@@ -1,6 +1,11 @@
+import { $duration, $pgorgress, $songs } from "@/features/music"
+import clsx from "clsx"
+import { useStore } from "effector-react"
 import Head from "next/head"
+import Image from "next/image"
 import Link from "next/link"
-import React, { memo, FC, ReactNode } from "react"
+import React, { memo, FC, ReactNode, useState } from "react"
+import AudioPlayer from "../AudioPlayer/AudioPlayer"
 
 interface LayoutProps {
     title?: string
@@ -8,6 +13,11 @@ interface LayoutProps {
 }
 
 const Layout: FC<LayoutProps> = ({ title, children }) => {
+    const songs = useStore($songs)
+    const duration = useStore($duration)
+    const [hidden, setHidden] = useState(false)
+
+    const progress = useStore($pgorgress)
     return (
         <>
             <Head>
@@ -16,7 +26,10 @@ const Layout: FC<LayoutProps> = ({ title, children }) => {
             </Head>
             <header className="grid w-full grid-cols-12 content-center items-center px-8 py-4 ">
                 <Link href="/" shallow>
-                    <a className="col-span-3 text-xl">Музыкалка</a>
+                    <a className="col-span-3 flex items-center text-xl">
+                        <Image src="/img/winamp-logo.svg" height={50} width={50} />
+                        <h2>Шinamp</h2>
+                    </a>
                 </Link>
                 <nav className=" col-span-5 flex items-center  space-x-4 text-center text-base">
                     <Link href="/music" shallow>
@@ -41,9 +54,40 @@ const Layout: FC<LayoutProps> = ({ title, children }) => {
             <aside></aside>
             <footer className="grid grid-cols-12 items-center bg-gray-400 px-8 py-4 text-xl">
                 <Link href="/" shallow>
-                    <a className="col-span-3">Музыкалка</a>
+                    <a className="col-span-3 flex items-center text-xl">
+                        <Image src="/img/winamp-logo.svg" height={50} width={50} />
+                        <h2>Шinamp</h2>
+                    </a>
                 </Link>
             </footer>
+            <aside
+                className={clsx(
+                    "fixed bottom-4 left-[10%] right-[10%] rounded bg-white px-10  shadow-md",
+                    hidden && "max-h-8 overflow-hidden"
+                )}
+            >
+                <button
+                    className="absolute  right-0 -top-10 bg-green-600 p-4"
+                    onClick={() => setHidden((prev) => !prev)}
+                >
+                    hide
+                </button>
+                <div className={clsx(hidden && "hidden")}>
+                    <AudioPlayer track={songs[0]} />
+                </div>
+
+                {hidden && (
+                    <input
+                        type="range"
+                        min={0}
+                        max={duration}
+                        value={progress}
+                        // onChange={changeCurrentTime}
+                        className="w-full max-w-[calc(100%-2rem)]"
+                    />
+                )}
+            </aside>
+
             {/* <MobileNavPanel />
         <Footer /> */}
         </>

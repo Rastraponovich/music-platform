@@ -11,6 +11,8 @@ import "@/styles/globals.css"
 import "tailwindcss/tailwind.css"
 import { useScope } from "../hooks/useScope"
 
+let clientScope: Scope
+
 const App: NextPage<AppProps> = ({ Component, pageProps, router }) => {
     // const scope = fork({
     //     values: {

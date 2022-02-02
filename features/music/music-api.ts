@@ -1,0 +1,42 @@
+import { TResponse } from "@/types"
+import { externalAPI } from "@/utils/axiosInstanse"
+import { AxiosResponse } from "axios"
+import { createEffect } from "effector"
+import { Song } from "./types"
+
+const getAllSongsAPI = async () => await externalAPI.get("/songs")
+const getOneSongAPI = async (id: number) => await externalAPI.get(`/songs/${id}`)
+const deleteOneSongAPI = async (id: number) => await externalAPI.delete(`/songs/${id}`)
+
+const saveSongAPI = async (song: Song & { image: File; music: File }) => {
+    const formdata = new FormData()
+
+    Object.entries(song).forEach(([key, value], index) => formdata.append(key, value))
+
+    const response = await externalAPI.post("/songs", formdata)
+
+    return response
+}
+const updateSongAPI = async ({ id, song }: { id: number; song: Song }) =>
+    await externalAPI.patch(`/songs/${id}`, song)
+
+const getAllSongsFx = createEffect<any, AxiosResponse<TResponse<Song>>, Error>(getAllSongsAPI)
+const saveSongFx = createEffect<Song & { image: File; music: File }, AxiosResponse<Song>, Error>(
+    saveSongAPI
+)
+const getOneSongFx = createEffect<number, AxiosResponse<Song>, Error>(getOneSongAPI)
+const updateSongFx = createEffect<{ id: number; song: Song }, AxiosResponse<Song>, Error>(
+    updateSongAPI
+)
+
+const deleteOneSongFx = createEffect<number, AxiosResponse<Song>, Error>(deleteOneSongAPI)
+
+const MusicAPI = {
+    getAllSongsFx,
+    saveSongFx,
+    getOneSongFx,
+    updateSongFx,
+    deleteOneSongFx,
+}
+
+export { MusicAPI }
