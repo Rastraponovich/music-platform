@@ -15,9 +15,7 @@ const TrackListItem: FC<TrackListItemProps> = ({ track }) => {
     const playing = useStore(player.$playing)
     const volume = useStore(player.volume.$volume)
     const duration = useStore(player.$duration)
-
     const handleSelectTrack = useEvent(player.selectTrack)
-
     const currentTrack = useStore(player.$currentTrack)
 
     const [isCurrentTrack, setIsCurrentTrack] = useState(false)
@@ -37,7 +35,6 @@ const TrackListItem: FC<TrackListItemProps> = ({ track }) => {
 
     const [seconds, setSeconds] = useState(0)
     const [minutes, setMinutes] = useState(0)
-    const [loop, setLoop] = useState(false)
 
     const play = () => {
         if (!currentTrack || currentTrack.id !== track.id) return handleSelectTrack(track)
@@ -45,55 +42,67 @@ const TrackListItem: FC<TrackListItemProps> = ({ track }) => {
         return handlePlay()
     }
 
+    useEffect(() => {
+        if (isCurrentTrack) {
+            if (progress < 60) {
+                setSeconds(progress)
+            } else {
+                setSeconds((prev) => progress % 60)
+                setMinutes(Math.floor(progress / 60))
+            }
+        }
+
+        return () => {
+            setSeconds(0)
+            setMinutes(0)
+        }
+    }, [progress, duration])
+
     return (
         <div className="flex  flex-col">
-            <div className="grid grid-cols-12 items-center">
-                <button onClick={play} className="col-span-2">
-                    {isCurrentTrack ? playing ? <PauseIcon /> : <PlayIcon /> : <PlayIcon />}
+            <div className="grid grid-cols-12 items-center rounded bg-white py-2 shadow-sm">
+                <button onClick={play} className="col-span-1 justify-self-center">
+                    {isCurrentTrack ? (
+                        playing ? (
+                            <PauseIcon size="small" />
+                        ) : (
+                            <PlayIcon size="small" />
+                        )
+                    ) : (
+                        <PlayIcon size="small" />
+                    )}
                 </button>
-                <div className="col-span-6 flex space-x-2">
+                <div className="col-span-7 flex space-x-2">
                     <Image
                         src={`${process.env.NEXT_PUBLIC_BACKEND}/images/${track.cover}`}
                         objectFit="contain"
-                        height={50}
-                        width={50}
+                        height={40}
+                        width={40}
                     />
-                    <div className=" flex grow flex-col">
-                        <span className="text-base font-medium">{track.name}</span>
-                        <span className="text-sm font-light text-gray-800">{track.artist}</span>
+                    <div className=" flex grow flex-col justify-center text-base">
+                        <div className="flex grow">
+                            <span className=" font-normal text-gray-800 after:mx-2 after:content-['-']">
+                                {track.artist}
+                            </span>
+
+                            <span className=" truncate font-semibold">{track.name}</span>
+                        </div>
+                        {isCurrentTrack && (
+                            <input type="range" min={0} max={duration} value={progress} disabled />
+                        )}
                     </div>
                 </div>
-                <span className="col-span-1 col-start-10 mr-2 flex justify-self-end text-sm text-gray-800">
-                    {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
-                </span>
-                <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    value={volume}
-                    onChange={handleChangeVolume}
-                    className="col-span-2 col-end-13"
-                    onSeeking={() => console.log(`${volume.toString()}%`)}
-                />
                 {isCurrentTrack && (
-                    <input
-                        type="range"
-                        min={0}
-                        max={duration}
-                        value={progress}
-                        onChange={handleChangeProgress}
-                        className="col-span-8 col-start-3"
-                    />
+                    <div className="col-span-1 col-start-10 mr-2 flex justify-self-end text-sm text-gray-800">
+                        <span className="after:mx-1 after:content-['/']">
+                            {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+                        </span>
+                        <span>
+                            {Math.floor(duration / 60)}:
+                            {duration % 60 < 10 ? `0${duration & 60}` : duration % 60}
+                        </span>
+                    </div>
                 )}
-            </div>
-
-            <div className="flex flex-col">
-                <label className="mb-2 flex items-center space-x-2">
-                    <span>repeat</span>
-                    <input type="checkbox" />
-                    {/* checked={false} onChange={() => null} */}
-                    {/* //onChange={hanldeLoopStateSet} */}
-                </label>
             </div>
         </div>
     )

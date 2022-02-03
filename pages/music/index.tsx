@@ -43,7 +43,7 @@ const MusicPage: FC<MusicPageProps> = () => {
                 <h2>добро пожаловать</h2>
 
                 <section className="flex flex-col">
-                    <div className="flex flex-col">
+                    <div className="flex  flex-col divide-y-2 divide-gray-200">
                         {useList($songs, {
                             fn: (song) => <TrackListItem track={song} />,
                         })}

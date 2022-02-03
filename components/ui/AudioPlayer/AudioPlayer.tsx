@@ -1,4 +1,4 @@
-import { $refAudio, player } from "@/features/music/player"
+import { player } from "@/features/music/player"
 import { Song } from "@/features/music/types"
 import { useEvent, useStore } from "effector-react"
 import Image from "next/image"
@@ -18,8 +18,6 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ track }) => {
     const volume = useStore(player.volume.$volume)
     const duration = useStore(player.$duration)
     const currentTime = useStore(player.progress.$pgorgress)
-
-    const refAudio = useStore($refAudio)
 
     const playing = useStore(player.$playing)
 
@@ -52,7 +50,7 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ track }) => {
     //инициализация
     useEffect(() => {
         audio = new Audio()
-        // setAudio()
+        setAudio()
 
         handleLoadTrack(audio.readyState)
 
@@ -62,14 +60,6 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ track }) => {
     //конвертация времени
 
     let id: any
-
-    useEffect(() => {
-        // refAudio.loadFromUrl(`${process.env.NEXT_PUBLIC_BACKEND}/music/${track.path}`, true)
-        id = setInterval(() => {
-            // console.log(refAudio._source)
-        }, 1000)
-        return () => clearInterval(id)
-    }, [refAudio])
 
     useEffect(() => {
         if (currentTime < 60) {
@@ -142,7 +132,6 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ track }) => {
     const changeVolume = (e: React.ChangeEvent<HTMLInputElement>) => {
         audio.volume = Number(e.target.value) / 100
         handleSetVolume(Number(e.target.value))
-        refAudio.setVolume(Number(e.target.value))
     }
     const changeCurrentTime = (e: React.ChangeEvent<HTMLInputElement>) => {
         audio.currentTime = Number(e.target.value)

@@ -1,6 +1,4 @@
-import { createApi, createEffect, createEvent, createStore, guard } from "effector"
-import { on } from "events"
-import { sample } from "lodash"
+import { createApi, createEffect, createEvent, createStore, guard, sample } from "effector"
 import { ChangeEvent } from "react"
 import Media from "../media"
 import { Song } from "./types"
@@ -46,6 +44,17 @@ const volume = {
 
 const $playing = createStore<boolean>(false).reset(selectTrack)
 
+const $timeRemaining = createStore<number>(0)
+
+sample({
+    clock: $pgorgress,
+    source: $duration,
+    fn: (duration, progress) => duration - progress,
+    target: $timeRemaining,
+})
+
+$timeRemaining.watch(console.log)
+
 const { play, pause } = createApi($playing, {
     play: () => true,
     pause: () => false,
@@ -65,31 +74,7 @@ const player = {
     $duration,
 }
 
-// $trackLoaded.watch((args) => console.log(args, "trackLoaded"))
+const media = new Media()
 
-// $playing.watch((args) => console.log(args, "playing"))
-
-const $refAudio = createStore<Media>(new Media())
-
-$refAudio
-    .on(initVolume, (ref, value) => {
-        ref.setVolume(value)
-
-        console.log(ref._gainNode.gain.value, value)
-    })
-    .on(changeVolume, (ref, event) => {
-        ref.setVolume(Number(event.target.value))
-
-        console.log(ref._gainNode.gain.value, Number(event.target.value))
-    })
-    .on($currentTrack, (ref, track) => {
-        ref.loadFromUrl(`${process.env.NEXT_PUBLIC_BACKEND}/music/${track!.path}`, true)
-    })
-    .on(play, (ref, _) => {
-        ref.play()
-    })
-    .on(pause, (ref, _) => ref.stop())
-
-$refAudio.watch((args) => console.log(args))
-
-export { player, $refAudio }
+media.timeRemaining()
+export { player }
