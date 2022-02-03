@@ -1,6 +1,8 @@
-import { $duration, $pgorgress, $songs } from "@/features/music"
+import { $songs } from "@/features/music"
+import { player } from "@/features/music/player"
 import clsx from "clsx"
 import { useStore } from "effector-react"
+import { useEvent } from "effector-react/scope"
 import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
@@ -14,10 +16,13 @@ interface LayoutProps {
 
 const Layout: FC<LayoutProps> = ({ title, children }) => {
     const songs = useStore($songs)
-    const duration = useStore($duration)
+    const currentTrack = useStore(player.$currentTrack)
+    const duration = useStore(player.$duration)
+
+    const handleChangeProgress = useEvent(player.progress.changeProgress)
     const [hidden, setHidden] = useState(false)
 
-    const progress = useStore($pgorgress)
+    const progress = useStore(player.progress.$pgorgress)
     return (
         <>
             <Head>
@@ -60,33 +65,35 @@ const Layout: FC<LayoutProps> = ({ title, children }) => {
                     </a>
                 </Link>
             </footer>
-            <aside
-                className={clsx(
-                    "fixed bottom-4 left-[10%] right-[10%] rounded bg-white px-10  shadow-md",
-                    hidden && "max-h-8 overflow-hidden"
-                )}
-            >
-                <button
-                    className="absolute  right-0 -top-10 bg-green-600 p-4"
-                    onClick={() => setHidden((prev) => !prev)}
+            {currentTrack && (
+                <aside
+                    className={clsx(
+                        "fixed bottom-4 left-[10%] right-[10%] rounded bg-white px-10  shadow-md",
+                        hidden && "max-h-8 overflow-hidden"
+                    )}
                 >
-                    hide
-                </button>
-                <div className={clsx(hidden && "hidden")}>
-                    <AudioPlayer track={songs[0]} />
-                </div>
+                    <button
+                        className="absolute  right-0 -top-10 bg-green-600 p-4"
+                        onClick={() => setHidden((prev) => !prev)}
+                    >
+                        hide
+                    </button>
+                    <div className={clsx(hidden && "hidden")}>
+                        <AudioPlayer track={currentTrack} />
+                    </div>
 
-                {hidden && (
-                    <input
-                        type="range"
-                        min={0}
-                        max={duration}
-                        value={progress}
-                        // onChange={changeCurrentTime}
-                        className="w-full max-w-[calc(100%-2rem)]"
-                    />
-                )}
-            </aside>
+                    {hidden && (
+                        <input
+                            type="range"
+                            min={0}
+                            max={duration}
+                            value={progress}
+                            onChange={handleChangeProgress}
+                            className="w-full max-w-[calc(100%-2rem)]"
+                        />
+                    )}
+                </aside>
+            )}
 
             {/* <MobileNavPanel />
         <Footer /> */}

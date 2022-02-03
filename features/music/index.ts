@@ -55,28 +55,4 @@ sample({
     target: MusicAPI.saveSongFx,
 })
 
-const setProgress = createEvent<number>()
-const $pgorgress = createStore<number>(0).on(setProgress, (_, payload) => payload)
-
-const setDuration = createEvent<number>()
-const $duration = createStore<number>(0).on(setDuration, (_, payload) => payload)
-
-const setVolume = createEvent<number>()
-const $volume = createStore<number>(50).on(setVolume, (_,payload) => payload)
-
-export {
-    getSongs,
-    $songs,
-    $countSongs,
-    $currentSong,
-    submitted,
-    changeSong,
-    uploadFile,
-    $files,
-    $pgorgress,
-    setProgress,
-    $duration,
-    setDuration,
-    setVolume,
-$volume,
-}
+export { getSongs, $songs, $countSongs, $currentSong, submitted, changeSong, uploadFile, $files }

@@ -17,6 +17,7 @@ import {
 } from "@/features/music"
 
 import Layout from "@/components/ui/Layout/Layout"
+import TrackListItem from "@/components/TrackListItem/TrackListItem"
 
 const AudioPlayer = dynamic(() => import("@/components/ui/AudioPlayer/AudioPlayer"), {
     ssr: false,
@@ -38,50 +39,39 @@ const MusicPage: FC<MusicPageProps> = () => {
 
     return (
         <Layout title="Плейлисты">
-            <main className="grow">
+            <main className="grow px-20 py-10">
                 <h2>добро пожаловать</h2>
 
-                <section className="grid grid-cols-1 gap-4 px-20 py-10 lg:grid-cols-3">
-                    {useList($songs, {
-                        fn: (song) => (
-                            <div className="flex flex-col space-y-4">
-                                <div
-                                    className={clsx(
-                                        "relative flex h-[200px] grow backdrop-blur-sm ",
-                                        "bg-gradient-to-r from-cyan-500 to-blue-500"
-                                    )}
-                                >
-                                    <Image
-                                        src={`${process.env.NEXT_PUBLIC_BACKEND}/images/${song.cover}`}
-                                        objectFit="contain"
-                                        layout="fill"
-                                        placeholder="blur"
-                                        blurDataURL={`${process.env.NEXT_PUBLIC_BACKEND}/images/${song.cover}`}
-                                        loading="lazy"
-                                    />
-                                </div>
-                                <h3>исполнитель: {song.artist}</h3>
-                                <h4>Название: {song.name}</h4>
-                                <AudioPlayer track={song} />
-                            </div>
-                        ),
-                    })}
+                <section className="flex flex-col">
+                    <div className="flex flex-col">
+                        {useList($songs, {
+                            fn: (song) => <TrackListItem track={song} />,
+                        })}
+                    </div>
                 </section>
 
                 <section className="flex px-20 py-10">
                     <form className="flex flex-col space-y-4" onSubmit={onSubmit}>
-                        <input
-                            type="text"
-                            name="name"
-                            value={currentSong.name}
-                            onChange={onChange}
-                        />
-                        <input
-                            type="text"
-                            name="artist"
-                            value={currentSong.artist}
-                            onChange={onChange}
-                        />
+                        <label className="flex flex-col">
+                            <span>Название</span>
+                            <input
+                                type="text"
+                                name="name"
+                                value={currentSong.name}
+                                onChange={onChange}
+                            />
+                        </label>
+
+                        <label className="flex flex-col">
+                            <span>Автор</span>
+                            <input
+                                type="text"
+                                name="artist"
+                                value={currentSong.artist}
+                                onChange={onChange}
+                            />
+                        </label>
+
                         <span>image</span>
                         <input type="file" name="image" onChange={onUpload} />
                         <span>music</span>
