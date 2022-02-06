@@ -6,6 +6,7 @@ import { useStore } from "effector-react"
 import { useEvent } from "effector-react/scope"
 import Image from "next/image"
 import React, { memo, FC, useState, useEffect } from "react"
+import Annotation from "../ui/icons/Annotation/Annotation"
 import MinusIcon from "../ui/icons/MinusIcon/MinusIcon"
 import PauseIcon from "../ui/icons/PauseIcon/PauseIcon"
 import PlayIcon from "../ui/icons/PlayIcon/PlayIcon"
@@ -44,7 +45,7 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
 
         return handleAddToPlayList(track)
     }
-
+    const [comments, showComments] = useState(false)
     return (
         <div className="flex  flex-col">
             <div className="grid grid-cols-12 items-center rounded bg-white py-2 shadow-sm">
@@ -78,9 +79,22 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
                     </div>
                 </div>
                 <TrackTimer isCurrentTrack={isCurrentTrack} metaData={track.metaData} />
-                <button onClick={handlePlayListActionClick} className="col-end-13">
-                    {!isExistInPlaylist ? <PlusIcon size="small" /> : <MinusIcon size="small" />}
-                </button>
+
+                <div className="col-span-2 col-end-13 flex space-x-2 justify-self-start">
+                    <button onClick={handlePlayListActionClick}>
+                        {!isExistInPlaylist ? (
+                            <PlusIcon size="small" />
+                        ) : (
+                            <MinusIcon size="small" />
+                        )}
+                    </button>
+                    <button onClick={() => showComments(!comments)}>
+                        <Annotation size="small" />
+                    </button>
+                </div>
+                {isCurrentTrack && comments && (
+                    <div className="col-span-12 bg-gray-600 p-10">asdsads</div>
+                )}
             </div>
         </div>
     )

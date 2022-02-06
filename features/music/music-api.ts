@@ -8,9 +8,16 @@ const getMetadataAPI = async (name: string) => {
     return await externalAPI.get(`/songs/metadata/${name}`, { withCredentials: false })
 }
 
-const getAllSongsAPI = async () => {
-    return await externalAPI.get("/songs")
+const getAllSongsAPI = async (params?: any) => {
+    return await externalAPI.get("/songs" + "?" + params)
 }
+
+const searchTrackAPI = async (params: any) => {
+    return axios.get("http://localhost:4000/songs?name=" + params)
+}
+
+const searchTrackFx = createEffect<string, AxiosResponse<any>, Error>(searchTrackAPI)
+
 const getOneSongAPI = async (id: number) => await externalAPI.get(`/songs/${id}`)
 const deleteOneSongAPI = async (id: number) => await externalAPI.delete(`/songs/${id}`)
 
@@ -46,6 +53,7 @@ const MusicAPI = {
     updateSongFx,
     deleteOneSongFx,
     getMetadataFx,
+    searchTrackFx,
 }
 
 export { MusicAPI }

@@ -9,6 +9,7 @@ import Head from "next/head"
 import "@/styles/globals.css"
 import "tailwindcss/tailwind.css"
 import { useScope } from "../hooks/useScope"
+import Layout from "@/components/ui/Layout/Layout"
 
 let clientScope: Scope
 

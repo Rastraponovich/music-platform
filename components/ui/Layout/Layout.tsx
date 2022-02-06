@@ -1,4 +1,6 @@
 import AsidePlayer from "@/components/AsidePlayer/AsidePlayer"
+import { player } from "@/features/music/player"
+import { useStore } from "effector-react"
 import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
@@ -12,6 +14,7 @@ interface LayoutProps {
 
 const Layout: FC<LayoutProps> = ({ title, children }) => {
     console.log("render layout")
+    const currentTrack = useStore(player.$currentTrack)
 
     return (
         <>
@@ -55,7 +58,7 @@ const Layout: FC<LayoutProps> = ({ title, children }) => {
                     </a>
                 </Link>
             </footer>
-            <AsidePlayer />
+            {currentTrack && <AsidePlayer />}
             <PlayList />
 
             {/* <MobileNavPanel />

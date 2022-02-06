@@ -2,13 +2,15 @@ import { player } from "@/features/music/player"
 import clsx from "clsx"
 import { useStore, useEvent } from "effector-react"
 import React, { memo, FC, useState } from "react"
-import AudioPlayer from "../ui/AudioPlayer/AudioPlayer"
 import Progressbar from "../ui/Progressbar/Progressbar"
+
+import dynamic from "next/dynamic"
+
+const AudioPlayer = dynamic(() => import("../ui/AudioPlayer/AudioPlayer"), { ssr: false })
 
 interface AsidePlayerProps {}
 
 const AsidePlayer: FC<AsidePlayerProps> = () => {
-    const currentTrack = useStore(player.$currentTrack)
     console.log("render asidePlayer")
     const [hidden, setHidden] = useState(false)
     return (
@@ -19,12 +21,12 @@ const AsidePlayer: FC<AsidePlayerProps> = () => {
             )}
         >
             <button
-                className="absolute  right-0 -top-10 bg-green-600 p-4"
+                className="absolute  right-0 top-0 bg-green-600 "
                 onClick={() => setHidden((prev) => !prev)}
             >
-                hide
+                {!hidden ? "hide" : "show"}
             </button>
-            {currentTrack && <AudioPlayer className={clsx(hidden && "hidden")} />}
+            <AudioPlayer className={clsx(hidden && "hidden")} />
 
             {hidden && <Progressbar className="w-full max-w-[calc(100%-2rem)]" />}
         </aside>

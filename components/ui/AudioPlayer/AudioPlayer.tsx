@@ -2,7 +2,7 @@ import { player, PlayerGate } from "@/features/music/player"
 import { useEvent, useGate, useStore } from "effector-react"
 import Image from "next/image"
 
-import React, { memo, FC, useEffect } from "react"
+import React, { memo, FC, useEffect, useState } from "react"
 import PauseIcon from "../icons/PauseIcon/PauseIcon"
 import PlayIcon from "../icons/PlayIcon/PlayIcon"
 import Progressbar from "../Progressbar/Progressbar"
@@ -14,17 +14,16 @@ import { useRouter } from "next/router"
 interface AudioPlayerProps {
     className?: string
 }
-let audio: HTMLAudioElement
+let audioEL: HTMLAudioElement
 const AudioPlayer: FC<AudioPlayerProps> = ({ className }) => {
     useGate(PlayerGate)
 
     const track = useStore(player.$currentTrack)
-
+    const [audio, setStateAudio] = useState<HTMLAudioElement>(new Audio())
     const router = useRouter()
 
     //инициализация
     useEffect(() => {
-        audio = new Audio()
         setAudio()
         handlePlay()
 

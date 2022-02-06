@@ -3,7 +3,15 @@ import { GetServerSideProps } from "next"
 import { allSettled, fork, serialize } from "effector"
 import { useEvent, useList, useStore } from "effector-react"
 
-import { $currentSong, $songs, changeSong, getSongs, submitted, uploadFile } from "@/features/music"
+import {
+    $currentSong,
+    $songs,
+    changeSong,
+    getSongs,
+    searchTrack,
+    submitted,
+    uploadFile,
+} from "@/features/music"
 
 import Layout from "@/components/ui/Layout/Layout"
 import TrackListItem from "@/components/TrackListItem/TrackListItem"
@@ -17,13 +25,22 @@ const MusicPage: FC<MusicPageProps> = () => {
     const onSubmit = useEvent(submitted)
     const onChange = useEvent(changeSong)
 
+    const handleSearch = useEvent(searchTrack)
+
     const currentTrack = useStore(player.$currentTrack)
     console.log("render list")
 
     return (
         <Layout title="Плейлисты">
             <main className="grow px-20 py-10">
-                <h2>добро пожаловать</h2>
+                <label className="mb-4 flex flex-col space-y-2">
+                    <span>Поиск по названию</span>
+                    <input
+                        type="text"
+                        placeholder="search track"
+                        onChange={(e) => handleSearch(e.target.value)}
+                    />
+                </label>
 
                 <section className="flex flex-col">
                     <div className="flex  flex-col divide-y-2 divide-gray-200">

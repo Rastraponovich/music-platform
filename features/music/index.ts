@@ -1,18 +1,32 @@
 import axios from "axios"
-import { attach, createEffect, createEvent, createStore, forward, sample } from "effector"
+import { attach, createEffect, createEvent, createStore, forward, guard, sample } from "effector"
 import { ChangeEvent } from "react"
 import { MusicAPI } from "./music-api"
 import { createTrackFactory } from "./player"
 import { Song } from "./types"
 
+import { debounce } from "patronum"
+
 const getSongs = createEvent()
+
+const searchTrack = createEvent<string>()
+
+const searchTrackNameFiled = createStore<string>("").on(searchTrack, (_, trackName) => trackName)
+
+const debouncedSearch = debounce({
+    source: searchTrackNameFiled,
+    timeout: 500,
+    target: MusicAPI.searchTrackFx,
+})
 
 sample({
     clock: getSongs,
     target: MusicAPI.getAllSongsFx,
 })
 
-const $songs = createStore<Song[]>([]).on(MusicAPI.getAllSongsFx.doneData, (_, res) => res.data[0])
+const $songs = createStore<Song[]>([])
+    .on(MusicAPI.getAllSongsFx.doneData, (_, res) => res.data[0])
+    .on(MusicAPI.searchTrackFx.doneData, (_, res) => res.data[0])
 const $countSongs = createStore<number>(0).on(
     MusicAPI.getAllSongsFx.doneData,
     (_, res) => res.data[1]
@@ -56,4 +70,14 @@ sample({
     target: MusicAPI.saveSongFx,
 })
 
-export { getSongs, $songs, $countSongs, $currentSong, submitted, changeSong, uploadFile, $files }
+export {
+    getSongs,
+    $songs,
+    $countSongs,
+    $currentSong,
+    submitted,
+    changeSong,
+    uploadFile,
+    $files,
+    searchTrack,
+}
