@@ -1,10 +1,16 @@
 import { TResponse } from "@/types"
 import { externalAPI } from "@/utils/axiosInstanse"
-import { AxiosResponse } from "axios"
+import axios, { AxiosResponse } from "axios"
 import { createEffect } from "effector"
 import { Song } from "./types"
 
-const getAllSongsAPI = async () => await externalAPI.get("/songs")
+const getMetadataAPI = async (name: string) => {
+    return await externalAPI.get(`/songs/metadata/${name}`, { withCredentials: false })
+}
+
+const getAllSongsAPI = async () => {
+    return await externalAPI.get("/songs")
+}
 const getOneSongAPI = async (id: number) => await externalAPI.get(`/songs/${id}`)
 const deleteOneSongAPI = async (id: number) => await externalAPI.delete(`/songs/${id}`)
 
@@ -19,6 +25,8 @@ const saveSongAPI = async (song: Song & { image: File; music: File }) => {
 }
 const updateSongAPI = async ({ id, song }: { id: number; song: Song }) =>
     await externalAPI.patch(`/songs/${id}`, song)
+
+const getMetadataFx = createEffect<string, AxiosResponse<any>, Error>(getMetadataAPI)
 
 const getAllSongsFx = createEffect<any, AxiosResponse<TResponse<Song>>, Error>(getAllSongsAPI)
 const saveSongFx = createEffect<Song & { image: File; music: File }, AxiosResponse<Song>, Error>(
@@ -37,6 +45,7 @@ const MusicAPI = {
     getOneSongFx,
     updateSongFx,
     deleteOneSongFx,
+    getMetadataFx,
 }
 
 export { MusicAPI }

@@ -1,41 +1,24 @@
-import clsx from "clsx"
 import { FC } from "react"
-import Image from "next/image"
-import dynamic from "next/dynamic"
 import { GetServerSideProps } from "next"
 import { allSettled, fork, serialize } from "effector"
 import { useEvent, useList, useStore } from "effector-react"
 
-import {
-    $currentSong,
-    $files,
-    $songs,
-    changeSong,
-    getSongs,
-    submitted,
-    uploadFile,
-} from "@/features/music"
+import { $currentSong, $songs, changeSong, getSongs, submitted, uploadFile } from "@/features/music"
 
 import Layout from "@/components/ui/Layout/Layout"
 import TrackListItem from "@/components/TrackListItem/TrackListItem"
-
-const AudioPlayer = dynamic(() => import("@/components/ui/AudioPlayer/AudioPlayer"), {
-    ssr: false,
-})
+import { player } from "@/features/music/player"
 
 interface MusicPageProps {}
 
 const MusicPage: FC<MusicPageProps> = () => {
-    const songs = useStore($songs)
-
     const currentSong = useStore($currentSong)
-
-    const files = useStore($files)
     const onUpload = useEvent(uploadFile)
-
     const onSubmit = useEvent(submitted)
-
     const onChange = useEvent(changeSong)
+
+    const currentTrack = useStore(player.$currentTrack)
+    console.log("render list")
 
     return (
         <Layout title="Плейлисты">
@@ -45,7 +28,13 @@ const MusicPage: FC<MusicPageProps> = () => {
                 <section className="flex flex-col">
                     <div className="flex  flex-col divide-y-2 divide-gray-200">
                         {useList($songs, {
-                            fn: (song) => <TrackListItem track={song} />,
+                            keys: [currentTrack],
+                            fn: (song) => (
+                                <TrackListItem
+                                    track={song}
+                                    isCurrentTrack={currentTrack?.id === song.id}
+                                />
+                            ),
                         })}
                     </div>
                 </section>

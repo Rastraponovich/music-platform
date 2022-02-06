@@ -1,62 +1,49 @@
-import { player } from "@/features/music/player"
+import { createTrackFactory, player } from "@/features/music/player"
 import { Song } from "@/features/music/types"
+import { useTrack } from "@/hooks/useTrack"
+import axios from "axios"
 import { useStore } from "effector-react"
 import { useEvent } from "effector-react/scope"
 import Image from "next/image"
 import React, { memo, FC, useState, useEffect } from "react"
+import MinusIcon from "../ui/icons/MinusIcon/MinusIcon"
 import PauseIcon from "../ui/icons/PauseIcon/PauseIcon"
 import PlayIcon from "../ui/icons/PlayIcon/PlayIcon"
+import PlusIcon from "../ui/icons/PlusIcon/PlusIcon"
+import Progressbar from "../ui/Progressbar/Progressbar"
+import TrackTimer from "./TrackTimer"
 
 interface TrackListItemProps {
     track: Song
+    isCurrentTrack: boolean
 }
 
-const TrackListItem: FC<TrackListItemProps> = ({ track }) => {
+const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
+    console.log("render track", track.name)
     const playing = useStore(player.$playing)
-    const volume = useStore(player.volume.$volume)
-    const duration = useStore(player.$duration)
+
     const handleSelectTrack = useEvent(player.selectTrack)
-    const currentTrack = useStore(player.$currentTrack)
 
-    const [isCurrentTrack, setIsCurrentTrack] = useState(false)
-
-    const handlePlay = useEvent(player.play)
-    const handlePause = useEvent(player.pause)
-
-    const progress = useStore(player.progress.$pgorgress)
-    const handleChangeProgress = useEvent(player.progress.changeProgress)
-
-    const handleChangeVolume = useEvent(player.volume.changeVolume)
-
-    useEffect(() => {
-        if (currentTrack && currentTrack!.id === track.id) setIsCurrentTrack(true)
-        return () => setIsCurrentTrack(false)
-    }, [currentTrack, track])
-
-    const [seconds, setSeconds] = useState(0)
-    const [minutes, setMinutes] = useState(0)
+    const handlePlay = useEvent(player.onPlay)
+    const handlePause = useEvent(player.onPause)
 
     const play = () => {
-        if (!currentTrack || currentTrack.id !== track.id) return handleSelectTrack(track)
+        if (!isCurrentTrack) return handleSelectTrack(track)
         if (playing) return handlePause()
         return handlePlay()
     }
 
-    useEffect(() => {
-        if (isCurrentTrack) {
-            if (progress < 60) {
-                setSeconds(progress)
-            } else {
-                setSeconds((prev) => progress % 60)
-                setMinutes(Math.floor(progress / 60))
-            }
-        }
+    const handleAddToPlayList = useEvent(player.playList.onAddToPlayList)
+    const hanldeRemoveFromPlayList = useEvent(player.playList.onRemoveFromPlayList)
+    const isExistInPlaylist = useStore(player.playList.$playList).some(
+        (item) => item.id === track.id
+    )
 
-        return () => {
-            setSeconds(0)
-            setMinutes(0)
-        }
-    }, [progress, duration])
+    const handlePlayListActionClick = () => {
+        if (isExistInPlaylist) return hanldeRemoveFromPlayList(track)
+
+        return handleAddToPlayList(track)
+    }
 
     return (
         <div className="flex  flex-col">
@@ -87,22 +74,13 @@ const TrackListItem: FC<TrackListItemProps> = ({ track }) => {
 
                             <span className=" truncate font-semibold">{track.name}</span>
                         </div>
-                        {isCurrentTrack && (
-                            <input type="range" min={0} max={duration} value={progress} disabled />
-                        )}
+                        {isCurrentTrack && <Progressbar />}
                     </div>
                 </div>
-                {isCurrentTrack && (
-                    <div className="col-span-1 col-start-10 mr-2 flex justify-self-end text-sm text-gray-800">
-                        <span className="after:mx-1 after:content-['/']">
-                            {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
-                        </span>
-                        <span>
-                            {Math.floor(duration / 60)}:
-                            {duration % 60 < 10 ? `0${duration & 60}` : duration % 60}
-                        </span>
-                    </div>
-                )}
+                <TrackTimer isCurrentTrack={isCurrentTrack} metaData={track.metaData} />
+                <button onClick={handlePlayListActionClick} className="col-end-13">
+                    {!isExistInPlaylist ? <PlusIcon size="small" /> : <MinusIcon size="small" />}
+                </button>
             </div>
         </div>
     )

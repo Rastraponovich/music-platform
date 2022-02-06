@@ -1,8 +1,7 @@
-import { NextPage, NextPageContext } from "next"
-import React, { useEffect } from "react"
+import { NextPage } from "next"
 
 import { Provider } from "effector-react/scope"
-import { fork, Scope, serialize } from "effector"
+import { Scope } from "effector"
 
 import { AppProps } from "next/app"
 import Head from "next/head"
@@ -26,6 +25,10 @@ const App: NextPage<AppProps> = ({ Component, pageProps, router }) => {
         <Provider value={scope}>
             <Head>
                 <link rel="icon" href="/favicon.ico" />
+                {/* <script
+                    src="https://cdn.jsdelivr.net/npm/react-render-tracker"
+                    data-config="inpage:true"
+                ></script> */}
             </Head>
             <Component {...pageProps} router={router} />
         </Provider>

@@ -1,4 +1,12 @@
 {
     "presets": ["next/babel"],
-    "plugins": [["effector/babel-plugin", { "reactSsr": true, "factories": ["/models/factories"] }]]
+    "plugins": [
+        [
+            "effector/babel-plugin",
+            {
+                "reactSsr": true,
+                "factories": ["/models/factories", "/features/music/player", "/features/music"]
+            }
+        ]
+    ]
 }

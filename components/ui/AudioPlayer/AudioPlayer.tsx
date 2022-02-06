@@ -1,83 +1,94 @@
-import { player } from "@/features/music/player"
-import { Song } from "@/features/music/types"
-import { useEvent, useStore } from "effector-react"
+import { player, PlayerGate } from "@/features/music/player"
+import { useEvent, useGate, useStore } from "effector-react"
 import Image from "next/image"
 
-import throttle from "lodash/throttle"
-
-import React, { memo, FC, useState, useEffect, useRef } from "react"
+import React, { memo, FC, useEffect } from "react"
 import PauseIcon from "../icons/PauseIcon/PauseIcon"
 import PlayIcon from "../icons/PlayIcon/PlayIcon"
+import Progressbar from "../Progressbar/Progressbar"
+import clsx from "clsx"
+import AudioPlayerTimer from "./AudioPlayerTimer"
+import RefreshIcon from "../icons/RefreshIcon/RefreshIcon"
+import { useRouter } from "next/router"
 
 interface AudioPlayerProps {
-    track: Song
+    className?: string
 }
 let audio: HTMLAudioElement
+const AudioPlayer: FC<AudioPlayerProps> = ({ className }) => {
+    useGate(PlayerGate)
 
-const AudioPlayer: FC<AudioPlayerProps> = ({ track }) => {
-    const volume = useStore(player.volume.$volume)
-    const duration = useStore(player.$duration)
-    const currentTime = useStore(player.progress.$pgorgress)
+    const track = useStore(player.$currentTrack)
 
-    const playing = useStore(player.$playing)
+    const router = useRouter()
 
-    const handlePlay = useEvent(player.play)
-    const handlePause = useEvent(player.pause)
-
-    const handleLoadTrack = useEvent(player.initTrack)
-    const trackLoaded = useStore(player.$trackLoaded)
-
-    const handleSetProgress = useEvent(player.progress.initProgress)
-    const handleChangeProgress = useEvent(player.progress.changeProgress)
-    const handleSetDuration = useEvent(player.setDuration)
-    const handleSetVolume = useEvent(player.volume.initVolume)
-
-    const [loop, setLoop] = useState(false)
-
-    const [seconds, setSeconds] = useState(0)
-    const [minutes, setMinutes] = useState(0)
-
-    const setAudio = () => {
-        audio.src = `${process.env.NEXT_PUBLIC_BACKEND}/music/${track.path}`
-        audio.volume = volume / 100
-        audio.loop = loop
-        audio.onloadedmetadata = () => handleSetDuration(Math.ceil(audio.duration))
-        audio.ontimeupdate = () => handleSetProgress(Math.ceil(audio.currentTime))
-        audio.onvolumechange = () => console.log(audio.volume)
-
-        return handlePlay()
-    }
     //инициализация
     useEffect(() => {
         audio = new Audio()
         setAudio()
-
-        handleLoadTrack(audio.readyState)
+        handlePlay()
 
         //unmount
         return () => audio.pause()
     }, [track])
-    //конвертация времени
+    const loop = useStore(player.$loop)
+    const playing = useStore(player.$playing)
+    const duration = useStore(player.$duration)
+    const volume = useStore(player.volume.$volume)
+    const trackLoaded = useStore(player.$trackLoaded)
+    const allowSeeking = useStore(player.progress.$allowSeeking)
+    const seekingProgress = useStore(player.progress.$seekingProgress)
 
-    let id: any
+    const handlePlay = useEvent(player.onPlay)
+    const handlePause = useEvent(player.onPause)
+    const handleLoadTrack = useEvent(player.initTrack)
+    const handleSetDuration = useEvent(player.setDuration)
+    const handleSetLoop = useEvent(player.onSetLoopEnabled)
+    const handleSetVolume = useEvent(player.volume.initVolume)
+    const handleSetProgress = useEvent(player.progress.initProgress)
+
+    const setAudio = () => {
+        audio.src = `${process.env.NEXT_PUBLIC_BACKEND}/music/${track!.path}`
+        audio.volume = volume / 100
+        audio.loop = loop
+
+        audio.onloadedmetadata = () => handleSetDuration(Math.ceil(audio.duration))
+        audio.ontimeupdate = () => handleSetProgress(Math.ceil(audio.currentTime))
+        audio.onvolumechange = () => handleSetVolume(audio.volume * 100)
+        audio.onloadeddata = () => handleLoadTrack(audio.readyState)
+        audio.onpause = () => audio.ended && handlePause()
+
+        audio.preload = "auto"
+
+        if (playing) return handlePause()
+    }
 
     useEffect(() => {
-        if (currentTime < 60) {
-            setSeconds(currentTime)
-        } else {
-            setSeconds((prev) => currentTime % 60)
-            setMinutes(Math.floor(currentTime / 60))
+        if (audio.readyState) {
+            handleLoadTrack(audio.readyState)
         }
+    }, [audio?.readyState])
+    //перемотка
+    useEffect(() => {
+        if (allowSeeking) audio.currentTime = seekingProgress
+    }, [seekingProgress, allowSeeking])
 
-        return () => {
-            setSeconds(0)
-            setMinutes(0)
-        }
-    }, [currentTime, duration])
-
-    let timerId: any
+    //looping
+    useEffect(() => {
+        audio.loop = loop
+    }, [loop, audio])
 
     //подсчет прослушки
+
+    // useEffect(() => {
+    //     if (audio.src.length > 0) {
+    //         if (audio.buffered.length)
+    //             timerId = setInterval(() => {
+    //                 console.log(audio.buffered.end(0))
+    //             }, 100)
+    //     }
+    //     return () => clearInterval(timerId)
+    // })
 
     // useEffect(() => {
     //     if (playing) {
@@ -96,28 +107,6 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ track }) => {
     //     }
     // }, [listensAdded, listnerTimer])
 
-    //лупинг
-    // useEffect(() => {
-    //     audio.loop = loop
-    // }, [loop])
-
-    useEffect(() => {
-        if (currentTime >= duration) {
-            setAudio()
-        }
-    }, [currentTime])
-
-    // useEffect(() => {
-    //     if (audio.seeking) console.log(currentTime)
-    // }, [audio, currentTime, volume])
-
-    const play = () => {
-        if (!playing) {
-            return handlePlay()
-        }
-        return handlePause()
-    }
-
     useEffect(() => {
         if (trackLoaded) {
             if (playing) {
@@ -125,40 +114,36 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ track }) => {
             } else {
                 audio.pause()
             }
+            return () => audio.pause()
         }
-        // return () => audio.pause()
     }, [playing, trackLoaded])
 
     const changeVolume = (e: React.ChangeEvent<HTMLInputElement>) => {
         audio.volume = Number(e.target.value) / 100
-        handleSetVolume(Number(e.target.value))
-    }
-    const changeCurrentTime = (e: React.ChangeEvent<HTMLInputElement>) => {
-        audio.currentTime = Number(e.target.value)
-        handleSetProgress(Number(e.target.value))
     }
 
     return (
-        <div className="flex  flex-col">
+        <div className={clsx("flex flex-col py-4", className)}>
             <div className="grid grid-cols-12 items-center">
-                <button onClick={play} className="col-span-2">
+                <button
+                    onClick={() => (playing ? handlePause() : handlePlay())}
+                    className="col-span-2"
+                >
                     {playing ? <PauseIcon /> : <PlayIcon />}
                 </button>
                 <div className="col-span-6 flex space-x-2">
                     <Image
-                        src={`${process.env.NEXT_PUBLIC_BACKEND}/images/${track.cover}`}
+                        src={`${process.env.NEXT_PUBLIC_BACKEND}/images/${track!.cover}`}
                         objectFit="contain"
                         height={50}
                         width={50}
                     />
                     <div className=" flex grow flex-col">
-                        <span className="text-base font-medium">{track.name}</span>
-                        <span className="text-sm font-light text-gray-800">{track.artist}</span>
+                        <span className="text-base font-medium">{track!.name}</span>
+                        <span className="text-sm font-light text-gray-800">{track!.artist}</span>
                     </div>
                 </div>
-                <span className="col-span-1 col-start-10 mr-2 flex justify-self-end text-sm text-gray-800">
-                    {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
-                </span>
+                <AudioPlayerTimer duration={duration} />
                 <input
                     type="range"
                     min={0}
@@ -166,27 +151,14 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ track }) => {
                     value={volume}
                     onChange={changeVolume}
                     className="col-span-2 col-end-13"
-                    onSeeking={() => console.log(`${volume.toString()}%`)}
                 />
-                <input
-                    type="range"
-                    min={0}
-                    max={duration}
-                    value={currentTime}
-                    onChange={changeCurrentTime}
-                    className="col-span-8 col-start-3"
-                />
-            </div>
-
-            <div className="flex flex-col">
-                <label className="mb-2 flex items-center space-x-2">
-                    <span>repeat</span>
-                    <input
-                        type="checkbox"
-                        checked={loop}
-                        onChange={() => setLoop((prev) => !prev)}
-                    />
-                </label>
+                <Progressbar className="col-span-8 col-start-3" />
+                <button
+                    className="col-span-1 col-start-11 justify-self-end "
+                    onClick={handleSetLoop}
+                >
+                    <RefreshIcon size="small" color={clsx(loop ? "currentColor" : "#9ca3af")} />
+                </button>
             </div>
         </div>
     )
