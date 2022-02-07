@@ -4,6 +4,7 @@ import { allSettled, fork, serialize } from "effector"
 import { useEvent, useList, useStore } from "effector-react"
 
 import {
+    $countSongs,
     $currentSong,
     $songs,
     changeSong,
@@ -21,73 +22,76 @@ interface MusicPageProps {}
 
 const MusicPage: FC<MusicPageProps> = () => {
     const currentSong = useStore($currentSong)
-    const onUpload = useEvent(uploadFile)
-    const onSubmit = useEvent(submitted)
-    const onChange = useEvent(changeSong)
 
-    const handleSearch = useEvent(searchTrack)
+    const [onUpload, onSubmit, onChange, handleSearch] = useEvent([
+        uploadFile,
+        submitted,
+        changeSong,
+        searchTrack,
+    ])
 
     const currentTrack = useStore(player.$currentTrack)
     console.log("render list")
 
+    const countSongs = useStore($countSongs)
+
     return (
-        <Layout title="Плейлисты">
-            <main className="grow px-20 py-10">
-                <label className="mb-4 flex flex-col space-y-2">
-                    <span>Поиск по названию</span>
-                    <input
-                        type="text"
-                        placeholder="search track"
-                        onChange={(e) => handleSearch(e.target.value)}
-                    />
-                </label>
+        <main className="grow px-20 py-10">
+            <label className="mb-4 flex flex-col space-y-2">
+                <span>Поиск по названию</span>
+                <input
+                    type="text"
+                    placeholder="search track"
+                    onChange={(e) => handleSearch(e.target.value)}
+                />
+            </label>
 
-                <section className="flex flex-col">
-                    <div className="flex  flex-col divide-y-2 divide-gray-200">
-                        {useList($songs, {
-                            keys: [currentTrack],
-                            fn: (song) => (
-                                <TrackListItem
-                                    track={song}
-                                    isCurrentTrack={currentTrack?.id === song.id}
-                                />
-                            ),
-                        })}
-                    </div>
-                </section>
-
-                <section className="flex px-20 py-10">
-                    <form className="flex flex-col space-y-4" onSubmit={onSubmit}>
-                        <label className="flex flex-col">
-                            <span>Название</span>
-                            <input
-                                type="text"
-                                name="name"
-                                value={currentSong.name}
-                                onChange={onChange}
+            <section className="flex flex-col">
+                <div className="flex  flex-col divide-y-2 divide-gray-200">
+                    {useList($songs, {
+                        keys: [currentTrack, countSongs],
+                        fn: (song) => (
+                            <TrackListItem
+                                track={song}
+                                isCurrentTrack={currentTrack?.id === song.id}
                             />
-                        </label>
+                        ),
+                    })}
+                </div>
+                <span className="x">Треков: {countSongs}</span>
+            </section>
 
-                        <label className="flex flex-col">
-                            <span>Автор</span>
-                            <input
-                                type="text"
-                                name="artist"
-                                value={currentSong.artist}
-                                onChange={onChange}
-                            />
-                        </label>
+            <section className="flex px-20 py-10">
+                <form className="flex flex-col space-y-4" onSubmit={onSubmit}>
+                    <label className="flex flex-col">
+                        <span>Название</span>
+                        <input
+                            type="text"
+                            name="name"
+                            value={currentSong.name}
+                            onChange={onChange}
+                        />
+                    </label>
 
-                        <span>image</span>
-                        <input type="file" name="image" onChange={onUpload} />
-                        <span>music</span>
+                    <label className="flex flex-col">
+                        <span>Автор</span>
+                        <input
+                            type="text"
+                            name="artist"
+                            value={currentSong.artist}
+                            onChange={onChange}
+                        />
+                    </label>
 
-                        <input type="file" name="music" onChange={onUpload} />
-                        <button type="submit">Сохранить</button>
-                    </form>
-                </section>
-            </main>
-        </Layout>
+                    <span>image</span>
+                    <input type="file" name="image" onChange={onUpload} />
+                    <span>music</span>
+
+                    <input type="file" name="music" onChange={onUpload} />
+                    <button type="submit">Сохранить</button>
+                </form>
+            </section>
+        </main>
     )
 }
 

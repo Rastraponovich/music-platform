@@ -1,81 +1,38 @@
-import { player, PlayerGate } from "@/features/music/player"
-import { useEvent, useGate, useStore } from "effector-react"
-import Image from "next/image"
-
-import React, { memo, FC, useEffect, useState } from "react"
-import PauseIcon from "../icons/PauseIcon/PauseIcon"
-import PlayIcon from "../icons/PlayIcon/PlayIcon"
-import Progressbar from "../Progressbar/Progressbar"
 import clsx from "clsx"
-import AudioPlayerTimer from "./AudioPlayerTimer"
+import Image from "next/image"
+import { memo, FC } from "react"
+import { useEvent, useStore } from "effector-react"
+
+import { player } from "@/features/music/player"
+
+import PlayIcon from "../icons/PlayIcon/PlayIcon"
+import PauseIcon from "../icons/PauseIcon/PauseIcon"
+import Progressbar from "../Progressbar/Progressbar"
 import RefreshIcon from "../icons/RefreshIcon/RefreshIcon"
-import { useRouter } from "next/router"
+import DocumentTextIcon from "../icons/DocumentTextIcon/DocumentTextIcon"
+import TrackTimer from "@/components/TrackListItem/TrackTimer"
+import AudioPlayerTimer from "./AudioPlayerTimer"
+import PlayList from "../PlayList/PlayList"
 
 interface AudioPlayerProps {
     className?: string
 }
-let audioEL: HTMLAudioElement
 const AudioPlayer: FC<AudioPlayerProps> = ({ className }) => {
-    useGate(PlayerGate)
-
     const track = useStore(player.$currentTrack)
-    const [audio, setStateAudio] = useState<HTMLAudioElement>(new Audio())
-    const router = useRouter()
 
-    //инициализация
-    useEffect(() => {
-        setAudio()
-        handlePlay()
-
-        //unmount
-        return () => audio.pause()
-    }, [track])
     const loop = useStore(player.$loop)
     const playing = useStore(player.$playing)
-    const duration = useStore(player.$duration)
+
     const volume = useStore(player.volume.$volume)
-    const trackLoaded = useStore(player.$trackLoaded)
-    const allowSeeking = useStore(player.progress.$allowSeeking)
-    const seekingProgress = useStore(player.progress.$seekingProgress)
 
-    const handlePlay = useEvent(player.onPlay)
-    const handlePause = useEvent(player.onPause)
-    const handleLoadTrack = useEvent(player.initTrack)
-    const handleSetDuration = useEvent(player.setDuration)
-    const handleSetLoop = useEvent(player.onSetLoopEnabled)
-    const handleSetVolume = useEvent(player.volume.initVolume)
-    const handleSetProgress = useEvent(player.progress.initProgress)
-
-    const setAudio = () => {
-        audio.src = `${process.env.NEXT_PUBLIC_BACKEND}/music/${track!.path}`
-        audio.volume = volume / 100
-        audio.loop = loop
-
-        audio.onloadedmetadata = () => handleSetDuration(Math.ceil(audio.duration))
-        audio.ontimeupdate = () => handleSetProgress(Math.ceil(audio.currentTime))
-        audio.onvolumechange = () => handleSetVolume(audio.volume * 100)
-        audio.onloadeddata = () => handleLoadTrack(audio.readyState)
-        audio.onpause = () => audio.ended && handlePause()
-
-        audio.preload = "auto"
-
-        if (playing) return handlePause()
-    }
-
-    useEffect(() => {
-        if (audio.readyState) {
-            handleLoadTrack(audio.readyState)
-        }
-    }, [audio?.readyState])
-    //перемотка
-    useEffect(() => {
-        if (allowSeeking) audio.currentTime = seekingProgress
-    }, [seekingProgress, allowSeeking])
-
-    //looping
-    useEffect(() => {
-        audio.loop = loop
-    }, [loop, audio])
+    const [handlePlay, handlePause, handleSetLoop, onVolumeChange, handleSetShowPlaylist] =
+        useEvent([
+            player.controls.onPlayClicked,
+            player.controls.onPauseClicked,
+            player.onSetLoopEnabled,
+            player.volume.changeVolume,
+            player.playList.setShowVisiblePlaylist,
+        ])
 
     //подсчет прослушки
 
@@ -106,24 +63,9 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ className }) => {
     //     }
     // }, [listensAdded, listnerTimer])
 
-    useEffect(() => {
-        if (trackLoaded) {
-            if (playing) {
-                audio.play()
-            } else {
-                audio.pause()
-            }
-            return () => audio.pause()
-        }
-    }, [playing, trackLoaded])
-
-    const changeVolume = (e: React.ChangeEvent<HTMLInputElement>) => {
-        audio.volume = Number(e.target.value) / 100
-    }
-
     return (
-        <div className={clsx("flex flex-col py-4", className)}>
-            <div className="grid grid-cols-12 items-center">
+        <div className={clsx("z-40 flex flex-col ", className)}>
+            <div className="mb-4 grid grid-cols-12 items-center">
                 <button
                     onClick={() => (playing ? handlePause() : handlePlay())}
                     className="col-span-2"
@@ -132,33 +74,41 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ className }) => {
                 </button>
                 <div className="col-span-6 flex space-x-2">
                     <Image
-                        src={`${process.env.NEXT_PUBLIC_BACKEND}/images/${track!.cover}`}
+                        src={`${process.env.NEXT_PUBLIC_BACKEND}/images/${track?.cover}`}
                         objectFit="contain"
                         height={50}
                         width={50}
                     />
                     <div className=" flex grow flex-col">
-                        <span className="text-base font-medium">{track!.name}</span>
-                        <span className="text-sm font-light text-gray-800">{track!.artist}</span>
+                        <span className="text-base font-medium">{track?.name}</span>
+                        <span className="text-sm font-light text-gray-800">{track?.artist}</span>
                     </div>
                 </div>
-                <AudioPlayerTimer duration={duration} />
+                <AudioPlayerTimer />
                 <input
                     type="range"
                     min={0}
                     max={100}
                     value={volume}
-                    onChange={changeVolume}
+                    onChange={onVolumeChange}
                     className="col-span-2 col-end-13"
                 />
-                <Progressbar className="col-span-8 col-start-3" />
-                <button
-                    className="col-span-1 col-start-11 justify-self-end "
-                    onClick={handleSetLoop}
-                >
-                    <RefreshIcon size="small" color={clsx(loop ? "currentColor" : "#9ca3af")} />
-                </button>
+                <Progressbar
+                    id="#position"
+                    className="absolute left-4 top-[97px] col-span-8 col-start-3 h-2.5 w-[248px] appearance-none bg-progresbar-player"
+                />
+
+                <div className="col-span-2 col-start-11 flex space-x-2 justify-self-end py-1">
+                    <button onClick={() => handleSetLoop()}>
+                        <RefreshIcon size="small" color={clsx(loop ? "currentColor" : "#9ca3af")} />
+                    </button>
+
+                    <button onClick={() => handleSetShowPlaylist()}>
+                        <DocumentTextIcon size="small" />
+                    </button>
+                </div>
             </div>
+            <PlayList />
         </div>
     )
 }

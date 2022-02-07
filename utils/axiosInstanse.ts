@@ -6,7 +6,7 @@ const externalAPI = axios.create({
 })
 const iternalAPI = axios.create({
     baseURL: `${process.env.NEXT_PUBLIC_HOST}/api`,
-    withCredentials: true,
+    // withCredentials: true,
 })
 
 export { externalAPI, iternalAPI }

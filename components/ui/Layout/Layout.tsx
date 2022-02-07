@@ -1,25 +1,23 @@
-import AsidePlayer from "@/components/AsidePlayer/AsidePlayer"
-import { player } from "@/features/music/player"
-import { useStore } from "effector-react"
 import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
 import { memo, FC, ReactNode } from "react"
+import { useInitPlayer } from "@/hooks/useInitPlayer"
+
 import PlayList from "../PlayList/PlayList"
 
 interface LayoutProps {
-    title?: string
     children: ReactNode
 }
 
-const Layout: FC<LayoutProps> = ({ title, children }) => {
+const Layout: FC<LayoutProps> = ({ children }) => {
+    useInitPlayer()
     console.log("render layout")
-    const currentTrack = useStore(player.$currentTrack)
 
     return (
         <>
             <Head>
-                <title>Музыкалка {title}</title>
+                <title>Музыкалка </title>
                 <meta name="viewport" content="initial-scale=1.0, width=device-width" />
             </Head>
             <header className="grid w-full grid-cols-12 content-center items-center px-8 py-4 ">
@@ -49,7 +47,7 @@ const Layout: FC<LayoutProps> = ({ title, children }) => {
             </header>
             {/* <Header /> */}
             {children}
-            <aside></aside>
+
             <footer className="grid grid-cols-12 items-center bg-gray-400 px-8 py-4 text-xl">
                 <Link href="/" shallow>
                     <a className="col-span-3 flex items-center text-xl">
@@ -58,8 +56,6 @@ const Layout: FC<LayoutProps> = ({ title, children }) => {
                     </a>
                 </Link>
             </footer>
-            {currentTrack && <AsidePlayer />}
-            <PlayList />
 
             {/* <MobileNavPanel />
         <Footer /> */}

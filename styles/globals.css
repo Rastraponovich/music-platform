@@ -1,8 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+@import "./playlist.css";
+@import "./player.css";
+@import "./player-volume.css";
 @layer base {
+    .slider-thumb::-webkit-slider-thumb {
+        @apply appearance-none;
+    }
+}
+
+@components {
 }
 body {
     margin: 0 auto;

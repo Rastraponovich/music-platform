@@ -10,6 +10,8 @@ import "@/styles/globals.css"
 import "tailwindcss/tailwind.css"
 import { useScope } from "../hooks/useScope"
 import Layout from "@/components/ui/Layout/Layout"
+import AsidePlayer from "@/components/AsidePlayer/AsidePlayer"
+import PlayList from "@/components/ui/PlayList/PlayList"
 
 let clientScope: Scope
 
@@ -24,14 +26,18 @@ const App: NextPage<AppProps> = ({ Component, pageProps, router }) => {
     const scope = useScope(pageProps.initialState)
     return (
         <Provider value={scope}>
-            <Head>
-                <link rel="icon" href="/favicon.ico" />
-                {/* <script
+            <Layout>
+                <Head>
+                    <link rel="icon" href="/favicon.ico" />
+                    {/* <script
                     src="https://cdn.jsdelivr.net/npm/react-render-tracker"
                     data-config="inpage:true"
                 ></script> */}
-            </Head>
-            <Component {...pageProps} router={router} />
+                </Head>
+                <Component {...pageProps} router={router} />
+                <AsidePlayer />
+                <PlayList />
+            </Layout>
         </Provider>
     )
 }
