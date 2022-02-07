@@ -12,18 +12,19 @@ interface AsidePlayerProps {}
 
 const AsidePlayer: FC<AsidePlayerProps> = () => {
     console.log("render asidePlayer")
-    const [hidden, setHidden] = useState(false)
+    const currentTrack = useStore(player.$currentTrack)
+    const hidden = useStore(player.$compact)
+    const handleSetCompact = useEvent(player.onSetCompact)
+
     return (
         <aside
             className={clsx(
                 "fixed bottom-4 left-[10%] right-[10%] rounded bg-white px-10  shadow-md",
-                hidden && "max-h-8 overflow-hidden"
+                hidden && "max-h-8 overflow-hidden",
+                !currentTrack && "hidden"
             )}
         >
-            <button
-                className="absolute  right-0 top-0 bg-green-600 "
-                onClick={() => setHidden((prev) => !prev)}
-            >
+            <button className="absolute  right-0 top-0 bg-green-600 " onClick={handleSetCompact}>
                 {!hidden ? "hide" : "show"}
             </button>
             <AudioPlayer className={clsx(hidden && "hidden")} />

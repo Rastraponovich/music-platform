@@ -14,7 +14,6 @@ interface LayoutProps {
 
 const Layout: FC<LayoutProps> = ({ title, children }) => {
     console.log("render layout")
-    const currentTrack = useStore(player.$currentTrack)
 
     return (
         <>
@@ -58,7 +57,6 @@ const Layout: FC<LayoutProps> = ({ title, children }) => {
                     </a>
                 </Link>
             </footer>
-            {currentTrack && <AsidePlayer />}
             <PlayList />
 
             {/* <MobileNavPanel />

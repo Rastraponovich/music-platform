@@ -11,15 +11,13 @@ const PlaylistPage: FC<PlaylistPageProps> = () => {
     const playlists = useStore($playlists)
 
     return (
-        <Layout title="Плейлисты">
-            <main className="grow">
-                <h2>добро пожаловать</h2>
+        <main className="grow">
+            <h2>добро пожаловать</h2>
 
-                <section className="grid grid-cols-3 gap-4">
-                    {useList($playlists, { fn: (pl) => <div>{pl.name}</div> })}
-                </section>
-            </main>
-        </Layout>
+            <section className="grid grid-cols-3 gap-4">
+                {useList($playlists, { fn: (pl) => <div>{pl.name}</div> })}
+            </section>
+        </main>
     )
 }
 
