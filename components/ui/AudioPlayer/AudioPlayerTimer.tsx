@@ -7,15 +7,15 @@ interface AudioPlayerTimerProps {
 }
 
 const AudioPlayerTimer: FC<AudioPlayerTimerProps> = ({ duration }) => {
-    const currentTime = useStore(player.progress.$progress)
+    const currentTime = useStore(player.progress.$currentTime)
 
     const [seconds, setSeconds] = useState(0)
     const [minutes, setMinutes] = useState(0)
     useEffect(() => {
         if (currentTime < 60) {
-            setSeconds(currentTime)
+            setSeconds(Math.floor(currentTime))
         } else {
-            setSeconds((prev) => currentTime % 60)
+            setSeconds(Math.floor(currentTime % 60))
             setMinutes(Math.floor(currentTime / 60))
         }
 

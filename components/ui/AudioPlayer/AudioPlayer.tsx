@@ -1,47 +1,32 @@
-import { initPlayer, player } from "@/features/music/player"
-import { useEvent, useGate, useStore } from "effector-react"
-import Image from "next/image"
-
-import React, { memo, FC, useEffect, useState } from "react"
-import PauseIcon from "../icons/PauseIcon/PauseIcon"
-import PlayIcon from "../icons/PlayIcon/PlayIcon"
-import Progressbar from "../Progressbar/Progressbar"
 import clsx from "clsx"
+import Image from "next/image"
+import { memo, FC } from "react"
+import { useEvent, useStore } from "effector-react"
+
+import { player } from "@/features/music/player"
+
+import PlayIcon from "../icons/PlayIcon/PlayIcon"
 import AudioPlayerTimer from "./AudioPlayerTimer"
+import PauseIcon from "../icons/PauseIcon/PauseIcon"
+import Progressbar from "../Progressbar/Progressbar"
 import RefreshIcon from "../icons/RefreshIcon/RefreshIcon"
-import { useRouter } from "next/router"
 
 interface AudioPlayerProps {
     className?: string
 }
-let audioEL: HTMLAudioElement
 const AudioPlayer: FC<AudioPlayerProps> = ({ className }) => {
     const track = useStore(player.$currentTrack)
 
-    const handleInitPlater = initPlayer
-
-    //инициализация
-    useEffect(() => {
-        handleInitPlater()
-        // setAudio()
-        // handlePlay()
-
-        //unmount
-        // return () => audio.pause()
-    }, [track])
     const loop = useStore(player.$loop)
     const playing = useStore(player.$playing)
     const duration = useStore(player.$duration)
     const volume = useStore(player.volume.$volume)
-    const trackLoaded = useStore(player.$trackLoaded)
-    const allowSeeking = useStore(player.progress.$allowSeeking)
-    const seekingProgress = useStore(player.progress.$seekingProgress)
 
     const [handlePlay, handlePause, handleSetLoop, onVolumeChange] = useEvent([
-        player.onPlay,
-        player.onPause,
+        player.controls.onPlayClicked,
+        player.controls.onPauseClicked,
         player.onSetLoopEnabled,
-        player.volume.onVolumeChange,
+        player.volume.changeVolume,
     ])
 
     //подсчет прослушки
@@ -100,7 +85,7 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ className }) => {
                     min={0}
                     max={100}
                     value={volume}
-                    onChange={(e) => onVolumeChange(Number(e.target.value))}
+                    onChange={onVolumeChange}
                     className="col-span-2 col-end-13"
                 />
                 <Progressbar className="col-span-8 col-start-3" />

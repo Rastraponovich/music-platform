@@ -1,18 +1,20 @@
-import { createTrackFactory, player } from "@/features/music/player"
-import { Song } from "@/features/music/types"
-import { useTrack } from "@/hooks/useTrack"
-import axios from "axios"
-import { useStore } from "effector-react"
-import { useEvent } from "effector-react/scope"
 import Image from "next/image"
-import React, { memo, FC, useState, useEffect } from "react"
-import Annotation from "../ui/icons/Annotation/Annotation"
-import MinusIcon from "../ui/icons/MinusIcon/MinusIcon"
-import PauseIcon from "../ui/icons/PauseIcon/PauseIcon"
+import { useStore } from "effector-react"
+import { memo, FC, useState } from "react"
+
+import { useEvent } from "effector-react/scope"
+
+import { player } from "@/features/music/player"
+
+import { Song } from "@/features/music/types"
+
+import TrackTimer from "./TrackTimer"
 import PlayIcon from "../ui/icons/PlayIcon/PlayIcon"
 import PlusIcon from "../ui/icons/PlusIcon/PlusIcon"
+import MinusIcon from "../ui/icons/MinusIcon/MinusIcon"
+import PauseIcon from "../ui/icons/PauseIcon/PauseIcon"
 import Progressbar from "../ui/Progressbar/Progressbar"
-import TrackTimer from "./TrackTimer"
+import Annotation from "../ui/icons/Annotation/Annotation"
 
 interface TrackListItemProps {
     track: Song
@@ -21,21 +23,28 @@ interface TrackListItemProps {
 
 const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
     console.log("render track", track.name)
-    const playing = useStore(player.$playing)
+    const playingState = useStore(player.$playing)
 
-    const handleSelectTrack = useEvent(player.selectTrack)
-
-    const handlePlay = useEvent(player.onPlay)
-    const handlePause = useEvent(player.onPause)
+    const [
+        handleSelectTrack,
+        handlePlay,
+        handlePause,
+        handleAddToPlayList,
+        hanldeRemoveFromPlayList,
+    ] = useEvent([
+        player.selectTrack,
+        player.controls.onPlayClicked,
+        player.controls.onPauseClicked,
+        player.playList.onAddToPlayList,
+        player.playList.onRemoveFromPlayList,
+    ])
 
     const play = () => {
         if (!isCurrentTrack) return handleSelectTrack(track)
-        if (playing) return handlePause()
+        if (playingState) return handlePause()
         return handlePlay()
     }
 
-    const handleAddToPlayList = useEvent(player.playList.onAddToPlayList)
-    const hanldeRemoveFromPlayList = useEvent(player.playList.onRemoveFromPlayList)
     const isExistInPlaylist = useStore(player.playList.$playList).some(
         (item) => item.id === track.id
     )
@@ -51,7 +60,7 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
             <div className="grid grid-cols-12 items-center rounded bg-white py-2 shadow-sm">
                 <button onClick={play} className="col-span-1 justify-self-center">
                     {isCurrentTrack ? (
-                        playing ? (
+                        playingState ? (
                             <PauseIcon size="small" />
                         ) : (
                             <PlayIcon size="small" />

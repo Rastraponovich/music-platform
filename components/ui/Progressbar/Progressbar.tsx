@@ -10,11 +10,13 @@ interface ProgressbarProps {
 
 const Progressbar: FC<ProgressbarProps> = ({ className }) => {
     const duration = useStore(player.$duration)
-    const currentTime = useStore(player.progress.$progress)
+    const currentTime = useStore(player.progress.$currentTime)
 
-    const handleSeeking = useEvent(player.onSeeking)
-    const handleSeekingMouseDown = useEvent(player.progress.onmousedown)
-    const handleSeekingMouseUp = useEvent(player.progress.onmouseup)
+    const [handleSeeking, handleSeekingMouseDown, handleSeekingMouseUp] = useEvent([
+        player.progress.seekingCurrentTime,
+        player.progress.onmousedown,
+        player.progress.onmouseup,
+    ])
 
     return (
         <input

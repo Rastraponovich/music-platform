@@ -1,12 +1,9 @@
 import {
-    attach,
     createApi,
     createEffect,
     createEvent,
     createStore,
-    forward,
     guard,
-    restore,
     sample,
     scopeBind,
 } from "effector"
@@ -14,9 +11,8 @@ import {
 import { throttle, condition } from "patronum"
 
 import { createGate } from "effector-react"
-import { ChangeEvent } from "react"
-import { MusicAPI } from "./music-api"
-import { AUDIO_STATES, EAudioStates, Song, TAudioStates } from "./types"
+import { ChangeEvent, MouseEvent } from "react"
+import { Song } from "./types"
 import { getClientScope } from "@/hooks/useScope"
 import { Nullable } from "@/types"
 
@@ -27,69 +23,53 @@ const $audio = createStore<Nullable<HTMLAudioElement>>(null)
 
 const selectTrack = createEvent<Song>()
 
-const initTrack = createEvent<number>()
+// const initTrack = createEvent<number>()
 
-const $trackState = restore(initTrack, 0)
+const $trackState = createStore<number>(0)
 
-$trackState.watch(console.log)
-
-const $trackLoaded = createStore<boolean>(false)
-    .on(initTrack, () => true)
-    .reset(selectTrack)
+// const $trackLoaded = createStore<boolean>(false)
+//     .on(initTrack, () => true)
+//     .reset(selectTrack)
 
 const $currentTrack = createStore<Nullable<Song>>(null).on(selectTrack, (_, payload) => {
     return payload
 })
+const setVolume = createEvent<number>()
+const changeVolume = createEvent<ChangeEvent<HTMLInputElement>>()
+const $volume = createStore<number>(50).on(setVolume, (_, volume) => volume)
 
-const $volume = createStore<number>(50)
-
-const { setVolume, changeVolume } = createApi($volume, {
-    setVolume: (_, value: number) => value,
-    changeVolume: (_, event: ChangeEvent<HTMLInputElement>) => Number(event.target.value),
-})
-
-const onVolumeChangeFx = createEffect<number, void>((value) => {
-    const callSetVolume = scopeBind(setVolume, {
-        scope: getClientScope()!,
-    })
-    callSetVolume(value)
-})
-
-const onVolumeChange = createEvent<number>()
-
-guard({ clock: onVolumeChange, filter: $trackLoaded, target: onVolumeChangeFx })
-
-const onSeeking = createEvent<ChangeEvent<HTMLInputElement>>()
-
+const onmousedown = createEvent<MouseEvent<HTMLInputElement>>()
+const onmouseup = createEvent<MouseEvent<HTMLInputElement>>()
 const $allowSeeking = createStore<boolean>(true)
+    .on(onmousedown, () => false)
+    .on(onmouseup, () => true)
 
-const { onmousedown, onmouseup } = createApi($allowSeeking, {
-    onmousedown: () => false,
-    onmouseup: () => true,
+//progress
+const $currentTime = createStore<number>(0)
+
+const $seekingProgress = createStore<number>(0)
+
+const setCurrentTime = createEvent<number>()
+// const changeCurrentTime = createEvent<ChangeEvent<HTMLInputElement>>()
+const changeCurrentTime = createEvent<number>()
+
+const seekingCurrentTime = createEvent<ChangeEvent<HTMLInputElement>>()
+
+$seekingProgress.on(seekingCurrentTime, (_, event) => Number(event.target.value))
+
+sample({
+    clock: onmouseup,
+    source: $seekingProgress,
+    target: changeCurrentTime,
 })
 
-const $seekingProgress = createStore<number>(0).on(onSeeking, (_, event) =>
-    Number(event.target.value)
-)
-const $progress = createStore<number>(0)
-    .reset(selectTrack)
-    .on(onSeeking, (_, event) => Number(event.target.value))
+$currentTime.reset(selectTrack).on($seekingProgress, (_, seekedTime) => seekedTime)
 
-const { setProgress, changeProgress } = createApi($progress, {
-    setProgress: (_, value: number) => value,
-    changeProgress: (_, event: ChangeEvent<HTMLInputElement>) => Number(event.target.value),
+guard({
+    source: setCurrentTime,
+    filter: $allowSeeking,
+    target: $currentTime,
 })
-
-const onTimeUpdateFx = createEffect<number, void>((value) => {
-    const callSetCurrentTime = scopeBind(setProgress, {
-        scope: getClientScope()!,
-    })
-    callSetCurrentTime(value)
-})
-
-const onTimeUpdate = createEvent<number>()
-
-guard({ clock: onTimeUpdate, filter: $allowSeeking, target: onTimeUpdateFx })
 
 const setDuration = createEvent<number>()
 const $duration = createStore(0)
@@ -98,16 +78,18 @@ const $duration = createStore(0)
 
 const $playing = createStore<boolean>(false).reset(selectTrack)
 
-const { onPlay, onPause, setIsPlaying } = createApi($playing, {
-    onPlay: () => true,
-    onPause: () => false,
+const { onPlayClicked, onPauseClicked, setIsPlaying, setPause, setPlaying } = createApi($playing, {
+    onPlayClicked: () => true,
+    onPauseClicked: () => false,
+    setPause: () => false,
+    setPlaying: () => true,
     setIsPlaying: (_, payload: boolean) => payload,
 })
 
 const $timeRemaining = createStore<number>(0)
 
 sample({
-    clock: $progress,
+    clock: $currentTime,
     source: $duration,
     fn: (duration, progress) => duration - progress,
     target: $timeRemaining,
@@ -148,9 +130,8 @@ const playList = {
 }
 
 const progress = {
-    $progress,
-    changeProgress,
-    onTimeUpdate,
+    $currentTime,
+    seekingCurrentTime,
     $seekingProgress,
     $timeRemaining,
     $allowSeeking,
@@ -159,23 +140,23 @@ const progress = {
 }
 const volume = {
     $volume,
-    onVolumeChange,
     changeVolume,
 }
 
+const controls = {
+    onPauseClicked,
+    onPlayClicked,
+}
+
 const player = {
+    controls,
     volume,
     progress,
     $currentTrack,
     selectTrack,
-    initTrack,
-    $trackLoaded,
     $playing,
-    onPlay,
-    onPause,
     setDuration,
     $duration,
-    onSeeking,
     $loop,
     onSetLoopEnabled,
     onSetPlayListEnabled,
@@ -217,9 +198,9 @@ const createPlayerFx = createEffect<boolean, HTMLAudioElement>((loop) => {
     // loadstart Событие вызывается , когда браузер начал загружать ресурс.
     audio.addEventListener("loadstart", onLoadStart)
     // pause Событие отправляется , когда запрос приостановить деятельность осуществляется и деятельность вошла в приостановленное состояние, чаще всего после того, как в средствах массовой информации было приостановлено через вызов элемента pause()метода.
-    audio.addEventListener("pause", onPause1)
+    audio.addEventListener("pause", onPause)
     // play Событие вызывается , когда pausedсвойство изменяется от trueдо false, в результате playметода, или autoplayатрибута.
-    audio.addEventListener("play", onPlay1)
+    audio.addEventListener("play", onPlay)
     // playing Событие вызывается после того, как воспроизведение первым начало, и всякий раз , когда он будет перезапущен. Например, он срабатывает, когда воспроизведение возобновляется после паузы или задержки из-за отсутствия данных.
     audio.addEventListener("playing", onPlaying)
     // progress Событие вызывается периодически как браузер загружает ресурс.
@@ -235,12 +216,11 @@ const createPlayerFx = createEffect<boolean, HTMLAudioElement>((loop) => {
     // suspend Событие вызывается при загрузке мультимедийных данных было приостановлено.
     audio.addEventListener("suspend", onSuspend)
     // timeupdate Событие вызывается , когда время , указанное в currentTimeатрибуте было обновлено.
-    audio.addEventListener("timeupdate", onTimeUpdate1)
+    audio.addEventListener("timeupdate", onTimeUpdate)
     // volumechange Событие вызывается , когда объем изменился.
-    audio.addEventListener("volumechange", onVolumeChange1)
+    audio.addEventListener("volumechange", onVolumeChange)
     // waiting Событие вызывается , когда воспроизведение остановлено из - за временного отсутствия данных.
     audio.addEventListener("waiting", onWaiting)
-    audio.src = `http://localhost:4000/music/7f2ddd70-73a5-45a2-83af-1cd3d93c9bf4.mp3`
 
     return audio
 })
@@ -252,24 +232,62 @@ sample({
     target: createPlayerFx,
 })
 
-$audio.on(createPlayerFx.doneData, (_, audio) => {
-    console.log(audio)
+$audio.on(createPlayerFx.doneData, (_, audio) => audio)
 
-    return audio
+guard({
+    source: sample({ clock: $currentTrack, source: $audio, fn: (audio, track) => [audio, track] }),
+    filter: (sourceTuple): sourceTuple is [HTMLAudioElement, Song] =>
+        sourceTuple[0] instanceof HTMLAudioElement && sourceTuple[1] !== null,
+    target: createEffect<[HTMLAudioElement, Song], void>(([audio, track]) => {
+        audio.src = `${process.env.NEXT_PUBLIC_BACKEND}/music/${track!.path}`
+        audio.load()
+        audio.play()
+    }),
 })
 
 guard({
-    clock: onPlay,
+    clock: onPlayClicked,
     source: $audio,
     filter: (audio): audio is HTMLAudioElement => audio instanceof HTMLAudioElement,
     target: createEffect<HTMLAudioElement, void>((audio) => audio.play()),
 })
 
 guard({
-    clock: onPause,
+    clock: onPauseClicked,
     source: $audio,
     filter: (audio): audio is HTMLAudioElement => audio instanceof HTMLAudioElement,
     target: createEffect<HTMLAudioElement, void>((audio) => audio.pause()),
+})
+//Изменение громкости из UI
+guard({
+    source: sample({ clock: changeVolume, source: $audio, fn: (audio, event) => [audio, event] }),
+    filter: (sourceTuple): sourceTuple is [HTMLAudioElement, ChangeEvent<HTMLInputElement>] =>
+        sourceTuple[0] instanceof HTMLAudioElement,
+    target: createEffect<[HTMLAudioElement, ChangeEvent<HTMLInputElement>], void>(
+        ([audio, event]) => {
+            audio.volume = Number(event.target.value) / 100
+        }
+    ),
+})
+//Изменение положения в треке из UI
+
+guard({
+    source: sample({
+        clock: changeCurrentTime,
+        source: [$audio, $allowSeeking],
+        fn: ([audio, allowSeeking], event) => [audio, event, allowSeeking],
+    }),
+    filter: (sourceTuple): sourceTuple is [HTMLAudioElement, number, boolean] =>
+        sourceTuple[0] instanceof HTMLAudioElement && sourceTuple[2] === true,
+    target: createEffect<[HTMLAudioElement, number, boolean], void>(
+        ([audio, newcurrentTime, allowSeeking]) => {
+            if (allowSeeking) {
+                console.log(allowSeeking)
+
+                audio.currentTime = newcurrentTime
+            }
+        }
+    ),
 })
 
 const onAbort = (event: Event) => {
@@ -312,24 +330,22 @@ const onLoadedData = (event: Event) => {
 }
 
 const onLoadedMetadata = (event: Event) => {
-    console.log(event)
-
     // console.log("loadedmetadata", { el: event.currentTarget });
 }
 
 const onLoadStart = (event: Event) => {
     // console.log("loadstart", { el: event.currentTarget });
 }
-const onPause1 = (_event: Event) => {
+const onPause = (_event: Event) => {
     console.log("pause")
-    // const callSetPause = scopeBind(setPause, { scope: getClientScope()! });
-    // callSetPause();
+    const callSetPause = scopeBind(setPause, { scope: getClientScope()! })
+    callSetPause()
 }
 
-const onPlay1 = (_event: Event) => {
+const onPlay = (_event: Event) => {
     console.log("play")
-    // const callSetPlaying = scopeBind(setPlaying, { scope: getClientScope()! });
-    // callSetPlaying();
+    const callSetPlaying = scopeBind(setPlaying, { scope: getClientScope()! })
+    callSetPlaying()
 }
 
 const onPlaying = (event: Event) => {
@@ -364,18 +380,20 @@ const onSuspend = (event: Event) => {
     // console.log("suspend", { el: event.currentTarget });
 }
 
-const onTimeUpdate1 = (event: Event) => {
-    console.log(event)
-
+const onTimeUpdate = (event: Event) => {
     const audio = event.currentTarget as HTMLAudioElement
-    const callSetCurrentTime = scopeBind(onTimeUpdate, {
+
+    const callSetCurrentTime = scopeBind(setCurrentTime, {
         scope: getClientScope()!,
     })
+
     callSetCurrentTime(audio.currentTime)
 }
 
-const onVolumeChange1 = (event: Event) => {
-    // console.log("volumechange", { el: event.currentTarget });
+const onVolumeChange = (event: Event) => {
+    const audioElement = event.currentTarget as HTMLAudioElement
+    const callSetVolume = scopeBind(setVolume, { scope: getClientScope()! })
+    callSetVolume(audioElement.volume * 100)
 }
 
 const onWaiting = (event: Event) => {
@@ -383,16 +401,32 @@ const onWaiting = (event: Event) => {
 }
 
 guard({
-    source: sample({ clock: $audio, source: $currentTrack, fn: (audio, track) => [audio, track] }),
-    filter: (sourceTuple): sourceTuple is [HTMLAudioElement, Song] =>
-        sourceTuple[0] instanceof HTMLAudioElement && sourceTuple[1] !== null,
-    target: createEffect<[HTMLAudioElement, Song], void>(([audio, track]) => {
-        console.log(audio, track)
-
-        audio.src = `${process.env.NEXT_PUBLIC_BACKEND}/music/${track!.path}`
-
-        audio.load()
-        audio.play()
+    clock: destroyPlayer,
+    source: $audio,
+    filter: (audio): audio is HTMLAudioElement => audio instanceof HTMLAudioElement,
+    target: createEffect<HTMLAudioElement, void>((audio) => {
+        audio.removeEventListener("abort", onAbort)
+        audio.removeEventListener("canplay", onCanPlay)
+        audio.removeEventListener("canplaythrough", onCanPlayThrough)
+        audio.removeEventListener("durationchange", onDurationChange)
+        audio.removeEventListener("emptied", onEmptied)
+        audio.removeEventListener("ended", onEnded)
+        audio.removeEventListener("error", onError)
+        audio.removeEventListener("loadeddata", onLoadedData)
+        audio.removeEventListener("loadedmetadata", onLoadedMetadata)
+        audio.removeEventListener("loadstart", onLoadStart)
+        audio.removeEventListener("pause", onPause)
+        audio.removeEventListener("play", onPlay)
+        audio.removeEventListener("playing", onPlaying)
+        audio.removeEventListener("progress", onProgress)
+        audio.removeEventListener("ratechange", onRateChange)
+        audio.removeEventListener("seeked", onSeeked)
+        audio.removeEventListener("seeking", onSeeking1)
+        audio.removeEventListener("stalled", onStalled)
+        audio.removeEventListener("suspend", onSuspend)
+        audio.removeEventListener("timeupdate", onTimeUpdate)
+        audio.removeEventListener("volumechange", onVolumeChange)
+        audio.removeEventListener("waiting", onWaiting)
     }),
 })
 

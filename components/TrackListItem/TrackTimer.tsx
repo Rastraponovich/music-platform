@@ -11,21 +11,21 @@ interface TrackTimerProps {
 const TrackTimer: FC<TrackTimerProps> = ({ isCurrentTrack, metaData }) => {
     console.log("render timer", isCurrentTrack)
 
-    const progress = useStore(player.progress.$progress)
+    const currentTime = useStore(player.progress.$currentTime)
 
     const [seconds, setSeconds] = useState(0)
     const [minutes, setMinutes] = useState(0)
 
     useEffect(() => {
         if (isCurrentTrack) {
-            if (progress < 60) {
-                setSeconds(progress)
+            if (currentTime < 60) {
+                setSeconds(Math.floor(currentTime))
             } else {
-                setSeconds(progress % 60)
-                setMinutes(Math.floor(progress / 60))
+                setSeconds(Math.floor(currentTime % 60))
+                setMinutes(Math.floor(currentTime / 60))
             }
         }
-    }, [progress, isCurrentTrack])
+    }, [currentTime, isCurrentTrack])
     return (
         <div className="col-span-1 col-start-10 mr-2 flex justify-self-end text-sm text-gray-800">
             {isCurrentTrack && (
