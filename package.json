@@ -12,6 +12,7 @@
         "@heroicons/react": "^1.0.5",
         "axios": "^0.25.0",
         "clsx": "^1.1.1",
+        "daisyui": "^1.25.4",
         "effector": "^22.1.2",
         "effector-react": "^22.0.6",
         "lodash": "^4.17.21",

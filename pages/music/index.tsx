@@ -4,6 +4,7 @@ import { allSettled, fork, serialize } from "effector"
 import { useEvent, useList, useStore } from "effector-react"
 
 import {
+    $countSongs,
     $currentSong,
     $songs,
     changeSong,
@@ -32,6 +33,8 @@ const MusicPage: FC<MusicPageProps> = () => {
     const currentTrack = useStore(player.$currentTrack)
     console.log("render list")
 
+    const countSongs = useStore($countSongs)
+
     return (
         <main className="grow px-20 py-10">
             <label className="mb-4 flex flex-col space-y-2">
@@ -46,7 +49,7 @@ const MusicPage: FC<MusicPageProps> = () => {
             <section className="flex flex-col">
                 <div className="flex  flex-col divide-y-2 divide-gray-200">
                     {useList($songs, {
-                        keys: [currentTrack],
+                        keys: [currentTrack, countSongs],
                         fn: (song) => (
                             <TrackListItem
                                 track={song}
@@ -55,6 +58,7 @@ const MusicPage: FC<MusicPageProps> = () => {
                         ),
                     })}
                 </div>
+                <span>Треков: {countSongs}</span>
             </section>
 
             <section className="flex px-20 py-10">

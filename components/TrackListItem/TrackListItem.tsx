@@ -11,7 +11,6 @@ import { Song } from "@/features/music/types"
 import TrackTimer from "./TrackTimer"
 import PlayIcon from "../ui/icons/PlayIcon/PlayIcon"
 import PlusIcon from "../ui/icons/PlusIcon/PlusIcon"
-import MinusIcon from "../ui/icons/MinusIcon/MinusIcon"
 import PauseIcon from "../ui/icons/PauseIcon/PauseIcon"
 import Progressbar from "../ui/Progressbar/Progressbar"
 import Annotation from "../ui/icons/Annotation/Annotation"
@@ -25,18 +24,11 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
     console.log("render track", track.name)
     const playingState = useStore(player.$playing)
 
-    const [
-        handleSelectTrack,
-        handlePlay,
-        handlePause,
-        handleAddToPlayList,
-        hanldeRemoveFromPlayList,
-    ] = useEvent([
+    const [handleSelectTrack, handlePlay, handlePause, handleAddToPlayList] = useEvent([
         player.selectTrack,
         player.controls.onPlayClicked,
         player.controls.onPauseClicked,
         player.playList.onAddToPlayList,
-        player.playList.onRemoveFromPlayList,
     ])
 
     const play = () => {
@@ -45,15 +37,6 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
         return handlePlay()
     }
 
-    const isExistInPlaylist = useStore(player.playList.$playList).some(
-        (item) => item.id === track.id
-    )
-
-    const handlePlayListActionClick = () => {
-        if (isExistInPlaylist) return hanldeRemoveFromPlayList(track)
-
-        return handleAddToPlayList(track)
-    }
     const [comments, showComments] = useState(false)
     return (
         <div className="flex  flex-col">
@@ -87,23 +70,30 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
                         {isCurrentTrack && <Progressbar />}
                     </div>
                 </div>
-                <TrackTimer isCurrentTrack={isCurrentTrack} metaData={track.metaData} />
+                <div className="col-span-1 col-start-10 mr-2 flex justify-self-end text-sm text-gray-800">
+                    {isCurrentTrack && <TrackTimer />}
+
+                    <span>
+                        {Math.floor(track?.metaData?.format?.duration / 60)}:
+                        {track?.metaData.format?.duration % 60 < 10
+                            ? `0${Math.ceil(track?.metaData?.format?.duration % 60)}`
+                            : Math.ceil(track?.metaData?.format?.duration % 60)}
+                    </span>
+                </div>
 
                 <div className="col-span-2 col-end-13 flex space-x-2 justify-self-start">
-                    <button onClick={handlePlayListActionClick}>
-                        {!isExistInPlaylist ? (
-                            <PlusIcon size="small" />
-                        ) : (
-                            <MinusIcon size="small" />
-                        )}
+                    <button onClick={() => handleAddToPlayList(track)}>
+                        <PlusIcon size="normal" />
                     </button>
-                    <button onClick={() => showComments(!comments)}>
-                        <Annotation size="small" />
+
+                    <button onClick={() => showComments(!comments)} className="indicator  ">
+                        <div className="indicator-item badge badge-sm z-10">
+                            {track.comments.length}
+                        </div>
+                        <Annotation size="normal" />
                     </button>
                 </div>
-                {isCurrentTrack && comments && (
-                    <div className="col-span-12 bg-gray-600 p-10">asdsads</div>
-                )}
+                {comments && <div className="col-span-12 bg-gray-600 p-10">asdsads</div>}
             </div>
         </div>
     )

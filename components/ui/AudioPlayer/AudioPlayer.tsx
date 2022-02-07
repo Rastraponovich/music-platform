@@ -6,10 +6,12 @@ import { useEvent, useStore } from "effector-react"
 import { player } from "@/features/music/player"
 
 import PlayIcon from "../icons/PlayIcon/PlayIcon"
-import AudioPlayerTimer from "./AudioPlayerTimer"
 import PauseIcon from "../icons/PauseIcon/PauseIcon"
 import Progressbar from "../Progressbar/Progressbar"
 import RefreshIcon from "../icons/RefreshIcon/RefreshIcon"
+import DocumentTextIcon from "../icons/DocumentTextIcon/DocumentTextIcon"
+import TrackTimer from "@/components/TrackListItem/TrackTimer"
+import AudioPlayerTimer from "./AudioPlayerTimer"
 
 interface AudioPlayerProps {
     className?: string
@@ -59,7 +61,7 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ className }) => {
     // }, [listensAdded, listnerTimer])
 
     return (
-        <div className={clsx("flex flex-col py-4", className)}>
+        <div className={clsx("z-40 flex flex-col py-4", className)}>
             <div className="grid grid-cols-12 items-center">
                 <button
                     onClick={() => (playing ? handlePause() : handlePlay())}
@@ -79,7 +81,7 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ className }) => {
                         <span className="text-sm font-light text-gray-800">{track?.artist}</span>
                     </div>
                 </div>
-                <AudioPlayerTimer duration={duration} />
+                <AudioPlayerTimer />
                 <input
                     type="range"
                     min={0}
@@ -89,12 +91,16 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ className }) => {
                     className="col-span-2 col-end-13"
                 />
                 <Progressbar className="col-span-8 col-start-3" />
-                <button
-                    className="col-span-1 col-start-11 justify-self-end "
-                    onClick={() => handleSetLoop()}
-                >
-                    <RefreshIcon size="small" color={clsx(loop ? "currentColor" : "#9ca3af")} />
-                </button>
+
+                <div className="col-span-1 col-start-11 flex space-x-2 justify-self-end">
+                    <button onClick={() => handleSetLoop()}>
+                        <RefreshIcon size="small" color={clsx(loop ? "currentColor" : "#9ca3af")} />
+                    </button>
+
+                    <button onClick={() => handleSetLoop()}>
+                        <DocumentTextIcon size="small" />
+                    </button>
+                </div>
             </div>
         </div>
     )

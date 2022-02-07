@@ -12,9 +12,9 @@ const PlusIcon: FC<PlusIconProps> = ({ size = "normal", color = "currentColor" }
         <svg
             xmlns="http://www.w3.org/2000/svg"
             className={clsx(
-                size === "normal" && "h-16 w-16",
+                size === "normal" && "h-8 w-8",
                 size === "small" && "h-4 w-4",
-                size === "large" && "h-20 w-20"
+                size === "large" && "h-16 w-16"
             )}
             viewBox="0 0 20 20"
             fill={color}

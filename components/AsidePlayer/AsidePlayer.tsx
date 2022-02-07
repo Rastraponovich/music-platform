@@ -27,6 +27,7 @@ const AsidePlayer: FC<AsidePlayerProps> = () => {
             <button className="absolute  right-0 top-0 bg-green-600 " onClick={handleSetCompact}>
                 {!hidden ? "hide" : "show"}
             </button>
+
             {currentTrack && <AudioPlayer className={clsx(hidden && "hidden")} />}
 
             {hidden && <Progressbar className="w-full max-w-[calc(100%-2rem)]" />}

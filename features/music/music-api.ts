@@ -9,7 +9,7 @@ const getMetadataAPI = async (name: string) => {
 }
 
 const getAllSongsAPI = async (params?: any) => {
-    return await externalAPI.get("/songs" + "?" + params)
+    return await externalAPI.get("/songs", { params: { take: 10 } })
 }
 
 const searchTrackAPI = async (params: any) => {

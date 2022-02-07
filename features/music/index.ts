@@ -1,8 +1,6 @@
-import axios from "axios"
-import { attach, createEffect, createEvent, createStore, forward, guard, sample } from "effector"
+import { createEvent, createStore, sample } from "effector"
 import { ChangeEvent } from "react"
 import { MusicAPI } from "./music-api"
-import { createTrackFactory } from "./player"
 import { Song } from "./types"
 
 import { debounce } from "patronum"

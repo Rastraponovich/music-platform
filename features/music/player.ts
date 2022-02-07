@@ -23,13 +23,7 @@ const $audio = createStore<Nullable<HTMLAudioElement>>(null)
 
 const selectTrack = createEvent<Song>()
 
-// const initTrack = createEvent<number>()
-
 const $trackState = createStore<number>(0)
-
-// const $trackLoaded = createStore<boolean>(false)
-//     .on(initTrack, () => true)
-//     .reset(selectTrack)
 
 const $currentTrack = createStore<Nullable<Song>>(null).on(selectTrack, (_, payload) => {
     return payload
@@ -95,21 +89,11 @@ sample({
     target: $timeRemaining,
 })
 
-const onSetPlayListEnabled = createEvent()
-const onSetPlayListDisabled = createEvent()
-
-const $playListEnabled = createStore<boolean>(false)
-    .on(onSetPlayListEnabled, () => true)
-    .on(onSetPlayListDisabled, () => false)
-
-const $playList = createStore<Song[]>([])
+const $playList = createStore<Song[]>([]).on(selectTrack, (store, track) => [track])
 
 const { onAddToPlayList, onRemoveFromPlayList } = createApi($playList, {
     onAddToPlayList: (state, track: Song) => {
-        const disAllowAdd = state.some((item) => item.id === track.id)
-
-        if (disAllowAdd) return
-        return [...state, track]
+        return [...state, { ...track, playerPlayListId: state.length }]
     },
     onRemoveFromPlayList: (state, track: Song) => {
         return state.filter((item) => item.id !== track.id)
@@ -123,7 +107,6 @@ const onSetLoopEnabled = createEvent()
 const $loop = createStore<boolean>(false).on(onSetLoopEnabled, (state, _) => !state)
 
 const playList = {
-    $playListEnabled,
     $playList,
     onAddToPlayList,
     onRemoveFromPlayList,
@@ -159,7 +142,6 @@ const player = {
     $duration,
     $loop,
     onSetLoopEnabled,
-    onSetPlayListEnabled,
     playList,
     onSetCompact,
     $compact,
@@ -258,6 +240,16 @@ guard({
     filter: (audio): audio is HTMLAudioElement => audio instanceof HTMLAudioElement,
     target: createEffect<HTMLAudioElement, void>((audio) => audio.pause()),
 })
+
+guard({
+    clock: $loop,
+    source: [$audio, $loop],
+    filter: (params): params is [HTMLAudioElement, boolean] =>
+        params[0] instanceof HTMLAudioElement,
+    target: createEffect<[HTMLAudioElement, boolean], void>(([audio, loop]) => {
+        audio.loop = loop
+    }),
+})
 //Изменение громкости из UI
 guard({
     source: sample({ clock: changeVolume, source: $audio, fn: (audio, event) => [audio, event] }),
@@ -318,7 +310,7 @@ const onEmptied = (event: Event) => {
 }
 
 const onEnded = (event: Event) => {
-    // console.log("ended", { el: event.currentTarget });
+    console.log("ended", { el: event })
 }
 
 const onError = (event: Event) => {
