@@ -16,7 +16,7 @@ const DocumentTextIcon: FC<DocumentTextIconProps> = ({
             xmlns="http://www.w3.org/2000/svg"
             className={clsx(
                 size === "normal" && "h-8 w-8",
-                size === "small" && "h-4 w-4",
+                size === "small" && "h-5 w-5",
                 size === "large" && "h-16 w-16"
             )}
         >

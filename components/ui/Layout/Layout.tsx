@@ -56,7 +56,6 @@ const Layout: FC<LayoutProps> = ({ children }) => {
                     </a>
                 </Link>
             </footer>
-            <PlayList />
 
             {/* <MobileNavPanel />
         <Footer /> */}

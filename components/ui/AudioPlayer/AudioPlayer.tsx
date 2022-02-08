@@ -12,6 +12,7 @@ import RefreshIcon from "../icons/RefreshIcon/RefreshIcon"
 import DocumentTextIcon from "../icons/DocumentTextIcon/DocumentTextIcon"
 import TrackTimer from "@/components/TrackListItem/TrackTimer"
 import AudioPlayerTimer from "./AudioPlayerTimer"
+import PlayList from "../PlayList/PlayList"
 
 interface AudioPlayerProps {
     className?: string
@@ -21,15 +22,17 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ className }) => {
 
     const loop = useStore(player.$loop)
     const playing = useStore(player.$playing)
-    const duration = useStore(player.$duration)
+
     const volume = useStore(player.volume.$volume)
 
-    const [handlePlay, handlePause, handleSetLoop, onVolumeChange] = useEvent([
-        player.controls.onPlayClicked,
-        player.controls.onPauseClicked,
-        player.onSetLoopEnabled,
-        player.volume.changeVolume,
-    ])
+    const [handlePlay, handlePause, handleSetLoop, onVolumeChange, handleSetShowPlaylist] =
+        useEvent([
+            player.controls.onPlayClicked,
+            player.controls.onPauseClicked,
+            player.onSetLoopEnabled,
+            player.volume.changeVolume,
+            player.playList.setShowVisiblePlaylist,
+        ])
 
     //подсчет прослушки
 
@@ -62,7 +65,7 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ className }) => {
 
     return (
         <div className={clsx("z-40 flex flex-col py-4", className)}>
-            <div className="grid grid-cols-12 items-center">
+            <div className="mb-4 grid grid-cols-12 items-center">
                 <button
                     onClick={() => (playing ? handlePause() : handlePlay())}
                     className="col-span-2"
@@ -92,16 +95,17 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ className }) => {
                 />
                 <Progressbar className="col-span-8 col-start-3" />
 
-                <div className="col-span-1 col-start-11 flex space-x-2 justify-self-end">
+                <div className="col-span-2 col-start-11 flex space-x-2 justify-self-end py-1">
                     <button onClick={() => handleSetLoop()}>
                         <RefreshIcon size="small" color={clsx(loop ? "currentColor" : "#9ca3af")} />
                     </button>
 
-                    <button onClick={() => handleSetLoop()}>
+                    <button onClick={() => handleSetShowPlaylist()}>
                         <DocumentTextIcon size="small" />
                     </button>
                 </div>
             </div>
+            <PlayList />
         </div>
     )
 }

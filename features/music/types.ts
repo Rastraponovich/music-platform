@@ -12,7 +12,7 @@ export type Song = {
     userId: number
     user: any
     metaData: any
-    playerPlayListId?: number | null
+    playerPlayListId?: string | null
     playlists: Playlist[]
     createdAt: Date
     updatedAt: Date

@@ -10,6 +10,8 @@ import {
 
 import { throttle, condition } from "patronum"
 
+import { v4 as uuid } from "uuid"
+
 import { createGate } from "effector-react"
 import { ChangeEvent, MouseEvent } from "react"
 import { Song } from "./types"
@@ -26,7 +28,7 @@ const selectTrack = createEvent<Song>()
 const $trackState = createStore<number>(0)
 
 const $currentTrack = createStore<Nullable<Song>>(null).on(selectTrack, (_, payload) => {
-    return payload
+    return { ...payload, playerPlayListId: uuid() }
 })
 const setVolume = createEvent<number>()
 const changeVolume = createEvent<ChangeEvent<HTMLInputElement>>()
@@ -39,12 +41,11 @@ const $allowSeeking = createStore<boolean>(true)
     .on(onmouseup, () => true)
 
 //progress
-const $currentTime = createStore<number>(0)
+const $currentTime = createStore<number>(0).reset($currentTrack)
 
 const $seekingProgress = createStore<number>(0)
 
 const setCurrentTime = createEvent<number>()
-// const changeCurrentTime = createEvent<ChangeEvent<HTMLInputElement>>()
 const changeCurrentTime = createEvent<number>()
 
 const seekingCurrentTime = createEvent<ChangeEvent<HTMLInputElement>>()
@@ -89,11 +90,80 @@ sample({
     target: $timeRemaining,
 })
 
-const $playList = createStore<Song[]>([]).on(selectTrack, (store, track) => [track])
+const setShowVisiblePlaylist = createEvent()
+const $visiblePlaylist = createStore<boolean>(false).on(
+    setShowVisiblePlaylist,
+    (visible, _) => !visible
+)
+
+const $playList = createStore<Song[]>([])
+
+const $playListLength = createStore<number>(0).on($playList, (_, playlist) => playlist.length)
+
+const selectTrackInPlayList = createEvent<number>()
+const $currentPlayedTrackIndexPlaylist = createStore<Nullable<number>>(null)
+    .on(selectTrack, () => 0)
+    .on(selectTrackInPlayList, (_, newIndex) => newIndex)
+
+//когда трек закончится вызываем проверку на переключение на следующий трек
+const checkNextTrack = createEvent()
+
+//если плейлист не пуст то передаем его длину
+const allowSelectNextTrack = guard({
+    clock: checkNextTrack,
+    source: $playListLength,
+    filter: (playlistLength, _) => (playlistLength === 0 ? false : true),
+})
+
+//если плейлист не пуст то берем индекс текущего трека, проверяем если не последний то передаем следущий индекс иначе возвращаем 0
+const selectNextTrack = sample({
+    clock: allowSelectNextTrack,
+    source: $currentPlayedTrackIndexPlaylist,
+
+    fn: (currentIndex, playListLength) => {
+        const lastTrack = currentIndex === playListLength - 1
+
+        if (lastTrack) return 0
+        return currentIndex! + 1
+    },
+})
+
+// меняем индекс
+sample({
+    clock: selectNextTrack,
+    fn: (newIndex) => newIndex,
+    target: $currentPlayedTrackIndexPlaylist,
+})
+// выбераем новый трек по пришедшему индексу
+
+sample({
+    clock: $currentPlayedTrackIndexPlaylist,
+    source: $playList,
+    fn: (playlist, newIndex) => playlist[newIndex!],
+    target: $currentTrack,
+})
+
+//добавляем трек в плейлист если его выбрали с панели
+sample({
+    clock: selectTrack,
+    source: $currentTrack,
+    fn: (track, _) => [track!],
+    target: $playList,
+})
+
+const $playlistTracksLength = createStore<any>(0).on($playList, (_, tracks) => {
+    let initialValue = 0
+    const sum = tracks.reduce(
+        (accumulator, currentValue) => accumulator + currentValue.metaData.format.duration,
+        initialValue
+    )
+    // sum == 6
+    return sum
+})
 
 const { onAddToPlayList, onRemoveFromPlayList } = createApi($playList, {
     onAddToPlayList: (state, track: Song) => {
-        return [...state, { ...track, playerPlayListId: state.length }]
+        return [...state, { ...track, playerPlayListId: uuid() }]
     },
     onRemoveFromPlayList: (state, track: Song) => {
         return state.filter((item) => item.id !== track.id)
@@ -105,48 +175,6 @@ const $compact = createStore<boolean>(false).on(onSetCompact, (state, _) => !sta
 
 const onSetLoopEnabled = createEvent()
 const $loop = createStore<boolean>(false).on(onSetLoopEnabled, (state, _) => !state)
-
-const playList = {
-    $playList,
-    onAddToPlayList,
-    onRemoveFromPlayList,
-}
-
-const progress = {
-    $currentTime,
-    seekingCurrentTime,
-    $seekingProgress,
-    $timeRemaining,
-    $allowSeeking,
-    onmousedown,
-    onmouseup,
-}
-const volume = {
-    $volume,
-    changeVolume,
-}
-
-const controls = {
-    onPauseClicked,
-    onPlayClicked,
-}
-
-const player = {
-    controls,
-    volume,
-    progress,
-    $currentTrack,
-    selectTrack,
-    $playing,
-    setDuration,
-    $duration,
-    $loop,
-    onSetLoopEnabled,
-    playList,
-    onSetCompact,
-    $compact,
-    $trackState,
-}
 
 export const PlayListGate = createGate<any>()
 
@@ -309,7 +337,31 @@ const onEmptied = (event: Event) => {
     // console.log("emptied", { el: event.currentTarget });
 }
 
+// sample({
+//     clock: checkNextTrack,
+//     source: [$playList, $currentTrack],
+
+//     fn: ([sourcePlaylist, currentTrack], _) => {
+//         const currentPlayingTrackIndex = sourcePlaylist.findIndex(
+//             (playListTrack) => playListTrack.playerPlayListId === currentTrack?.playerPlayListId
+//         )
+
+//         if (currentPlayingTrackIndex >= 0) {
+//             const isLastTrack = sourcePlaylist.length - 1 === currentPlayingTrackIndex
+//             if (isLastTrack) return sourcePlaylist[0]
+//             return sourcePlaylist[currentPlayingTrackIndex + 1]
+//         }
+
+//         return currentTrack
+//     },
+
+//     target: $currentTrack,
+// })
+
 const onEnded = (event: Event) => {
+    const callCheckNextTrack = scopeBind(checkNextTrack, { scope: getClientScope()! })
+
+    callCheckNextTrack()
     console.log("ended", { el: event })
 }
 
@@ -421,5 +473,52 @@ guard({
         audio.removeEventListener("waiting", onWaiting)
     }),
 })
+
+const playList = {
+    $playList,
+    onAddToPlayList,
+    onRemoveFromPlayList,
+    $currentPlayedTrackIndexPlaylist,
+    selectTrackInPlayList,
+    $visiblePlaylist,
+    setShowVisiblePlaylist,
+    $playlistTracksLength,
+}
+
+const progress = {
+    $currentTime,
+    seekingCurrentTime,
+    $seekingProgress,
+    $timeRemaining,
+    $allowSeeking,
+    onmousedown,
+    onmouseup,
+}
+const volume = {
+    $volume,
+    changeVolume,
+}
+
+const controls = {
+    onPauseClicked,
+    onPlayClicked,
+}
+
+const player = {
+    controls,
+    volume,
+    progress,
+    $currentTrack,
+    selectTrack,
+    $playing,
+    setDuration,
+    $duration,
+    $loop,
+    onSetLoopEnabled,
+    playList,
+    onSetCompact,
+    $compact,
+    $trackState,
+}
 
 export { player }
