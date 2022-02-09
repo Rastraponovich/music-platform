@@ -20,7 +20,7 @@ const PlayList: FC<PlayListProps> = () => {
     const handleSelectNewTrack = useEvent(player.playList.selectTrackInPlayList)
     return (
         <div
-            className="font-[15px] flex cursor-winamp flex-col font-[Arial]  text-[#00FF00]"
+            className="font-[15px] mt-[103px] flex cursor-winamp flex-col  font-[Arial] text-[#00FF00]"
             style={{ imageRendering: "pixelated" }}
         >
             <div className="playlist-top draggable min-h-5 min-w-5 relative flex w-full">

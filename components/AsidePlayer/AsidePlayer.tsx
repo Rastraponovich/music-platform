@@ -5,6 +5,9 @@ import React, { memo, FC, useState, MouseEvent } from "react"
 import Progressbar from "../ui/Progressbar/Progressbar"
 
 import dynamic from "next/dynamic"
+import Link from "next/link"
+import PlayList from "../ui/PlayList/PlayList"
+import ActionsButton from "../ui/AudioPlayer/ActionsButton"
 
 const AudioPlayer = dynamic(() => import("../ui/AudioPlayer/AudioPlayer"), { ssr: false })
 
@@ -15,12 +18,25 @@ const AsidePlayer: FC<AsidePlayerProps> = () => {
     const currentTrack = useStore(player.$currentTrack)
     const hidden = useStore(player.$compact)
     const handleSetCompact = useEvent(player.onSetCompact)
+    const currentPlayedTrackIndexPlaylist = useStore(
+        player.playList.$currentPlayedTrackIndexPlaylist
+    )
 
     const playing = useStore(player.$playing)
+    const loop = useStore(player.$loop)
+
+    const [handlePlay, handlePause, handleSetLoop, handlePrevTrackClick, handleNextTrackClick] =
+        useEvent([
+            player.controls.controlPanelPlayClicked,
+            player.controls.onPauseClicked,
+            player.onSetLoopEnabled,
+            player.controls.prevTrackClicked,
+            player.controls.nextTrackClicked,
+        ])
 
     const [pos, setpos] = useState<{ [key: string]: number | string }>({
         clientX: "unset",
-        clientY: 0,
+        clientY: "unset",
         bottom: "1rem",
     })
 
@@ -52,7 +68,7 @@ const AsidePlayer: FC<AsidePlayerProps> = () => {
     const [selected, setSelected] = useState(false)
     return (
         <aside
-        id='main-window'
+            id="main-window"
             className={clsx(
                 "fixed z-50  rounded bg-white  shadow-md",
                 hidden && "max-h-8 overflow-hidden",
@@ -124,9 +140,43 @@ const AsidePlayer: FC<AsidePlayerProps> = () => {
                 </div>
             </div>
             <canvas id="visualizer" width="152" height="32" className="h-4 w-[76px]"></canvas>
-            {currentTrack && <AudioPlayer className={clsx(hidden && "hidden", "select-none")} />}
+            <Progressbar
+                id="#position"
+                className="absolute left-4 top-[97px] col-span-8 col-start-3 h-2.5 w-[248px] appearance-none bg-progresbar-player"
+            />
+            <div className="actions absolute top-[25px]">
+                <ActionsButton
+                    id="previous"
+                    title="Previous Track"
+                    onClick={handlePrevTrackClick}
+                />
+                <ActionsButton id="play" title="Play" onClick={handlePlay} />
+                <ActionsButton
+                    id="pause"
+                    title="Pause"
+                    onClick={() => (playing ? handlePause() : handlePlay())}
+                />
+                <ActionsButton id="stop" title="Stop" />
+                <ActionsButton id="next" title="Next Track" onClick={handleNextTrackClick} />
+                <ActionsButton id="eject" title="Open File(s)" />
+
+                <div className="shuffle-repeat">
+                    <ActionsButton id="shuffle" className="" title="Toggle Shuffle" />
+                    <ActionsButton
+                        id="repeat"
+                        className={clsx(loop && "selected")}
+                        title="Toggle Repeat"
+                        onClick={handleSetLoop}
+                    />
+                </div>
+                <Link href="https://webamp.org/about">
+                    <a id="about" target="_blank" title="About" className="cursor-pointer"></a>
+                </Link>
+            </div>
+            <PlayList />
 
             {hidden && <Progressbar className="w-full max-w-[calc(100%-2rem)]" />}
+            {currentPlayedTrackIndexPlaylist}
         </aside>
     )
 }

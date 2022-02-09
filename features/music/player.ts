@@ -91,19 +91,83 @@ sample({
 })
 
 const setShowVisiblePlaylist = createEvent()
-const $visiblePlaylist = createStore<boolean>(false).on(
+const $visiblePlaylist = createStore<boolean>(true).on(
     setShowVisiblePlaylist,
     (visible, _) => !visible
 )
 
 const $playList = createStore<Song[]>([])
 
-const $playListLength = createStore<number>(0).on($playList, (_, playlist) => playlist.length)
+const $playListLength = $playList.map((state) => state.length)
 
 const selectTrackInPlayList = createEvent<number>()
 const $currentPlayedTrackIndexPlaylist = createStore<Nullable<number>>(null)
     .on(selectTrack, () => 0)
     .on(selectTrackInPlayList, (_, newIndex) => newIndex)
+
+//controlpanel actions
+const nextTrackClicked = createEvent()
+
+const checkNextTrackClicked = guard({
+    clock: nextTrackClicked,
+    source: $playListLength,
+    filter: (source, _) => (source > 0 ? true : false),
+})
+
+sample({
+    clock: checkNextTrackClicked,
+    source: [$playListLength, $currentPlayedTrackIndexPlaylist],
+    fn: ([tracksIds, currentTrackId], _) => {
+        if (currentTrackId === tracksIds - 1) return 0
+        return currentTrackId! + 1
+    },
+    target: $currentPlayedTrackIndexPlaylist,
+})
+const prevTrackClicked = createEvent()
+
+const checkPrevTrackClicked = guard({
+    clock: prevTrackClicked,
+    source: $playListLength,
+    filter: (source, _) => (source > 0 ? true : false),
+})
+
+sample({
+    clock: checkPrevTrackClicked,
+    source: [$playList, $currentPlayedTrackIndexPlaylist],
+    fn: ([playList, currentTrackId], _) => {
+        if (currentTrackId! === 0) return playList.length - 1
+        return currentTrackId! - 1
+    },
+    target: selectTrackInPlayList,
+})
+//нажатие на play на панели
+const controlPanelPlayClicked = createEvent()
+
+//если трек играет начнем с начала
+const allowPlayinBeginning = guard({
+    clock: controlPanelPlayClicked,
+    source: $playing,
+    filter: (playing) => playing,
+})
+sample({
+    clock: allowPlayinBeginning,
+    source: $audio,
+    fn: (audio, _) => {
+        audio!.currentTime = 0
+    },
+})
+//если трек на паузе продолжим
+
+const continuePlaying = guard({
+    clock: controlPanelPlayClicked,
+    source: $playing,
+    filter: (playing) => (playing ? false : true),
+})
+
+sample({
+    clock: continuePlaying,
+    target: onPlayClicked,
+})
 
 //когда трек закончится вызываем проверку на переключение на следующий трек
 const checkNextTrack = createEvent()
@@ -502,6 +566,9 @@ const volume = {
 const controls = {
     onPauseClicked,
     onPlayClicked,
+    nextTrackClicked,
+    prevTrackClicked,
+    controlPanelPlayClicked,
 }
 
 const player = {
