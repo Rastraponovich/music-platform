@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 @import "./playlist.css";
+@import "./player.css";
 @layer base {
 }
 body {
@@ -21,4 +22,26 @@ main {
     flex-direction: column;
     width: 100%;
     background: transparent;
+}
+#position {
+    position: absolute;
+    left: 16px;
+    top: 72px;
+    width: 248px;
+    height: 10px;
+}
+
+#position::-webkit-slider-thumb {
+    height: 10px;
+    width: 29px;
+    /*
+       * Fix the strange bug in Safair/mobile-chrome
+       * http://stackoverflow.com/questions/26727769/rendering-glitch-when-manipulating-range-input-value-via-javascript-in-webkit
+       */
+    position: relative;
+}
+
+#position::-moz-range-thumb {
+    height: 10px;
+    width: 29px;
 }

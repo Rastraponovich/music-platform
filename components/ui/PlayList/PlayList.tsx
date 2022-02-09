@@ -47,7 +47,7 @@ const PlayList: FC<PlayListProps> = () => {
 
                 <div
                     className={clsx(
-                        "flex  grow flex-col bg-black py-1  shadow-lg",
+                        "flex  min-h-[150px] grow flex-col bg-black  py-1 shadow-lg",
                         "cursor-winamp",
                         !visible && "hidden"
                     )}
@@ -93,7 +93,7 @@ const PlayList: FC<PlayListProps> = () => {
                 <div className="playlist-bottom-center draggable"></div>
                 <div className="playlist-bottom-right draggable absolute right-0 h-full w-[150px] text-[9px]">
                     <span
-                        className="absolute top-4 left-[66px] block h-1.5 w-[25px]"
+                        className="absolute top-[10px] left-[7px] block h-2.5 align-text-top"
                         style={{
                             imageRendering: "pixelated",
                         }}

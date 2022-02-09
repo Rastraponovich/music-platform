@@ -4,11 +4,12 @@ import React, { memo, FC, InputHTMLAttributes } from "react"
 
 interface ProgressbarProps {
     className?: InputHTMLAttributes<HTMLInputElement>["className"]
+    id?: string
 }
 
 //"col-span-8 col-start-3"
 
-const Progressbar: FC<ProgressbarProps> = ({ className }) => {
+const Progressbar: FC<ProgressbarProps> = ({ className, id }) => {
     const duration = useStore(player.$duration)
     const currentTime = useStore(player.progress.$currentTime)
 
@@ -20,6 +21,7 @@ const Progressbar: FC<ProgressbarProps> = ({ className }) => {
 
     return (
         <input
+            id={id}
             type="range"
             min={0}
             max={duration}
