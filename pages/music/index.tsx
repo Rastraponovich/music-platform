@@ -1,96 +1,119 @@
-import { FC } from "react"
-import { GetServerSideProps } from "next"
+import { GetServerSideProps, NextPage } from "next"
 import { allSettled, fork, serialize } from "effector"
 import { useEvent, useList, useStore } from "effector-react"
 
-import {
-    $countSongs,
-    $currentSong,
-    $songs,
-    changeSong,
-    getSongs,
-    searchTrack,
-    submitted,
-    uploadFile,
-} from "@/features/music"
+import { $countSongs, $songs, getSongs } from "@/features/music"
 
-import Layout from "@/components/ui/Layout/Layout"
 import TrackListItem from "@/components/TrackListItem/TrackListItem"
-import { player } from "@/features/music/player"
+import { winamp } from "@/features/media/winamp"
+import WinampIcon from "@/components/ui/icons/WinampIcon/WinampIcon"
 
-interface MusicPageProps {}
+import SearchInput from "@/components/ui/SearchInput/SearchInput"
 
-const MusicPage: FC<MusicPageProps> = () => {
-    const currentSong = useStore($currentSong)
+import MusicFilter from "@/components/MusicFilter/MusicFilter"
+import PlaylistFormModal from "@/components/ui/PlaylistForm/PlaylistFormModal"
+import UploadFormModal from "@/components/UploadForm/UploadFormModal"
+import { MusicNoteIcon, PlayIcon } from "@heroicons/react/solid"
+import { useState } from "react"
+import { Nullable } from "@/types"
+import clsx from "clsx"
+import { Song } from "@/features/music/types"
 
-    const [onUpload, onSubmit, onChange, handleSearch] = useEvent([
-        uploadFile,
-        submitted,
-        changeSong,
-        searchTrack,
-    ])
+const MusicPage: NextPage = () => {
+    const [fav, setFavs] = useState<Song["id"][]>([])
+    const handleAddToFavorites = (id: Song["id"]) => {
+        const candidate = fav.some((item) => item === id)
 
-    const currentTrack = useStore(player.$currentTrack)
+        if (candidate) {
+            setFavs(fav.filter((item) => item !== id))
+        } else {
+            setFavs([...fav, id])
+        }
+    }
+    const hanldePlayAll = useEvent(winamp.playAllTracksFromList)
+
+    const [activePage, setActivePage] = useState<Nullable<number>>(null)
+
+    const currentTrack = useStore(winamp.$currentTrack)
+
+    const handleShowWinamp = useEvent(winamp.show)
     console.log("render list")
 
     const countSongs = useStore($countSongs)
 
     return (
         <main className="grow px-20 py-10">
-            <label className="mb-4 flex flex-col space-y-2">
-                <span>Поиск по названию</span>
-                <input
-                    type="text"
-                    placeholder="search track"
-                    onChange={(e) => handleSearch(e.target.value)}
-                />
-            </label>
+            <SearchInput />
+            <MusicFilter />
 
-            <section className="flex flex-col">
+            <div className="flex justify-start space-x-2">
+                <button
+                    onClick={handleShowWinamp}
+                    title="открыть winamp"
+                    className="btn btn-square no-animation btn-xs hover:shadow-lg"
+                >
+                    <WinampIcon size="extraSmall" />
+                </button>
+                <button
+                    onClick={hanldePlayAll}
+                    title="воспроизвести все треки"
+                    className="btn no-animation btn-xs gap-2  hover:shadow-lg"
+                >
+                    <PlayIcon className="h-4 w-4" />
+                    play all tracks
+                </button>
+                <PlaylistFormModal />
+
+                <div className="grow"></div>
+                <UploadFormModal />
+            </div>
+
+            <section className="flex flex-col py-4">
+                <div className="mb-2 flex items-center self-end text-right text-sm">
+                    <MusicNoteIcon className="mr-2 h-4 w-4 rounded-full bg-black p-1 text-white" />
+                    <span className="mb-1">всего треков: {countSongs}</span>
+                </div>
                 <div className="flex  flex-col divide-y-2 divide-gray-200">
                     {useList($songs, {
-                        keys: [currentTrack, countSongs],
+                        keys: [currentTrack, countSongs, fav],
                         fn: (song) => (
                             <TrackListItem
+                                addToFavorites={handleAddToFavorites}
+                                favorite={fav.some((item) => item === song.id)}
                                 track={song}
                                 isCurrentTrack={currentTrack?.id === song.id}
                             />
                         ),
                     })}
                 </div>
-                <span className="x">Треков: {countSongs}</span>
             </section>
 
-            <section className="flex px-20 py-10">
-                <form className="flex flex-col space-y-4" onSubmit={onSubmit}>
-                    <label className="flex flex-col">
-                        <span>Название</span>
-                        <input
-                            type="text"
-                            name="name"
-                            value={currentSong.name}
-                            onChange={onChange}
-                        />
-                    </label>
-
-                    <label className="flex flex-col">
-                        <span>Автор</span>
-                        <input
-                            type="text"
-                            name="artist"
-                            value={currentSong.artist}
-                            onChange={onChange}
-                        />
-                    </label>
-
-                    <span>image</span>
-                    <input type="file" name="image" onChange={onUpload} />
-                    <span>music</span>
-
-                    <input type="file" name="music" onChange={onUpload} />
-                    <button type="submit">Сохранить</button>
-                </form>
-            </section>
+            <div className="btn-group items-center justify-center">
+                <button
+                    className={clsx("btn btn-sm", activePage === 1 && "btn-active")}
+                    onClick={() => setActivePage(1)}
+                >
+                    1
+                </button>
+                <button
+                    className={clsx("btn btn-sm", activePage === 2 && "btn-active")}
+                    onClick={() => setActivePage(2)}
+                >
+                    2
+                </button>
+                <button
+                    className={clsx("btn btn-sm", activePage === 3 && "btn-active")}
+                    onClick={() => setActivePage(3)}
+                >
+                    3
+                </button>
+                <button
+                    className={clsx("btn btn-sm", activePage === 4 && "btn-active")}
+                    onClick={() => setActivePage(4)}
+                >
+                    4
+                </button>
+            </div>
         </main>
     )
 }

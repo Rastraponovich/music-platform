@@ -1,4 +1,4 @@
-import React, { ChangeEvent, memo } from "react"
+import { ChangeEvent, memo } from "react"
 
 interface TrackProgressProps {
     currentValue: number
@@ -6,7 +6,7 @@ interface TrackProgressProps {
     onChange: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
-const TrackProgress: React.FC<TrackProgressProps> = ({ currentValue, maxValue, onChange }) => {
+const TrackProgress = ({ currentValue, maxValue, onChange }: TrackProgressProps) => {
     return (
         <div className="flex flex-col">
             <input type="range" min={0} max={maxValue} value={currentValue} onChange={onChange} />

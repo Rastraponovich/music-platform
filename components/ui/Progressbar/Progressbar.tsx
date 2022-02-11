@@ -1,7 +1,8 @@
-import { player } from "@/features/music/player"
 import clsx from "clsx"
 import { useEvent, useStore } from "effector-react"
-import React, { memo, FC, InputHTMLAttributes, useState, ChangeEvent, MouseEvent } from "react"
+import { memo, InputHTMLAttributes, useState, MouseEvent } from "react"
+
+import { duration, marqueInfo, progress } from "@/features/media/winamp"
 
 interface ProgressbarProps {
     className?: InputHTMLAttributes<HTMLInputElement>["className"]
@@ -10,26 +11,31 @@ interface ProgressbarProps {
 
 //"col-span-8 col-start-3"
 
-const Progressbar: FC<ProgressbarProps> = ({ className, id }) => {
-    const duration = useStore(player.$duration)
-    const currentTime = useStore(player.progress.$currentTime)
+const Progressbar = ({ className, id }: ProgressbarProps) => {
+    const currentTrackDuration = useStore(duration.$currentTrackDuration)
+    const currentTime = useStore(progress.$currentTime)
+
+    const handleMouseDown = useEvent(marqueInfo.enabledMarqueInfo)
+    const handleMouseUp = useEvent(marqueInfo.disabledMarqueInfo)
 
     const [active, setActive] = useState(false)
 
     const [handleSeeking, mouseDown, mouseUp] = useEvent([
-        player.progress.seekingCurrentTime,
-        player.progress.onmousedown,
-        player.progress.onmouseup,
+        progress.seekingCurrentTime,
+        progress.onmousedown,
+        progress.onmouseup,
     ])
 
     const onMouseDown = (e: MouseEvent<HTMLInputElement>) => {
         mouseDown(e)
         setActive(true)
+        handleMouseDown()
     }
 
     const onMouseUp = (e: MouseEvent<HTMLInputElement>) => {
         mouseUp(e)
         setActive(false)
+        handleMouseUp()
     }
 
     return (
@@ -37,7 +43,7 @@ const Progressbar: FC<ProgressbarProps> = ({ className, id }) => {
             id={id}
             type="range"
             min={0}
-            max={duration}
+            max={currentTrackDuration}
             value={currentTime}
             onChange={handleSeeking}
             onMouseDown={onMouseDown}
@@ -45,7 +51,7 @@ const Progressbar: FC<ProgressbarProps> = ({ className, id }) => {
             className={clsx(
                 className,
                 active && "active",
-                duration / 2 >= currentTime ? "left" : "right"
+                currentTrackDuration / 2 >= currentTime ? "left" : "right"
             )}
         />
     )

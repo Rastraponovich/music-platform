@@ -1,55 +1,94 @@
 import Image from "next/image"
 import { useStore } from "effector-react"
-import { memo, FC, useState } from "react"
+import { memo, FC, useState, useMemo } from "react"
 
 import { useEvent } from "effector-react/scope"
-
-import { player } from "@/features/music/player"
 
 import { Song } from "@/features/music/types"
 
 import TrackTimer from "./TrackTimer"
-import PlayIcon from "../ui/icons/PlayIcon/PlayIcon"
-import PlusIcon from "../ui/icons/PlusIcon/PlusIcon"
-import PauseIcon from "../ui/icons/PauseIcon/PauseIcon"
 import Progressbar from "../ui/Progressbar/Progressbar"
-import Annotation from "../ui/icons/Annotation/Annotation"
+import { playlist, winamp, winampControls } from "@/features/media/winamp"
+import { MEDIA_STATUS } from "@/features/media/constants"
+
+import clsx from "clsx"
+import Comments from "./Comments"
+import { convertTimeToObj } from "@/utils/utils"
+import { AnnotationIcon, HeartIcon, PlusSmIcon, TrashIcon } from "@heroicons/react/outline"
+import { PauseIcon, PlayIcon, HeartIcon as Fav } from "@heroicons/react/solid"
 
 interface TrackListItemProps {
     track: Song
     isCurrentTrack: boolean
+    addToFavorites?(id: Song["id"]): void
+    favorite?: boolean
 }
 
-const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
-    console.log("render track", track.name)
-    const playingState = useStore(player.$playing)
+const TrackListItem: FC<TrackListItemProps> = ({
+    track,
+    isCurrentTrack,
+    addToFavorites,
+    favorite,
+}) => {
+    // console.log("render track", track.name)
+
+    const mediaStatus = useStore(winamp.$mediaStatus)
+
+    const { firstMinute, lastSecond, lastMinute, firstSecond } = useMemo(
+        () => convertTimeToObj(track?.metaData?.format.duration),
+        [track]
+    )
 
     const [handleSelectTrack, handlePlay, handlePause, handleAddToPlayList] = useEvent([
-        player.selectTrack,
-        player.controls.onPlayClicked,
-        player.controls.onPauseClicked,
-        player.playList.onAddToPlayList,
+        winamp.selectTrackFromList,
+        winampControls.play,
+        winampControls.pause,
+        playlist.addTrackToPlaylist,
     ])
 
     const play = () => {
         if (!isCurrentTrack) return handleSelectTrack(track)
-        if (playingState) return handlePause()
+        if (mediaStatus === "PLAYING") return handlePause()
         return handlePlay()
     }
 
     const [comments, showComments] = useState(false)
+
+    const toggleComments = () => showComments((prev) => !prev)
+
+    const handleAddToFavorites = () => {
+        addToFavorites!(track!.id)
+    }
+
+    const needToShow = isCurrentTrack && mediaStatus !== MEDIA_STATUS.STOPPED
+
     return (
-        <div className="flex  flex-col">
-            <div className="grid grid-cols-12 items-center rounded bg-white py-2 shadow-sm">
-                <button onClick={play} className="col-span-1 justify-self-center">
+        <div className="relative  flex flex-col overflow-hidden shadow-sm">
+            <div
+                className={clsx(
+                    "z-20 grid grid-cols-12 items-center rounded bg-white p-2",
+                    comments && "drop-shadow-xl"
+                )}
+            >
+                <button
+                    onClick={play}
+                    className={clsx(
+                        "col-span-1 justify-self-center text-gray-500 duration-150 hover:text-black",
+                        isCurrentTrack &&
+                            mediaStatus === "PLAYING" &&
+                            "animate-pulse  text-black hover:animate-none"
+                    )}
+                    title="play/pause"
+                >
                     {isCurrentTrack ? (
-                        playingState ? (
-                            <PauseIcon size="small" />
+                        mediaStatus === "PLAYING" ? (
+                            // <PauseIcon size="small" />
+                            <PauseIcon className="h-8 w-8" />
                         ) : (
-                            <PlayIcon size="small" />
+                            <PlayIcon className="h-8 w-8" />
                         )
                     ) : (
-                        <PlayIcon size="small" />
+                        <PlayIcon className="h-8 w-8" />
                     )}
                 </button>
                 <div className="col-span-7 flex space-x-2">
@@ -58,6 +97,7 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
                         objectFit="contain"
                         height={40}
                         width={40}
+                        alt={`${track.artist} ${track.name}`}
                     />
                     <div className=" flex grow flex-col justify-center text-base">
                         <div className="flex grow">
@@ -67,34 +107,51 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
 
                             <span className=" truncate font-semibold">{track.name}</span>
                         </div>
-                        {isCurrentTrack && <Progressbar />}
+                        {needToShow && <Progressbar />}
                     </div>
                 </div>
                 <div className="col-span-1 col-start-10 mr-2 flex justify-self-end text-sm text-gray-800">
-                    {isCurrentTrack && <TrackTimer />}
+                    {needToShow && <TrackTimer />}
 
                     <span>
-                        {Math.floor(track?.metaData?.format?.duration / 60)}:
-                        {track?.metaData.format?.duration % 60 < 10
-                            ? `0${Math.ceil(track?.metaData?.format?.duration % 60)}`
-                            : Math.ceil(track?.metaData?.format?.duration % 60)}
+                        {firstMinute}
+                        {lastMinute}:{firstSecond}
+                        {lastSecond}
                     </span>
                 </div>
 
-                <div className="col-span-2 col-end-13 flex space-x-2 justify-self-start">
-                    <button onClick={() => handleAddToPlayList(track)}>
-                        <PlusIcon size="normal" />
+                <div className="col-span-2 col-end-13 flex items-center justify-end space-x-2 justify-self-start">
+                    <button
+                        onClick={() => handleAddToPlayList(track)}
+                        title="добавить в плейлист winamp"
+                    >
+                        <PlusSmIcon className="h-6 w-6 text-gray-500 duration-200 hover:animate-cross-spin hover:text-gray-900" />
                     </button>
 
-                    <button onClick={() => showComments(!comments)} className="indicator  ">
-                        <div className="indicator-item badge badge-sm z-10">
+                    <button
+                        className="group indicator"
+                        onClick={toggleComments}
+                        title="показать\скрыть комментарии"
+                    >
+                        <span className="badge indicator-item badge-sm cursor-pointer border-gray-500 bg-gray-500 group-hover:border-gray-900 group-hover:bg-gray-900">
                             {track.comments.length}
-                        </div>
-                        <Annotation size="normal" />
+                        </span>
+                        <AnnotationIcon className="h-6 w-6 text-gray-500 duration-200 group-hover:text-gray-900" />
+                    </button>
+
+                    <button onClick={toggleComments} title="показать\скрыть комментарии">
+                        <TrashIcon className="h-5 w-6 text-gray-500 duration-200 group-hover:text-gray-900" />
+                    </button>
+                    <button onClick={handleAddToFavorites} title="добавить в избранное">
+                        {!favorite ? (
+                            <HeartIcon className=" h-5 w-6 text-gray-500 duration-200 group-hover:text-gray-900" />
+                        ) : (
+                            <Fav className=" h-5 w-6 text-gray-500 duration-200 group-hover:text-gray-900" />
+                        )}
                     </button>
                 </div>
-                {comments && <div className="col-span-12 bg-gray-600 p-10">asdsads</div>}
             </div>
+            <Comments opened={comments} comments={track.comments} />
         </div>
     )
 }
