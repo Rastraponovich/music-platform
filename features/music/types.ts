@@ -4,6 +4,12 @@ export enum EPLAYER_STATE {
     STOPED = "STOPED",
     PLAYED = "PLAYED",
     PAUSED = "PAUSED",
+    DESTROYED = "DESTROYED",
+}
+
+export enum TIME_MODE {
+    ELAPSED = "ELAPSED",
+    REMAINING = "REMAINING",
 }
 
 export type Song = {

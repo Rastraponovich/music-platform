@@ -1,4 +1,4 @@
-import { player } from "@/features/music/player"
+import { destroyPlayer, player } from "@/features/music/player"
 import clsx from "clsx"
 import { useEvent } from "effector-react"
 import React, { memo, FC, useState, useCallback, MouseEvent } from "react"
@@ -13,6 +13,7 @@ interface TitleBarProps {
 const TitleBar: FC<TitleBarProps> = ({ onMouseDown, onMouseMove, onMouseUp, onMouseLeave }) => {
     const [selected, setSelected] = useState(false)
     const handleSetCompact = useEvent(player.onSetCompact)
+    const handleDestroy = useEvent(destroyPlayer)
     const handleSelect = useCallback(() => {
         setSelected(!selected)
     }, [selected])
@@ -39,7 +40,7 @@ const TitleBar: FC<TitleBarProps> = ({ onMouseDown, onMouseMove, onMouseUp, onMo
                 className=""
                 onClick={handleSetCompact}
             ></button>
-            <button id="close" title="Close" className="" onClick={handleSetCompact}></button>
+            <button id="close" title="Close" className="" onClick={handleDestroy}></button>
         </div>
     )
 }

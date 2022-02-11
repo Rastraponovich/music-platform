@@ -1,3 +1,7 @@
+#time.player-countdown #minus-sign {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAABCAYAAAAW/mTzAAAAEElEQVQYV2Nk+MHwnwENAAAjgQH5sdp7TQAAAABJRU5ErkJggg==);
+}
+
 .webamp-status #clutter-bar {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAArBAMAAAC3GdQgAAAAElBMVEUAAAAAAAgQECEYGCkzPElgYGraVCJcAAAAVElEQVQI132NsQ2AQAwDr8gCv0FGMNLTu8gKv/8qFCAgQqI7WWebbYyBACQJEUbyRDgaTf95Va3xeGWkKUTQqPz12m9eyyYB8s7eVEUSJs8VIPe1DmVJGRTmaMgdAAAAAElFTkSuQmCC);
 }

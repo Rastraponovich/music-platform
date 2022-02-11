@@ -4,6 +4,7 @@ import { Nullable } from "@/types"
 import clsx from "clsx"
 import { useEvent, useList, useStore } from "effector-react/scope"
 import React, { FC, useState, MouseEvent } from "react"
+import MiniTimer from "./MiniTimer"
 
 interface PlayListProps {}
 
@@ -146,17 +147,7 @@ const PlayList: FC<PlayListProps> = () => {
                 <div className="playlist-bottom-left draggable absolute h-full w-[125px] "></div>
                 <div className="playlist-bottom-center draggable"></div>
                 <div className="playlist-bottom-right draggable absolute right-0 h-full w-[150px] text-[9px]">
-                    <span
-                        className="absolute top-[10px] left-[7px] block h-2.5 align-text-top"
-                        style={{
-                            imageRendering: "pixelated",
-                        }}
-                    >
-                        {Math.floor(playlistTracksLength / 60)}:
-                        {Math.ceil(playlistTracksLength % 60) < 10
-                            ? `0${Math.ceil(playlistTracksLength % 60)}`
-                            : Math.ceil(playlistTracksLength % 60)}
-                    </span>
+                    <MiniTimer />
                 </div>
             </div>
         </aside>

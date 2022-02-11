@@ -14,10 +14,9 @@ import { v4 as uuid } from "uuid"
 
 import { createGate } from "effector-react"
 import { ChangeEvent, MouseEvent } from "react"
-import { EPLAYER_STATE, Song } from "./types"
+import { EPLAYER_STATE, Song, TIME_MODE } from "./types"
 import { getClientScope } from "@/hooks/useScope"
 import { Nullable } from "@/types"
-import { on } from "events"
 
 export const initPlayer = createEvent()
 export const destroyPlayer = createEvent()
@@ -26,9 +25,8 @@ const $audio = createStore<Nullable<HTMLAudioElement>>(null)
 
 const selectTrack = createEvent<Song>()
 
-const $currentTrack = createStore<Nullable<Song>>(null).on(selectTrack, (_, payload) => {
-    return { ...payload, playerPlayListId: uuid() }
-})
+const $currentTrack = createStore<Nullable<Song>>(null).on(selectTrack, (_, payload) => payload)
+
 const setVolume = createEvent<number>()
 const changeVolume = createEvent<ChangeEvent<HTMLInputElement>>()
 const resetVolume = createEvent()
@@ -590,6 +588,12 @@ const $playerState = createStore<EPLAYER_STATE>(EPLAYER_STATE.STOPED)
     .on(setPlaying, () => EPLAYER_STATE.PLAYED)
     .on(setPause, () => EPLAYER_STATE.PAUSED)
     .on(onStopButtonClicked, () => EPLAYER_STATE.STOPED)
+    .on(destroyPlayer, () => EPLAYER_STATE.DESTROYED)
+
+const switchTimeMode = createEvent()
+const $timeMode = createStore<TIME_MODE>(TIME_MODE.ELAPSED).on(switchTimeMode, (state, _) =>
+    state === TIME_MODE.ELAPSED ? TIME_MODE.REMAINING : TIME_MODE.ELAPSED
+)
 
 const playList = {
     $playList,
@@ -642,6 +646,11 @@ const player = {
     onSetCompact,
     $compact,
     $playerState,
+    switchTimeMode,
+    $timeMode,
 }
+
+$visiblePlaylist.on(destroyPlayer, () => false)
+$currentTrack.reset(destroyPlayer)
 
 export { player }

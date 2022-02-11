@@ -1,7 +1,7 @@
 import { player } from "@/features/music/player"
-import { EPLAYER_STATE } from "@/features/music/types"
+import { EPLAYER_STATE, TIME_MODE } from "@/features/music/types"
 import clsx from "clsx"
-import { useStore } from "effector-react"
+import { useEvent, useStore } from "effector-react"
 import React, { FC, useState, useEffect } from "react"
 
 import Visualizer from "./Visualizer"
@@ -11,23 +11,35 @@ interface StatusBarProps {}
 const StatusBar: FC<StatusBarProps> = () => {
     const currentTime = useStore(player.progress.$currentTime)
     const playerState = useStore(player.$playerState)
+    const timeMode = useStore(player.$timeMode)
+    const timeremaining = useStore(player.progress.$timeRemaining)
 
+    const handleSwitchTimeMode = useEvent(player.switchTimeMode)
     const [minutes, setMinutes] = useState(0)
     const [seconds, setSeconds] = useState(0)
 
     useEffect(() => {
-        if (currentTime < 60) {
-            setSeconds(Math.ceil(currentTime))
+        if (timeMode === TIME_MODE.ELAPSED) {
+            if (currentTime < 60) {
+                setSeconds(Math.ceil(currentTime))
+            } else {
+                setSeconds(Math.ceil(currentTime % 60))
+                setMinutes(Math.floor(currentTime / 60))
+            }
         } else {
-            setSeconds(Math.ceil(currentTime % 60))
-            setMinutes(Math.floor(currentTime / 60))
+            if (timeremaining < 60) {
+                setSeconds(Math.ceil(timeremaining))
+            } else {
+                setSeconds(Math.ceil(timeremaining % 60))
+                setMinutes(Math.floor(timeremaining / 60))
+            }
         }
 
         return () => {
             setSeconds(0)
             setMinutes(0)
         }
-    }, [currentTime])
+    }, [currentTime, timeMode, timeremaining])
 
     return (
         <div className="webamp-status flex h-[42px] w-[93px]">
@@ -50,7 +62,7 @@ const StatusBar: FC<StatusBarProps> = () => {
                     playerState === EPLAYER_STATE.PAUSED && "pause",
                     playerState === EPLAYER_STATE.STOPED && "stop",
 
-                    "ml-[9px] mt-[6px] h-[9px] w-[9px] bg-no-repeat"
+                    "ml-[8px] mt-[6px] h-[9px] w-[9px] bg-no-repeat"
                 )}
             ></div>
             <div id="work-indicator" className=""></div>
@@ -61,12 +73,20 @@ const StatusBar: FC<StatusBarProps> = () => {
                     playerState === EPLAYER_STATE.PAUSED && "animate-w-blink",
                     playerState === EPLAYER_STATE.STOPED && "hidden",
 
-                    "ml-[13px] flex h-5 w-[59px] pt-1"
+                    "ml-[6px] flex h-5 w-[66px] items-center"
                 )}
+                onClick={handleSwitchTimeMode}
             >
                 <span
+                    id="minus-sign"
+                    className={clsx(
+                        " h-[1px] w-[5px]",
+                        timeMode === TIME_MODE.ELAPSED && "opacity-0"
+                    )}
+                />
+                <span
                     id="minute-first-digit"
-                    className={clsx("digit", `digit-${Math.floor(minutes / 10)}`)}
+                    className={clsx("digit ml-[3px]", `digit-${Math.floor(minutes / 10)}`)}
                 ></span>
                 <span
                     id="minute-second-digit"
