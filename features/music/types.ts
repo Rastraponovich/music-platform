@@ -1,5 +1,11 @@
 import { Playlist } from "../playlist/types"
 
+export enum EPLAYER_STATE {
+    STOPED = "STOPED",
+    PLAYED = "PLAYED",
+    PAUSED = "PAUSED",
+}
+
 export type Song = {
     id?: number
     name: string

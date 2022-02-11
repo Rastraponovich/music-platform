@@ -58,7 +58,7 @@ const MusicPage: FC<MusicPageProps> = () => {
                         ),
                     })}
                 </div>
-                <span>Треков: {countSongs}</span>
+                <span className="x">Треков: {countSongs}</span>
             </section>
 
             <section className="flex px-20 py-10">

@@ -1,29 +1,82 @@
-import { player, PlayListGate } from "@/features/music/player"
-import { Song } from "@/features/music/types"
+import { player } from "@/features/music/player"
+import useChangeCurentTime from "@/hooks/useChangeCurrentTime"
 import { Nullable } from "@/types"
 import clsx from "clsx"
-import { useEvent, useGate, useList, useStore } from "effector-react/scope"
-import React, { memo, FC, useState } from "react"
+import { useEvent, useList, useStore } from "effector-react/scope"
+import React, { FC, useState, MouseEvent } from "react"
 
 interface PlayListProps {}
 
 const PlayList: FC<PlayListProps> = () => {
     const [selectedTrack, setSelectedTrack] = useState<Nullable<number>>(null)
     const playlistTracksLength = useStore(player.playList.$playlistTracksLength)
-
+    const visible = useStore(player.playList.$visiblePlaylist)
     const currentIndex = useStore(player.playList.$currentPlayedTrackIndexPlaylist)
 
     const playing = useStore(player.$playing)
     const playList = useStore(player.playList.$playList)
-    const visible = useStore(player.playList.$visiblePlaylist)
 
     const handleSelectNewTrack = useEvent(player.playList.selectTrackInPlayList)
+
+    const [pos, setpos] = useState<{ [key: string]: number | string }>({
+        clientX: "unset",
+        clientY: "unset",
+        bottom: "1rem",
+    })
+
+    const [diff, setDiff] = useState({
+        diffX: 0,
+        diffY: 0,
+    })
+
+    const useChangeCurentTimeHook = useChangeCurentTime()
+
+    const [allowDragging, setAllowDragging] = useState<boolean>(false)
+
+    const handleDragStart = (e: MouseEvent<HTMLElement>) => {
+        e.preventDefault()
+        setDiff({
+            diffX: e.screenX - e.currentTarget.getBoundingClientRect().left,
+            diffY: e.screenY - e.currentTarget.getBoundingClientRect().top,
+        })
+        setpos({ ...pos, bottom: "unset" })
+        setAllowDragging(true)
+    }
+    const handleDragging = (e: MouseEvent<HTMLElement>) => {
+        if (allowDragging) {
+            const left = e.screenX - diff.diffX
+            const top = e.screenY - diff.diffY
+
+            if (e.pageX === 0) {
+                return setTimeout(() => {
+                    setpos({ ...pos, clientX: 0 })
+                }, 500)
+            }
+
+            setpos({ ...pos, clientX: left, clientY: top })
+        }
+    }
+    const handleDragEnd = (e: MouseEvent<HTMLElement>) => setAllowDragging(false)
     return (
-        <div
-            className="font-[15px] mt-[103px] flex cursor-winamp flex-col  font-[Arial] text-[#00FF00]"
-            style={{ imageRendering: "pixelated" }}
+        <aside
+            className={clsx(
+                "font-[15px] fixed left-0 top-[141px] z-50  flex min-w-[275px] cursor-winamp flex-col font-[Arial] text-[#00FF00]",
+                !visible && "hidden"
+            )}
+            style={{
+                top: pos.clientY,
+                left: pos.clientX,
+                bottom: pos.bottom,
+                imageRendering: "pixelated",
+            }}
         >
-            <div className="playlist-top draggable min-h-5 min-w-5 relative flex w-full">
+            <div
+                className="playlist-top draggable min-h-5 min-w-5 relative flex w-full"
+                onMouseDown={handleDragStart}
+                onMouseMove={handleDragging}
+                onMouseUp={handleDragEnd}
+                onMouseLeave={handleDragEnd}
+            >
                 <div className="playlist-top-left draggable w-[25px]"></div>
                 <div className="playlist-top-left-spacer draggable "></div>
                 <div className="playlist-top-left-fill draggable grow "></div>
@@ -48,8 +101,7 @@ const PlayList: FC<PlayListProps> = () => {
                 <div
                     className={clsx(
                         "flex  min-h-[150px] grow flex-col bg-black  py-1 shadow-lg",
-                        "cursor-winamp",
-                        !visible && "hidden"
+                        "cursor-winamp"
                     )}
                 >
                     {useList(player.playList.$playList, {
@@ -58,6 +110,8 @@ const PlayList: FC<PlayListProps> = () => {
                             <div
                                 onClick={() => setSelectedTrack(index)}
                                 onDoubleClick={() => handleSelectNewTrack(index)}
+                                // onKeyPress={(e) => useEscapeFn(e)}
+                                // onKeyDown={(e) => useEscapeFn(e)}
                                 className={clsx(
                                     "flex select-none justify-between px-1 text-[9px]",
                                     selectedTrack === index && "bg-[#0000C6]",
@@ -105,8 +159,8 @@ const PlayList: FC<PlayListProps> = () => {
                     </span>
                 </div>
             </div>
-        </div>
+        </aside>
     )
 }
 
-export default memo(PlayList)
+export default PlayList

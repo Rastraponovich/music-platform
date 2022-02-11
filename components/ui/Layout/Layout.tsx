@@ -47,7 +47,7 @@ const Layout: FC<LayoutProps> = ({ children }) => {
             </header>
             {/* <Header /> */}
             {children}
-            <aside></aside>
+
             <footer className="grid grid-cols-12 items-center bg-gray-400 px-8 py-4 text-xl">
                 <Link href="/" shallow>
                     <a className="col-span-3 flex items-center text-xl">

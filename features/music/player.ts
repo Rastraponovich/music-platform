@@ -14,9 +14,10 @@ import { v4 as uuid } from "uuid"
 
 import { createGate } from "effector-react"
 import { ChangeEvent, MouseEvent } from "react"
-import { Song } from "./types"
+import { EPLAYER_STATE, Song } from "./types"
 import { getClientScope } from "@/hooks/useScope"
 import { Nullable } from "@/types"
+import { on } from "events"
 
 export const initPlayer = createEvent()
 export const destroyPlayer = createEvent()
@@ -25,13 +26,12 @@ const $audio = createStore<Nullable<HTMLAudioElement>>(null)
 
 const selectTrack = createEvent<Song>()
 
-const $trackState = createStore<number>(0)
-
 const $currentTrack = createStore<Nullable<Song>>(null).on(selectTrack, (_, payload) => {
     return { ...payload, playerPlayListId: uuid() }
 })
 const setVolume = createEvent<number>()
 const changeVolume = createEvent<ChangeEvent<HTMLInputElement>>()
+const resetVolume = createEvent()
 const $volume = createStore<number>(50).on(setVolume, (_, volume) => volume)
 
 const onmousedown = createEvent<MouseEvent<HTMLInputElement>>()
@@ -47,6 +47,7 @@ const $seekingProgress = createStore<number>(0)
 
 const setCurrentTime = createEvent<number>()
 const changeCurrentTime = createEvent<number>()
+const keyChangeCurrentTime = createEvent<string>()
 
 const seekingCurrentTime = createEvent<ChangeEvent<HTMLInputElement>>()
 
@@ -81,6 +82,9 @@ const { onPlayClicked, onPauseClicked, setIsPlaying, setPause, setPlaying } = cr
     setIsPlaying: (_, payload: boolean) => payload,
 })
 
+const onStopButtonClicked = createEvent()
+$playing.on(onStopButtonClicked, () => false)
+
 const $timeRemaining = createStore<number>(0)
 
 sample({
@@ -91,7 +95,7 @@ sample({
 })
 
 const setShowVisiblePlaylist = createEvent()
-const $visiblePlaylist = createStore<boolean>(true).on(
+const $visiblePlaylist = createStore<boolean>(false).on(
     setShowVisiblePlaylist,
     (visible, _) => !visible
 )
@@ -333,6 +337,17 @@ guard({
     target: createEffect<HTMLAudioElement, void>((audio) => audio.pause()),
 })
 
+//нажатие кнопки стоп
+
+guard({
+    clock: onStopButtonClicked,
+    source: $audio,
+    filter: (audio): audio is HTMLAudioElement => audio instanceof HTMLAudioElement,
+    target: createEffect<HTMLAudioElement, void>((audio) => {
+        audio.load()
+    }),
+})
+
 guard({
     clock: $loop,
     source: [$audio, $loop],
@@ -353,6 +368,16 @@ guard({
         }
     ),
 })
+//сброс громкости
+guard({
+    source: sample({ clock: resetVolume, source: $audio, fn: (audio) => [audio] }),
+    filter: (sourceTuple): sourceTuple is [HTMLAudioElement] =>
+        sourceTuple[0] instanceof HTMLAudioElement,
+    target: createEffect<[HTMLAudioElement], void>(([audio]) => {
+        audio.volume = 0.5
+    }),
+})
+
 //Изменение положения в треке из UI
 
 guard({
@@ -369,6 +394,29 @@ guard({
                 console.log(allowSeeking)
 
                 audio.currentTime = newcurrentTime
+            }
+        }
+    ),
+})
+
+//мотаем трек на +5 / -5
+guard({
+    source: sample({
+        clock: keyChangeCurrentTime,
+        source: [$audio, $allowSeeking],
+        fn: ([audio, allowSeeking], event) => [audio, event, allowSeeking],
+    }),
+    filter: (sourceTuple): sourceTuple is [HTMLAudioElement, string, boolean] =>
+        sourceTuple[0] instanceof HTMLAudioElement && sourceTuple[2] === true,
+    target: createEffect<[HTMLAudioElement, string, boolean], void>(
+        ([audio, event, allowSeeking]) => {
+            if (allowSeeking) {
+                if (event === "forward") {
+                    audio.currentTime = audio.currentTime + 5
+                }
+                if (event === "backward") {
+                    audio.currentTime = audio.currentTime - 5
+                }
             }
         }
     ),
@@ -538,6 +586,11 @@ guard({
     }),
 })
 
+const $playerState = createStore<EPLAYER_STATE>(EPLAYER_STATE.STOPED)
+    .on(setPlaying, () => EPLAYER_STATE.PLAYED)
+    .on(setPause, () => EPLAYER_STATE.PAUSED)
+    .on(onStopButtonClicked, () => EPLAYER_STATE.STOPED)
+
 const playList = {
     $playList,
     onAddToPlayList,
@@ -561,6 +614,7 @@ const progress = {
 const volume = {
     $volume,
     changeVolume,
+    resetVolume,
 }
 
 const controls = {
@@ -569,6 +623,8 @@ const controls = {
     nextTrackClicked,
     prevTrackClicked,
     controlPanelPlayClicked,
+    onStopButtonClicked,
+    onChangeCurrentTimeHook: keyChangeCurrentTime,
 }
 
 const player = {
@@ -585,7 +641,7 @@ const player = {
     playList,
     onSetCompact,
     $compact,
-    $trackState,
+    $playerState,
 }
 
 export { player }

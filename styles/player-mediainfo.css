@@ -1,0 +1,67 @@
+.media-info {
+    image-rendering: pixelated;
+    box-sizing: content-box;
+    -webkit-box-sizing: content-box;
+    @apply cursor-winamp;
+}
+
+.media-info #marquee {
+    top: 27px;
+    width: 154px;
+    display: block;
+    padding: 0 0;
+    position: absolute;
+    left: 111px;
+    height: 12px;
+    overflow: hidden;
+}
+
+.mono-stereo {
+    image-rendering: pixelated;
+    position: absolute;
+    left: 212px;
+    top: 41px;
+    width: 57px;
+    height: 12px;
+}
+
+.media-info .mono-stereo div {
+    position: absolute;
+    height: 12px;
+}
+
+.mono-stereo #stereo {
+    image-rendering: pixelated;
+    left: 27px;
+    width: 29px;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAMCAMAAACpx0YDAAAAk1BMVEUlJTklJTolJjsmJTsmJjsnJz0nJz4oJz4oKD8pKUApKkEqKUEqKUIqKkEqKkIrK0MrK0QsK0QsLEUtLUYtLUguLUcuLUguLkcvL0U8PFNDQ1hJSWFQUGNaWm9lZXZpaXpvcH5wcX9xcYF3d4Z5eYh8e4x+fpCBgY+Dg5KKipaLi5mMi5mRkZ2bmqaioqypqbKqqrTexa8FAAAAvUlEQVQYGQXBQW4aURAFwOrPIJCjEY5Hytq73P9giCj2YBTy+7mqfkUTiURmtUiqRY8eJBJRFAGULIemEipBQySka0xQL+9Bz4FEwbBUj9PP+ffF22P1cXbc1+fnsv7br5ExRr9mz911M99Op+d2P1+22/yRitHttr9eUPP5cH+w/3ftQ4cFx9VX93a7nD+ObufVn/nbdSRqk4qWSCfERHS1USq6ggwkKTCMLBERpCuoVAQdYyAl4dASNJjKN1/Kh0LDHtt2AAAAAElFTkSuQmCC);
+}
+
+.mono-stereo #stereo.selected {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAMCAMAAACpx0YDAAABXFBMVEUA/wAD+AQG7gkG8QkH4wwI6A0K2g8K3xAL2xIL4hIM2RMN2BUN3RUOxRYO1RUQ0xkSxh0SzBwS0RwTuR0VvCEVxSEapCkbnyscrSwfczAgpzIhkzQinDUlJTklJTolJjslJzklKDolLjslkzomJjsmKTsmKzsmLDomMjsmMjwmNjsmOjsmRjsmWjwmdzsmiDwnJz0nKT0nLT0nNT0nOj0nQjwnTj0nYj0oKz4oLT8oND4oOT8oRz4oSz4oZT8pL0ApO0ApTEApTkApZkApZ0EqMEIqMkMqPEEqTEMqT0IqUEIqZUIqZkMqa0IrLkIrL0UrNEQrPEQrPUQrQEMrSkUrYkQrfUQsMUQsNkUsQkQsS0MsTkYsVEQsWEUsYEYsZ0UtLkUtLkctL0gtMEYtM0YtM0gtNEgtNUctNkctOUYtP0YtQkctR0YtS0Yti0cuLUguLkcuMUcuM0cuN0c2LFEQAAABDklEQVQYGQXBvVHDQBCA0W/3TrJkBBhmPAQkBATUQA+0QEROT9RBwtADCQQkDMaBLIOk8+nnlvfkUfYq0HKgtzIMMIBBxNpR/+Qsy+pcxLnj46iFiKrquJeuw/xp51QvayeuxkSikk+YHuFmxLdetRH//HXnCIuoxiSxpzS1hFfRlw+/DrxWO1YdqdgXV9vd4mrZmWgl9UdaUnD/LX4bo9ue9O8/N/lnkFG0g+tquwGSy5dUR1BlABio2fmmoVzL00XfZMluV027WL3tK8DkIWtUJRBMJGCMQKQve5vT4C2tRDd5LSaS2wEDcjqz2cbZM0l7Nh/KHiPCCERIKfjR8EmnEApqAGMASDD9uiHBP3bmjPqWVRjwAAAAAElFTkSuQmCC);
+}
+
+.mono-stereo #mono {
+    width: 27px;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAMCAMAAACk2TZEAAAAclBMVEUtLUguLkcuLkgvL0ovMEswL0swMEsxMU0xMU4xMk0xMk4yMU4yMk8zM1AzNFE0M1E0M1I0NFE0NFI0NVM3N1E8PFNJSWFQUGdSUmtaWm9gYHZuboJ2dol8e4x+fpCGhpeOjp2VlaOdnaqlpbKsrLetrbnuzsEEAAAAp0lEQVQYGQXBQU4bURQEwOrvkcA4iRS4/+VYwI6VEyTPzGuq8ppyrjHKIVPQsSnnGpReZkQnQzfImKJUU8saWUEWQZyV0g7dqs6X349tf7qfN3uf6t/N/imLDL7WY1/Xx8d1m/+X6+P9+U1XSADNH8Xkr9aqmTW7fY5+r9v9OHp859f9i7z2vJwZpUdUjWpqSZQytlYJUrOpWaR1FhhgbcLQRiEFTH4AmtR0pKKbMGAAAAAASUVORK5CYII=);
+}
+
+#khz,
+#kbps {
+    cursor: url(data:image/x-win-bitmap;base64,AAACAAEAICAAAAAAAADoAgAAFgAAACgAAAAgAAAAQAAAAAEABAAAAAAAgAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAACAAAAAgIAAgAAAAIAAgACAgAAAgICAAMDAwAAAAP8AAP8AAAD//wD/AAAA/wD/AP//AAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB4gAAAAAAAAAAAAAAAAAAAf4AAAAAAAAAAAAAAAAAAB/gAAAAAAAAAAAAAAAAAAAf4AAAAAAAAAAAAAAAAcAB/gAAAAAAAAAAAAAAAAHgAf4AAAAAAAAAAAAAAAAB/gPgAAAAAAAAAAAAAAAAAf/gAAAAAAAAAAAAAAAAAAH//iIiAAAAAAAAAAAAAAAB//4iIAAAAAAAAAAAAAAAAf/iIgAAAAAAAAAAAAAAAAH/4iAAAAAAAAAAAAAAAAAB/iIAAAAAAAAAAAAAAAAAAf4gAAAAAAAAAAAAAAAAAAHiAAAAAAAAAAAAAAAAAAAB4AAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////////////////////////////////////////////////////////////////////j////w////8P///+H///3h///8w////EP///wH///8AH///AD///wB///8A////Af///wP///8H////D////x////8/////f////w==),
+        auto;
+    image-rendering: pixelated;
+    position: absolute;
+    height: 8px;
+    top: 43px;
+}
+
+#kbps {
+    left: 111px;
+    width: 15px;
+}
+
+#khz {
+    left: 156px;
+    width: 10px;
+}
