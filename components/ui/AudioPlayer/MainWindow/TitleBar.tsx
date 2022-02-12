@@ -14,16 +14,17 @@ const TitleBar: FC<TitleBarProps> = ({ onMouseDown, onMouseMove, onMouseUp, onMo
     const [selected, setSelected] = useState(false)
     const handleSetCompact = useEvent(player.onSetCompact)
     const handleDestroy = useEvent(destroyPlayer)
-    const handleSelect = useCallback(() => {
-        setSelected(!selected)
-    }, [selected])
+
+    const handleOnMouseDown = (e: MouseEvent<HTMLElement>) => {
+        setSelected(true)
+        onMouseDown(e)
+    }
 
     return (
         <div
             id="titlebar"
             className={clsx("draggable title-bar relative flex", selected && "selected")}
-            onClick={handleSelect}
-            onMouseDown={onMouseDown}
+            onMouseDown={handleOnMouseDown}
             onMouseMove={onMouseMove}
             onMouseUp={onMouseUp}
             onMouseLeave={onMouseLeave}

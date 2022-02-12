@@ -8,8 +8,6 @@ import {
     scopeBind,
 } from "effector"
 
-import { throttle, condition } from "patronum"
-
 import { v4 as uuid } from "uuid"
 
 import { createGate } from "effector-react"
@@ -17,6 +15,7 @@ import { ChangeEvent, MouseEvent } from "react"
 import { EPLAYER_STATE, Song, TIME_MODE } from "./types"
 import { getClientScope } from "@/hooks/useScope"
 import { Nullable } from "@/types"
+import { $visibleEQ, destroyEQ, toggleVisibleEQ } from "./eq"
 
 export const initPlayer = createEvent()
 export const destroyPlayer = createEvent()
@@ -28,6 +27,7 @@ const selectTrack = createEvent<Song>()
 const $currentTrack = createStore<Nullable<Song>>(null).on(selectTrack, (_, payload) => payload)
 
 const setVolume = createEvent<number>()
+
 const changeVolume = createEvent<ChangeEvent<HTMLInputElement>>()
 const resetVolume = createEvent()
 const $volume = createStore<number>(50).on(setVolume, (_, volume) => volume)
@@ -355,6 +355,7 @@ guard({
         audio.loop = loop
     }),
 })
+
 //Изменение громкости из UI
 guard({
     source: sample({ clock: changeVolume, source: $audio, fn: (audio, event) => [audio, event] }),
@@ -559,6 +560,7 @@ guard({
     source: $audio,
     filter: (audio): audio is HTMLAudioElement => audio instanceof HTMLAudioElement,
     target: createEffect<HTMLAudioElement, void>((audio) => {
+        audio.load()
         audio.removeEventListener("abort", onAbort)
         audio.removeEventListener("canplay", onCanPlay)
         audio.removeEventListener("canplaythrough", onCanPlayThrough)
@@ -594,6 +596,16 @@ const switchTimeMode = createEvent()
 const $timeMode = createStore<TIME_MODE>(TIME_MODE.ELAPSED).on(switchTimeMode, (state, _) =>
     state === TIME_MODE.ELAPSED ? TIME_MODE.REMAINING : TIME_MODE.ELAPSED
 )
+
+guard({
+    clock: $playerState,
+    source: $visibleEQ,
+    filter: (visible, state) => state === EPLAYER_STATE.DESTROYED,
+    target: createEffect(() => {
+        const callDestroyEQ = scopeBind(destroyEQ, { scope: getClientScope()! })
+        callDestroyEQ()
+    }),
+})
 
 const playList = {
     $playList,

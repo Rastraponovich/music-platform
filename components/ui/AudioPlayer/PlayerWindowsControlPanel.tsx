@@ -1,3 +1,4 @@
+import { $visibleEQ, toggleVisibleEQ } from "@/features/music/eq"
 import { player } from "@/features/music/player"
 import clsx from "clsx"
 import { useEvent, useStore } from "effector-react"
@@ -37,10 +38,17 @@ const Button = ({ id, title, active = false, onClick }: ButtonProps) => {
 const PlayerWindowsControlPanel: FC<PlayerWindowsControlPanelProps> = () => {
     const visiblePlaylist = useStore(player.playList.$visiblePlaylist)
     const setVisiblePlaylist = useEvent(player.playList.setShowVisiblePlaylist)
+    const toggleEQ = useEvent(toggleVisibleEQ)
+    const visibleEQ = useStore($visibleEQ)
 
     return (
         <div className="windows">
-            <Button id="equalizer-button" title="Toggle Graphical Equalizer" />
+            <Button
+                id="equalizer-button"
+                title="Toggle Graphical Equalizer"
+                onClick={toggleEQ}
+                active={visibleEQ}
+            />
             <Button
                 id="playlist-button"
                 title="Toggle Playlist Editor"

@@ -1,7 +1,7 @@
 import { player } from "@/features/music/player"
 import clsx from "clsx"
 import { useStore, useEvent } from "effector-react"
-import React, { memo, FC, useState, MouseEvent } from "react"
+import React, { memo, FC, useState, MouseEvent, useCallback } from "react"
 import Progressbar from "../ui/Progressbar/Progressbar"
 
 import dynamic from "next/dynamic"
@@ -9,14 +9,11 @@ import PlayList from "../ui/PlayList/PlayList"
 import PlayerControlPanel from "../ui/AudioPlayer/PlayerControlPanel"
 import Visualizer from "../ui/AudioPlayer/Visualizer"
 import StatusBar from "../ui/AudioPlayer/StatusBar"
-import TitleBar from "../ui/AudioPlayer/TitleBar"
+import TitleBar from "../ui/AudioPlayer/MainWindow/TitleBar"
 import VolumeBar from "../ui/AudioPlayer/VolumeBar"
 import BalanceBar from "../ui/AudioPlayer/BalanceBar"
 import PlayerWindowsControlPanel from "../ui/AudioPlayer/PlayerWindowsControlPanel"
 import MediaInfo from "../ui/AudioPlayer/MediaInfo/MediaInfo"
-import { debounce, throttle } from "lodash"
-
-const AudioPlayer = dynamic(() => import("../ui/AudioPlayer/AudioPlayer"), { ssr: false })
 
 interface AsidePlayerProps {}
 
@@ -26,8 +23,8 @@ const AsidePlayer: FC<AsidePlayerProps> = () => {
     const hidden = useStore(player.$compact)
 
     const [pos, setpos] = useState<{ [key: string]: number | string }>({
-        clientX: "unset",
-        clientY: "unset",
+        clientX: "1rem",
+        clientY: "95px",
         bottom: "1rem",
     })
 
@@ -38,30 +35,39 @@ const AsidePlayer: FC<AsidePlayerProps> = () => {
 
     const [allowDragging, setAllowDragging] = useState<boolean>(false)
 
-    const handleDragStart = (e: MouseEvent<HTMLElement>) => {
-        e.preventDefault()
-        setDiff({
-            diffX: e.screenX - e.currentTarget.getBoundingClientRect().left,
-            diffY: e.screenY - e.currentTarget.getBoundingClientRect().top,
-        })
-        setpos({ ...pos, bottom: "unset" })
-        setAllowDragging(true)
-    }
-    const handleDragging = (e: MouseEvent<HTMLElement>) => {
-        if (allowDragging) {
-            const left = e.screenX - diff.diffX
-            const top = e.screenY - diff.diffY
+    const handleDragStart = useCallback(
+        (e: MouseEvent<HTMLElement>) => {
+            e.preventDefault()
+            setDiff({
+                diffX: e.screenX - e.currentTarget.getBoundingClientRect().left,
+                diffY: e.screenY - e.currentTarget.getBoundingClientRect().top,
+            })
+            setpos({ ...pos, bottom: "unset" })
+            setAllowDragging(true)
+        },
+        [allowDragging, diff, pos]
+    )
+    const handleDragging = useCallback(
+        (e: MouseEvent<HTMLElement>) => {
+            if (allowDragging) {
+                const left = e.screenX - diff.diffX
+                const top = e.screenY - diff.diffY
 
-            if (e.pageX === 0) {
-                return setTimeout(() => {
-                    setpos({ ...pos, clientX: 0 })
-                }, 500)
+                if (e.pageX === 0) {
+                    return setTimeout(() => {
+                        setpos({ ...pos, clientX: 0 })
+                    }, 500)
+                }
+
+                setpos({ ...pos, clientX: left, clientY: top })
             }
-
-            setpos({ ...pos, clientX: left, clientY: top })
-        }
-    }
-    const handleDragEnd = (e: MouseEvent<HTMLElement>) => setAllowDragging(false)
+        },
+        [allowDragging, pos]
+    )
+    const handleDragEnd = useCallback(
+        (e: MouseEvent<HTMLElement>) => setAllowDragging(false),
+        [allowDragging]
+    )
     return (
         <aside
             id="main-window"
