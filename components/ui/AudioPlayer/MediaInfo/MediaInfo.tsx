@@ -1,3 +1,4 @@
+import { playlist, winamp } from "@/features/media/winamp"
 import { player } from "@/features/music/player"
 import { EPLAYER_STATE } from "@/features/music/types"
 import { useStore } from "effector-react"
@@ -10,20 +11,20 @@ import MonoStereo from "./MonoStereo"
 interface MediaInfoProps {}
 
 const MediaInfo: FC<MediaInfoProps> = () => {
-    const currentTrack = useStore(player.$currentTrack)
-    const currentId = useStore(player.playList.$currentPlayedTrackIndexPlaylist)
-    const playerState = useStore(player.$playerState)
+    const currentTrack = useStore(winamp.$currentTrack)
+    const currentId = useStore(playlist.$currentPlayedTrackIndexPlaylist)
+    const playerState = useStore(winamp.$mediaStatus)
     return (
         <div className="media-info flex text-[#00FF00]">
             {/* бегущая строка */}
             <MediaInfoTrack currentTrack={currentTrack!} currentId={currentId!} />
-            {playerState !== EPLAYER_STATE.STOPED && (
-                <KBPS bitrate={currentTrack?.metaData.format.bitrate} />
+            {playerState !== "STOPPED" && (
+                <KBPS bitrate={currentTrack?.metaData.format.bitrate || 0} />
             )}
-            {playerState !== EPLAYER_STATE.STOPED && (
-                <KHZ sampleRate={currentTrack?.metaData.format.sampleRate} />
+            {playerState !== "STOPPED" && (
+                <KHZ sampleRate={currentTrack?.metaData.format.sampleRate || 0} />
             )}
-            <MonoStereo numberOfChannels={currentTrack?.metaData.format.numberOfChannels} />
+            <MonoStereo numberOfChannels={currentTrack?.metaData.format.numberOfChannels || 0} />
         </div>
     )
 }

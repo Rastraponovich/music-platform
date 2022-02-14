@@ -1,9 +1,10 @@
+import { progress } from "@/features/media/winamp"
 import { player } from "@/features/music/player"
 import { useEvent } from "effector-react"
 import React, { KeyboardEvent, useEffect } from "react"
 
 const useChangeCurentTime = () => {
-    const changeCurrentTime = useEvent(player.controls.onChangeCurrentTimeHook)
+    const changeCurrentTime = useEvent(progress.keyChangeCurrentTime)
     useEffect(() => {
         const handler = (event: globalThis.KeyboardEvent) => {
             if (event.key === "ArrowLeft") return changeCurrentTime("backward")

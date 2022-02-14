@@ -1,5 +1,5 @@
+import { duration, playlist, winamp } from "@/features/media/winamp"
 import { player } from "@/features/music/player"
-import useChangeCurentTime from "@/hooks/useChangeCurrentTime"
 import { Nullable } from "@/types"
 import clsx from "clsx"
 import { useEvent, useList, useStore } from "effector-react/scope"
@@ -10,14 +10,15 @@ interface PlayListProps {}
 
 const PlayList: FC<PlayListProps> = () => {
     const [selectedTrack, setSelectedTrack] = useState<Nullable<number>>(null)
-    const playlistTracksLength = useStore(player.playList.$playlistTracksLength)
+    const durationTracksInPlaylist = useStore(duration.$durationTracksInPlaylist)
+
     const visible = useStore(player.playList.$visiblePlaylist)
-    const currentIndex = useStore(player.playList.$currentPlayedTrackIndexPlaylist)
+    const currentIndex = useStore(playlist.$currentPlayedTrackIndexPlaylist)
 
-    const playing = useStore(player.$playing)
-    const playList = useStore(player.playList.$playList)
+    const playing = useStore(winamp.$mediaStatus)
+    const playList = useStore(playlist.$playList)
 
-    const handleSelectNewTrack = useEvent(player.playList.selectTrackInPlayList)
+    const handleSelectNewTrack = useEvent(playlist.doubleClick)
 
     const [pos, setpos] = useState<{ [key: string]: number | string }>({
         clientX: "unset",
@@ -29,8 +30,6 @@ const PlayList: FC<PlayListProps> = () => {
         diffX: 0,
         diffY: 0,
     })
-
-    const useChangeCurentTimeHook = useChangeCurentTime()
 
     const [allowDragging, setAllowDragging] = useState<boolean>(false)
 
@@ -105,7 +104,7 @@ const PlayList: FC<PlayListProps> = () => {
                         "cursor-winamp"
                     )}
                 >
-                    {useList(player.playList.$playList, {
+                    {useList(playlist.$playList, {
                         keys: [selectedTrack, playList.length, currentIndex, playing],
                         fn: (track, index) => (
                             <div

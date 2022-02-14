@@ -1,47 +1,41 @@
-import Media from "@/features/media"
-import { initWinamp, loadUrl } from "@/features/media/winamp"
-import { Nullable } from "@/types"
-import { useEvent } from "effector-react/scope"
+import { winamp, winampControls, playlist } from "@/features/media/winamp"
+import clsx from "clsx"
+import { useEvent, useStore } from "effector-react/scope"
+import dynamic from "next/dynamic"
 import React, { memo, FC, useState, useEffect } from "react"
 
 interface testProps {}
 
-const test: FC<testProps> = () => {
-    const handleInitWinamp = useEvent(initWinamp)
-    const handleLoadUrl = useEvent(loadUrl)
+const TestPlayer = dynamic(() => import("@/components/Test"), { ssr: false })
 
+const Test: FC<testProps> = () => {
+    const handleInitWinamp = useEvent(winamp.init)
+
+    const playList = useStore(playlist.$playList)
+    const selectedTrack = useStore(playlist.$selectedTrackInPlayList)
+    const handleDoubleClick = useEvent(playlist.doubleClick)
+    const handleSelectTrack = useEvent(playlist.selectTrack)
     useEffect(() => {
         handleInitWinamp()
     }, [])
 
     return (
         <div className="flex grow p-20">
-            <div className="flex">
-                <span
-                    className="h-4"
-                    onClick={() =>
-                        handleLoadUrl({
-                            url: `/music/5b0c8552-6b88-4ac6-b4c5-01c8ffcf3303.mp3`,
-                            autoPlay: true,
-                        })
-                    }
-                >
-                    song 1{" "}
-                </span>
-                <span
-                    className="h-4"
-                    onClick={() =>
-                        handleLoadUrl({
-                            url: `/music/9baf25af-33ea-4525-bfc6-6500b06c3403.mp3`,
-                            autoPlay: true,
-                        })
-                    }
-                >
-                    song 2
-                </span>
+            <TestPlayer />
+            <div className="mt-4 flex flex-col">
+                {playList.map((track, idx) => (
+                    <div
+                        key={track.id}
+                        onDoubleClick={() => handleDoubleClick(idx)}
+                        className={clsx(selectedTrack === idx && "bg-blue-500")}
+                        onClick={() => handleSelectTrack(idx)}
+                    >
+                        {track.artist} - {track.name}
+                    </div>
+                ))}
             </div>
         </div>
     )
 }
 
-export default memo(test)
+export default Test

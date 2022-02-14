@@ -1,3 +1,4 @@
+import { winamp, winampControls } from "@/features/media/winamp"
 import { player } from "@/features/music/player"
 import clsx from "clsx"
 import { useEvent, useStore } from "effector-react"
@@ -8,7 +9,7 @@ import ActionsButton from "./ActionsButton"
 interface PlayerControlPanelProps {}
 
 const PlayerControlPanel: FC<PlayerControlPanelProps> = () => {
-    const playing = useStore(player.$playing)
+    const playing = useStore(winamp.$mediaStatus)
     const loop = useStore(player.$loop)
     const [
         handlePlay,
@@ -18,12 +19,12 @@ const PlayerControlPanel: FC<PlayerControlPanelProps> = () => {
         handleNextTrackClick,
         handleStopClick,
     ] = useEvent([
-        player.controls.controlPanelPlayClicked,
-        player.controls.onPauseClicked,
+        winampControls.play,
+        winampControls.pause,
         player.onSetLoopEnabled,
-        player.controls.prevTrackClicked,
-        player.controls.nextTrackClicked,
-        player.controls.onStopButtonClicked,
+        winampControls.prevTrack,
+        winampControls.nextTrack,
+        winampControls.stop,
     ])
 
     return (
@@ -33,9 +34,9 @@ const PlayerControlPanel: FC<PlayerControlPanelProps> = () => {
             <ActionsButton
                 id="pause"
                 title="Pause"
-                onClick={() => (playing ? handlePause() : handlePlay())}
+                onClick={() => (playing === "PLAYING" ? handlePause() : handlePlay())}
             />
-            <ActionsButton id="stop" title="Stop" onClick={handleStopClick} />
+            <ActionsButton id="stop" title="Stop" onClick={() => handleStopClick("STOPPED")} />
             <ActionsButton id="next" title="Next Track" onClick={handleNextTrackClick} />
             <ActionsButton id="eject" title="Open File(s)" className="mx-1.5" />
 

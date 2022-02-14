@@ -4,23 +4,23 @@ import { useStore, useEvent } from "effector-react"
 import React, { memo, FC, useState, MouseEvent, useCallback } from "react"
 import Progressbar from "../ui/Progressbar/Progressbar"
 
-import dynamic from "next/dynamic"
-import PlayList from "../ui/PlayList/PlayList"
 import PlayerControlPanel from "../ui/AudioPlayer/PlayerControlPanel"
-import Visualizer from "../ui/AudioPlayer/Visualizer"
 import StatusBar from "../ui/AudioPlayer/StatusBar"
 import TitleBar from "../ui/AudioPlayer/MainWindow/TitleBar"
 import VolumeBar from "../ui/AudioPlayer/VolumeBar"
 import BalanceBar from "../ui/AudioPlayer/BalanceBar"
 import PlayerWindowsControlPanel from "../ui/AudioPlayer/PlayerWindowsControlPanel"
 import MediaInfo from "../ui/AudioPlayer/MediaInfo/MediaInfo"
+import { winamp } from "@/features/media/winamp"
+import useChangeCurentTime from "@/hooks/useChangeCurrentTime"
 
 interface AsidePlayerProps {}
 
 const AsidePlayer: FC<AsidePlayerProps> = () => {
-    console.log("render asidePlayer")
-    const currentTrack = useStore(player.$currentTrack)
+    // console.log("render asidePlayer")
+    const currentTrack = useStore(winamp.$currentTrack)
     const hidden = useStore(player.$compact)
+    const useChangeCurentTimeHook = useChangeCurentTime()
 
     const [pos, setpos] = useState<{ [key: string]: number | string }>({
         clientX: "1rem",

@@ -4,8 +4,6 @@ import { memo, FC, useState } from "react"
 
 import { useEvent } from "effector-react/scope"
 
-import { player } from "@/features/music/player"
-
 import { Song } from "@/features/music/types"
 
 import TrackTimer from "./TrackTimer"
@@ -14,6 +12,7 @@ import PlusIcon from "../ui/icons/PlusIcon/PlusIcon"
 import PauseIcon from "../ui/icons/PauseIcon/PauseIcon"
 import Progressbar from "../ui/Progressbar/Progressbar"
 import Annotation from "../ui/icons/Annotation/Annotation"
+import { playlist, winamp, winampControls } from "@/features/media/winamp"
 
 interface TrackListItemProps {
     track: Song
@@ -21,19 +20,19 @@ interface TrackListItemProps {
 }
 
 const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
-    console.log("render track", track.name)
-    const playingState = useStore(player.$playing)
+    // console.log("render track", track.name)
+    const mediaStatus = useStore(winamp.$mediaStatus)
 
     const [handleSelectTrack, handlePlay, handlePause, handleAddToPlayList] = useEvent([
-        player.selectTrack,
-        player.controls.onPlayClicked,
-        player.controls.onPauseClicked,
-        player.playList.onAddToPlayList,
+        winamp.selectTrackFromList,
+        winampControls.play,
+        winampControls.pause,
+        playlist.addTrackToPlaylist,
     ])
 
     const play = () => {
         if (!isCurrentTrack) return handleSelectTrack(track)
-        if (playingState) return handlePause()
+        if (mediaStatus === "PLAYING") return handlePause()
         return handlePlay()
     }
 
@@ -43,7 +42,7 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
             <div className="grid grid-cols-12 items-center rounded bg-white py-2 shadow-sm">
                 <button onClick={play} className="col-span-1 justify-self-center">
                     {isCurrentTrack ? (
-                        playingState ? (
+                        mediaStatus === "PLAYING" ? (
                             <PauseIcon size="small" />
                         ) : (
                             <PlayIcon size="small" />

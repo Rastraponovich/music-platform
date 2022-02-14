@@ -1,3 +1,4 @@
+import { Nullable } from "@/types"
 import { Playlist } from "../playlist/types"
 
 export enum EPLAYER_STATE {
@@ -21,14 +22,41 @@ export type Song = {
     cover: string
     likes: number
     comments: any[]
-    userId: number
-    user: any
-    metaData: any
+    userId?: number
+    user?: any
+    metaData: {
+        format: {
+            tagTypes?: string[]
+            trackInfo?: any[]
+            lossless?: boolean
+            container?: string
+            codec?: string
+            tool?: string
+            sampleRate: number
+            numberOfChannels: number
+            numberOfSamples?: number
+            bitrate: number
+            codecProfile?: string
+            duration: number
+        }
+        native: { [key: string]: { id: string; value: string }[] }
+        quality: {
+            warnings: {
+                message: string
+            }[]
+        }
+        common: {
+            track: { no: Nullable<number>; of: Nullable<number> }
+            disk: { no: Nullable<number>; of: Nullable<number> }
+            movementIndex?: any
+            encodersettings?: string
+        }
+    }
     playerPlayListId?: string | null
-    playlists: Playlist[]
-    createdAt: Date
-    updatedAt: Date
-    deletedAt: Date
+    playlists?: Playlist[]
+    createdAt: Date | string
+    updatedAt: Date | string
+    deletedAt: Date | string | null
 }
 
 export enum EAudioStates {

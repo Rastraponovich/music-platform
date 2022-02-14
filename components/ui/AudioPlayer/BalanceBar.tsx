@@ -1,19 +1,24 @@
+import { balance } from "@/features/media/winamp"
+import { useStore } from "effector-react"
+import { useEvent } from "effector-react/scope"
 import React, { memo, FC, useState, useEffect } from "react"
 
 interface BalanceBarProps {}
 
 const BalanceBar: FC<BalanceBarProps> = () => {
-    const [balance, setBalance] = useState(0)
+    const currentBalance = useStore(balance.$currentBalance)
+    const handleChangeBalance = useEvent(balance.changeBalance)
+    const resetBalance = useEvent(balance.resetBalance)
 
     const [currentStep, setCurrentStep] = useState(0)
 
     useEffect(() => {
-        if (balance === 0) return setCurrentStep(0)
-        if (balance < 0) return setCurrentStep(Math.ceil(balance / 3.57) + 1)
-        if (balance > 0) return setCurrentStep(Math.ceil(balance / -3.57) + 1)
+        if (currentBalance === 0) return setCurrentStep(0)
+        if (currentBalance < 0) return setCurrentStep(Math.ceil(currentBalance / 3.57) + 1)
+        if (currentBalance > 0) return setCurrentStep(Math.ceil(currentBalance / -3.57) + 1)
 
         return () => setCurrentStep(0)
-    }, [setCurrentStep, balance])
+    }, [setCurrentStep, currentBalance])
     return (
         <input
             id="balance"
@@ -22,11 +27,11 @@ const BalanceBar: FC<BalanceBarProps> = () => {
             max="100"
             step="1"
             title="Balance"
-            value={balance}
+            value={currentBalance}
             style={{ backgroundPosition: `0px ${currentStep * 15}px` }}
             className="slider-thumb  appearance-none"
-            onChange={(e) => setBalance(Number(e.target.value))}
-            onDoubleClick={() => setBalance(0)}
+            onChange={handleChangeBalance}
+            onDoubleClick={resetBalance}
         />
     )
 }

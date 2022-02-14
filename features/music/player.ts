@@ -8,14 +8,12 @@ import {
     scopeBind,
 } from "effector"
 
-import { v4 as uuid } from "uuid"
-
 import { createGate } from "effector-react"
 import { ChangeEvent, MouseEvent } from "react"
 import { EPLAYER_STATE, Song, TIME_MODE } from "./types"
 import { getClientScope } from "@/hooks/useScope"
 import { Nullable } from "@/types"
-import { $visibleEQ, destroyEQ, toggleVisibleEQ } from "./eq"
+import { $visibleEQ, destroyEQ } from "./eq"
 
 export const initPlayer = createEvent()
 export const destroyPlayer = createEvent()
@@ -231,10 +229,10 @@ const $playlistTracksLength = createStore<any>(0).on($playList, (_, tracks) => {
 
 const { onAddToPlayList, onRemoveFromPlayList } = createApi($playList, {
     onAddToPlayList: (state, track: Song) => {
-        return [...state, { ...track, playerPlayListId: uuid() }]
+        return [...state, track]
     },
-    onRemoveFromPlayList: (state, track: Song) => {
-        return state.filter((item) => item.id !== track.id)
+    onRemoveFromPlayList: (state, id: number) => {
+        return state.filter((item, index) => index !== id)
     },
 })
 

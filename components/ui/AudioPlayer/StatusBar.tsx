@@ -1,3 +1,4 @@
+import { progress, winamp } from "@/features/media/winamp"
 import { player } from "@/features/music/player"
 import { EPLAYER_STATE, TIME_MODE } from "@/features/music/types"
 import clsx from "clsx"
@@ -9,12 +10,12 @@ import Visualizer from "./Visualizer"
 interface StatusBarProps {}
 
 const StatusBar: FC<StatusBarProps> = () => {
-    const currentTime = useStore(player.progress.$currentTime)
-    const playerState = useStore(player.$playerState)
-    const timeMode = useStore(player.$timeMode)
-    const timeremaining = useStore(player.progress.$timeRemaining)
+    const currentTime = useStore(progress.$currentTime)
+    const playerState = useStore(winamp.$mediaStatus)
+    const timeMode = useStore(winamp.$timeMode)
+    const timeremaining = useStore(progress.$currentTrackTimeRemaining)
 
-    const handleSwitchTimeMode = useEvent(player.switchTimeMode)
+    const handleSwitchTimeMode = useEvent(winamp.toggleTimeMode)
     const [minutes, setMinutes] = useState(0)
     const [seconds, setSeconds] = useState(0)
 
@@ -58,9 +59,9 @@ const StatusBar: FC<StatusBarProps> = () => {
                 id="play-pause"
                 className={clsx(
                     // playing ? "play" : "pause",
-                    playerState === EPLAYER_STATE.PLAYED && "play",
-                    playerState === EPLAYER_STATE.PAUSED && "pause",
-                    playerState === EPLAYER_STATE.STOPED && "stop",
+                    playerState === "PLAYING" && "play",
+                    playerState === "PAUSED" && "pause",
+                    playerState === "STOPPED" && "stop",
 
                     "ml-[8px] mt-[6px] h-[9px] w-[9px] bg-no-repeat"
                 )}
@@ -70,8 +71,8 @@ const StatusBar: FC<StatusBarProps> = () => {
                 id="time"
                 className={clsx(
                     "player-countdown",
-                    playerState === EPLAYER_STATE.PAUSED && "animate-w-blink",
-                    playerState === EPLAYER_STATE.STOPED && "hidden",
+                    playerState === "PAUSED" && "animate-w-blink",
+                    playerState === "STOPPED" && "hidden",
 
                     "ml-[6px] flex h-5 w-[66px] items-center"
                 )}
