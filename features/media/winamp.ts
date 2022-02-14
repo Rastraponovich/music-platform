@@ -569,18 +569,24 @@ guard({
 })
 
 const onStopButtonClicked = createEvent<MediaStatus>()
+const onStopButtonClickedFx = createEffect<MediaElement, void>(({ _audio }) => {
+    _audio.pause()
+    _audio.currentTime = 0
+})
 
 guard({
     clock: onStopButtonClicked,
     source: $Media,
     filter: (Media, _): Media is MediaElement => Media?._audio instanceof HTMLAudioElement,
-    target: createEffect<MediaElement, void>(({ _audio }) => {
-        _audio.pause()
-        _audio.currentTime = 0
-    }),
+    target: onStopButtonClickedFx
 })
 
-const setStopStatus = delay({ source: onStopButtonClicked, timeout: 300, target: $mediaStatus })
+sample({
+    clock:onStopButtonClickedFx.done,
+    fn:() => "STOPPED" as MediaStatus,
+    target:$mediaStatus
+})
+
 
 const nextTrackClicked = createEvent()
 
