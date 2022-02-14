@@ -120,7 +120,7 @@ sample({
     clock: checkNextTrackClicked,
     source: [$playListLength, $currentPlayedTrackIndexPlaylist],
     fn: ([tracksIds, currentTrackId], _) => {
-        if (currentTrackId === tracksIds - 1) return 0
+        if (currentTrackId! === tracksIds! - 1) return 0
         return currentTrackId! + 1
     },
     target: $currentPlayedTrackIndexPlaylist,
@@ -137,8 +137,10 @@ sample({
     clock: checkPrevTrackClicked,
     source: [$playList, $currentPlayedTrackIndexPlaylist],
     fn: ([playList, currentTrackId], _) => {
-        if (currentTrackId! === 0) return playList.length - 1
-        return currentTrackId! - 1
+        // @ts-ignore: types error
+        if (currentTrackId === 0) return playList.length - 1
+        // @ts-ignore: types error
+        return currentTrackId - 1
     },
     target: selectTrackInPlayList,
 })
