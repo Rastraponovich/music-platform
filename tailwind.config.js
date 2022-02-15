@@ -28,27 +28,13 @@ module.exports = {
         },
     },
     plugins: [require("@tailwindcss/typography"), require("daisyui")],
+    daisyui: {
+        styled: true,
+        themes: false,
+        base: true,
+        utils: true,
+        logs: true,
+        rtl: false,
+        darkTheme: "dark",
+    },
 }
-
-// @keyframes blink {
-//     0% {
-//       opacity: 1;
-//     }
-//     50% {
-//       opacity: 0;
-//     }
-//     100% {
-//       opacity: 1;
-//     }
-//   }
-//   @-webkit-keyframes blink {
-//     0% {
-//       opacity: 1;
-//     }
-//     50% {
-//       opacity: 0;
-//     }
-//     100% {
-//       opacity: 1;
-//     }
-//   }

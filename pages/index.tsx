@@ -129,14 +129,14 @@ const Home: NextPage = () => {
 
 export default Home
 
-export const getServerSideProps: GetServerSideProps = async () => {
-    const scope = fork()
+// export const getServerSideProps: GetServerSideProps = async () => {
+//     const scope = fork()
 
-    await allSettled(getPlaylists, { scope })
+//     await allSettled(getPlaylists, { scope })
 
-    return {
-        props: {
-            initialState: serialize(scope),
-        },
-    }
-}
+//     return {
+//         props: {
+//             initialState: serialize(scope),
+//         },
+//     }
+// }

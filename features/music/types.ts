@@ -76,3 +76,33 @@ export const AUDIO_STATES: TAudioStates = {
     "3": EAudioStates.HAVE_FUTURE_DATA,
     "4": EAudioStates.HAVE_ENOUGH_DATA,
 }
+
+export type TVISUALIZERS = {
+    OSCILLOSCOPE: "OSCILLOSCOPE"
+    BAR: "BAR"
+    NONE: "NONE"
+    MILKDROP: "MILKDROP"
+}
+
+export type TVISUALIZER = keyof TVISUALIZERS
+
+export type DummyVizData = {
+    0: 11.75
+    8: 11.0625
+    16: 8.5
+    24: 7.3125
+    32: 6.75
+    40: 6.4375
+    48: 6.25
+    56: 5.875
+    64: 5.625
+    72: 5.25
+    80: 5.125
+    88: 4.875
+    96: 4.8125
+    104: 4.375
+    112: 3.625
+    120: 1.5625
+}
+
+export type Band = 60 | 170 | 310 | 600 | 1000 | 3000 | 6000 | 12000 | 14000 | 16000

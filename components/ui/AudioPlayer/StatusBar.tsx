@@ -3,44 +3,22 @@ import { player } from "@/features/music/player"
 import { EPLAYER_STATE, TIME_MODE } from "@/features/music/types"
 import clsx from "clsx"
 import { useEvent, useStore } from "effector-react"
-import React, { FC, useState, useEffect } from "react"
+import dynamic from "next/dynamic"
+import React, { FC } from "react"
 
-import Visualizer from "./Visualizer"
+const Visualizer = dynamic(() => import("./Visualizer"), { ssr: false })
 
 interface StatusBarProps {}
 
 const StatusBar: FC<StatusBarProps> = () => {
-    const currentTime = useStore(progress.$currentTime)
     const playerState = useStore(winamp.$mediaStatus)
     const timeMode = useStore(winamp.$timeMode)
-    const timeremaining = useStore(progress.$currentTrackTimeRemaining)
+
+    const timer = useStore(progress.$timer)
+
+    const { firstSecond, lastSecond, firstMinute, lastMinute } = timer
 
     const handleSwitchTimeMode = useEvent(winamp.toggleTimeMode)
-    const [minutes, setMinutes] = useState(0)
-    const [seconds, setSeconds] = useState(0)
-
-    useEffect(() => {
-        if (timeMode === TIME_MODE.ELAPSED) {
-            if (currentTime < 60) {
-                setSeconds(Math.ceil(currentTime))
-            } else {
-                setSeconds(Math.ceil(currentTime % 60))
-                setMinutes(Math.floor(currentTime / 60))
-            }
-        } else {
-            if (timeremaining < 60) {
-                setSeconds(Math.ceil(timeremaining))
-            } else {
-                setSeconds(Math.ceil(timeremaining % 60))
-                setMinutes(Math.floor(timeremaining / 60))
-            }
-        }
-
-        return () => {
-            setSeconds(0)
-            setMinutes(0)
-        }
-    }, [currentTime, timeMode, timeremaining])
 
     return (
         <div className="webamp-status flex h-[42px] w-[93px]">
@@ -87,19 +65,19 @@ const StatusBar: FC<StatusBarProps> = () => {
                 />
                 <span
                     id="minute-first-digit"
-                    className={clsx("digit ml-[3px]", `digit-${Math.floor(minutes / 10)}`)}
+                    className={clsx("digit ml-[3px]", `digit-${firstMinute}`)}
                 ></span>
                 <span
                     id="minute-second-digit"
-                    className={clsx("digit ml-[3px]", `digit-${Math.floor(minutes % 10)}`)}
+                    className={clsx("digit ml-[3px]", `digit-${lastMinute}`)}
                 ></span>
                 <span
                     id="second-first-digit"
-                    className={clsx("digit ml-[9px]", `digit-${Math.floor(seconds / 10)}`)}
+                    className={clsx("digit ml-[9px]", `digit-${firstSecond}`)}
                 ></span>
                 <span
                     id="second-second-digit"
-                    className={clsx("digit ml-[3px]", `digit-${Math.floor(seconds % 10)}`)}
+                    className={clsx("digit ml-[3px]", `digit-${lastSecond}`)}
                 ></span>
             </div>
             <Visualizer />

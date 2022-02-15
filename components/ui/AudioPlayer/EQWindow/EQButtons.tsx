@@ -1,3 +1,4 @@
+import { disableClickedEQ, enableClickedEQ } from "@/features/media/winamp"
 import { $autoEQ, $enabledEQ, toggleAutoEQ, toggleEnabledEQ } from "@/features/music/eq"
 import { useEvent, useStore } from "effector-react"
 import React, { memo, FC } from "react"
@@ -11,7 +12,17 @@ const EQButtons: FC<EQButtonsProps> = () => {
     const enabledEQ = useStore($enabledEQ)
 
     const handleToggleAutoEQ = useEvent(toggleAutoEQ)
-    const handleToggleONEQ = useEvent(toggleEnabledEQ)
+
+    const handleEnableEQ = useEvent(enableClickedEQ)
+    const handleDisableEQ = useEvent(disableClickedEQ)
+
+    const handleToggleONEQ = () => {
+        if (enabledEQ) {
+            handleDisableEQ()
+        } else {
+            handleEnableEQ()
+        }
+    }
 
     return (
         <div className="flex h-[19px] items-start px-3.5 pt-1">

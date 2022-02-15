@@ -1,10 +1,14 @@
 import { getClientScope, useScope } from "@/hooks/useScope"
 import { Nullable } from "@/types"
+import { baseSkinColors } from "@/types/ui.types"
 import { sample, createEffect, createEvent, createStore, guard, scopeBind, Effect } from "effector"
 import { delay } from "patronum"
 import { ChangeEvent, MouseEvent } from "react"
-import { Song, TIME_MODE } from "../music/types"
+import { BANDS } from "../music/constants"
+import { $frequency, toggleEnabledEQ } from "../music/eq"
+import { Band, Song, TIME_MODE } from "../music/types"
 import StereoBalanceNode from "./StereoBalanceNode"
+import { TimeMode } from "./types"
 
 interface StereoBalanceNodeType extends AudioNode {
     constructor(context: AudioContext): StereoBalanceNodeType
@@ -13,13 +17,11 @@ interface StereoBalanceNodeType extends AudioNode {
     }
 }
 
-type Band = 60 | 170 | 310 | 600 | 1000 | 3000 | 6000 | 12000 | 14000 | 16000
-
-const BANDS: Band[] = [60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000]
-
 type MediaStatus = "PLAYING" | "STOPPED" | "PAUSED"
 type LoadStyle = "BUFFER" | "PLAY" | "NONE"
 type MediaTagRequestStatus = "INITIALIZED" | "FAILED" | "COMPLETE" | "NOT_REQUESTED"
+
+type _BANDS = { [key in Band]: BiquadFilterNode }
 
 type MediaElement = {
     _context: AudioContext
@@ -30,7 +32,7 @@ type MediaElement = {
     _gainNode: GainNode
     _audio: HTMLAudioElement
     _source: MediaElementAudioSourceNode
-    _bands: { [key in Band]: BiquadFilterNode }
+    _bands: _BANDS
 }
 
 declare global {
@@ -485,6 +487,7 @@ const $durationTracksInPlaylist = createStore<number>(0).on($playList, (_, track
     )
     return currentDuration
 })
+//timer for UI
 
 //remaining time in current Track
 const $currentTrackTimeRemaining = createStore<number>(0).reset($currentTrack)
@@ -492,8 +495,56 @@ const $currentTrackTimeRemaining = createStore<number>(0).reset($currentTrack)
 sample({
     clock: $currentTime,
     source: $currentTrackDuration,
-    fn: (duration, progress) => duration - progress,
+    fn: (duration, currentTime) => duration - currentTime,
     target: $currentTrackTimeRemaining,
+})
+
+const $timer = createStore<Record<string, number>>({
+    firstSecond: 0,
+    lastSecond: 0,
+    firstMinute: 0,
+    lastMinute: 0,
+})
+
+const convertCurrentTimeToTimerFx = createEffect<[number, TIME_MODE], Record<string, number>>(
+    ([currentTime, timeMode]) => {
+        const seconds = currentTime % 60
+        const minutes = Math.floor(currentTime / 60)
+
+        const firstSecond = Math.floor(seconds / 10)
+        const lastSecond = Math.floor(seconds % 10)
+        const firstMinute = Math.floor(minutes / 10)
+        const lastMinute = Math.floor(minutes % 10)
+
+        return {
+            firstSecond,
+            lastSecond,
+            firstMinute,
+            lastMinute,
+        }
+    }
+)
+
+guard({
+    clock: $currentTime,
+    source: [$currentTime, $timeMode],
+    filter: ([currentTime, timeMode]: [number, TIME_MODE], _: number) =>
+        timeMode === TIME_MODE.ELAPSED,
+    target: convertCurrentTimeToTimerFx,
+})
+
+guard({
+    clock: $currentTrackTimeRemaining,
+    source: [$currentTrackTimeRemaining, $timeMode],
+    filter: ([currentTime, timeMode]: [number, TIME_MODE], _: number) =>
+        timeMode === TIME_MODE.REMAINING,
+    target: convertCurrentTimeToTimerFx,
+})
+
+sample({
+    clock: convertCurrentTimeToTimerFx.doneData,
+    fn: (timer) => timer,
+    target: $timer,
 })
 
 //Volume
@@ -578,15 +629,14 @@ guard({
     clock: onStopButtonClicked,
     source: $Media,
     filter: (Media, _): Media is MediaElement => Media?._audio instanceof HTMLAudioElement,
-    target: onStopButtonClickedFx
+    target: onStopButtonClickedFx,
 })
 
 sample({
-    clock:onStopButtonClickedFx.done,
-    fn:() => "STOPPED" as MediaStatus,
-    target:$mediaStatus
+    clock: onStopButtonClickedFx.done,
+    fn: () => "STOPPED" as MediaStatus,
+    target: $mediaStatus,
 })
-
 
 const nextTrackClicked = createEvent()
 
@@ -666,6 +716,128 @@ sample({
     target: setBalance,
 })
 
+//EQ
+
+//turn off EQ in UI
+const disableClickedEQ = createEvent()
+
+const disableEQFx = createEffect<MediaElement, void>((media) => {
+    media._staticSource.disconnect()
+    media._staticSource.connect(media._balance)
+})
+
+guard({
+    clock: disableClickedEQ,
+    source: $Media,
+    filter: (media, _): media is MediaElement => media?._audio instanceof HTMLAudioElement,
+    target: disableEQFx,
+})
+// turn on EQ in UI
+const enableClickedEQ = createEvent()
+
+const enableEQFx = createEffect<MediaElement, void>((media) => {
+    media._staticSource.disconnect()
+    media._staticSource.connect(media._preamp)
+})
+
+guard({
+    clock: enableClickedEQ,
+    source: $Media,
+    filter: (media, _): media is MediaElement => media?._audio instanceof HTMLAudioElement,
+    target: enableEQFx,
+})
+
+sample({
+    clock: [enableEQFx.done, disableEQFx.done],
+    target: toggleEnabledEQ,
+})
+
+//ui change EQ Band
+const changeEQBand = createEvent<ChangeEvent<HTMLInputElement>>()
+
+const setEQbandFx = createEffect<
+    [MediaElement, ChangeEvent<HTMLInputElement>],
+    ChangeEvent<HTMLInputElement>
+>(([media, event]) => {
+    const { value, name } = event.target
+    const bandName = Number(name) as keyof _BANDS
+    const db = (Number(value) / 100) * 24 - 12
+
+    media!._bands[bandName].gain.value = db
+
+    return event
+})
+
+sample({
+    clock: changeEQBand,
+    source: $Media,
+    fn: (media, event) => [media, event] as [MediaElement, ChangeEvent<HTMLInputElement>],
+    target: setEQbandFx,
+})
+
+sample({
+    clock: setEQbandFx.doneData,
+    source: $frequency,
+    fn: (frequency, event) => ({ ...frequency, [event.target.name]: Number(event.target.value) }),
+    target: $frequency,
+})
+
+//set MAX BANDS in UI
+
+const changeAllBandsValues = createEvent<string>()
+
+const setMaxMinResetValuesBandsFx = createEffect<[MediaElement, string], string>(
+    ([media, event]) => {
+        let db = 0
+        switch (event) {
+            case "max":
+                db = 12
+                break
+            case "min":
+                db = -12
+                break
+            case "reset":
+                db = 0
+                break
+            default:
+                break
+        }
+        Object.entries(media._bands).forEach(([key, band]) => {
+            band.gain.value = db
+        })
+        return event
+    }
+)
+
+sample({
+    clock: changeAllBandsValues,
+    source: $Media,
+    fn: (media, event) => [media, event] as [MediaElement, string],
+    target: setMaxMinResetValuesBandsFx,
+})
+
+$frequency.on(setMaxMinResetValuesBandsFx.doneData, (state, event) => {
+    let newValue = 0
+    switch (event) {
+        case "min":
+            newValue = -100
+            break
+        case "max":
+            newValue = 100
+            break
+        case "reset":
+            newValue = 50
+            break
+        default:
+            break
+    }
+    let result: any = {}
+    Object.entries(state).forEach(([key, band]) => {
+        result = { ...result, [key]: newValue }
+    })
+    return result
+})
+
 export const balance = {
     $currentBalance,
     changeBalance,
@@ -699,6 +871,7 @@ export const progress = {
     $allowSeeking,
     onmousedown,
     onmouseup,
+    $timer,
 }
 
 export const volume = {
@@ -730,5 +903,12 @@ export const winampWindowsState = {
     playerWindowState: "",
 }
 
+export const eq = {
+    changeAllBandsValues,
+}
+
 $Media.watch(console.log)
-export { loadUrl, selectTrackFromList }
+
+export const $baseSkinColors = createStore<string[]>(baseSkinColors)
+
+export { loadUrl, selectTrackFromList, $Media, changeEQBand, disableClickedEQ, enableClickedEQ }
