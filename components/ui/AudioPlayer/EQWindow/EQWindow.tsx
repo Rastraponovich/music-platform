@@ -1,4 +1,5 @@
-import { $minimizedEQ, $visibleEQ } from "@/features/music/eq"
+import { eq } from "@/features/media/winamp"
+import { $minimizedEQ } from "@/features/music/eq"
 import useChangeCurentTime from "@/hooks/useChangeCurrentTime"
 import clsx from "clsx"
 import { useStore } from "effector-react"
@@ -14,12 +15,12 @@ interface EQWindowProps {}
 
 const EQWindow: FC<EQWindowProps> = () => {
     const minimized = useStore($minimizedEQ)
-    const visible = useStore($visibleEQ)
+    const visible = useStore(eq.$visibleEQ)
 
     const [pos, setpos] = useState<{ [key: string]: number | string }>({
-        clientX: "unset",
-        clientY: "unset",
-        bottom: "1rem",
+        clientX: "1rem",
+        clientY: "211px",
+        bottom: "unset",
     })
 
     const [diff, setDiff] = useState({

@@ -1,4 +1,4 @@
-import { Band, TVISUALIZERS } from "./types"
+import { Band, TVISUALIZERS, TWinampState } from "./types"
 
 export const VISUALIZERS: TVISUALIZERS = {
     OSCILLOSCOPE: "OSCILLOSCOPE",
@@ -9,3 +9,10 @@ export const VISUALIZERS: TVISUALIZERS = {
 
 export const VISUALIZER_ORDER = [VISUALIZERS.BAR, VISUALIZERS.OSCILLOSCOPE, VISUALIZERS.NONE]
 export const BANDS: Band[] = [60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000]
+
+export const WINAMP_STATE: Record<TWinampState, TWinampState> = {
+    CREATED: "CREATED",
+    INIT: "INIT",
+    FIRSTRACKLOADED: "FIRSTRACKLOADED",
+    DESTROYED: "DESTROYED",
+}

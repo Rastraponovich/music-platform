@@ -1,14 +1,12 @@
 import { getClientScope, useScope } from "@/hooks/useScope"
 import { Nullable } from "@/types"
 import { baseSkinColors } from "@/types/ui.types"
-import { sample, createEffect, createEvent, createStore, guard, scopeBind, Effect } from "effector"
-import { delay } from "patronum"
+import { sample, createEffect, createEvent, createStore, guard, scopeBind } from "effector"
 import { ChangeEvent, MouseEvent } from "react"
-import { BANDS } from "../music/constants"
-import { $frequency, toggleEnabledEQ } from "../music/eq"
-import { Band, Song, TIME_MODE } from "../music/types"
+import { BANDS, WINAMP_STATE } from "../music/constants"
+import { $frequency, changePreamp, toggleEnabledEQ } from "../music/eq"
+import { Band, Song, TIME_MODE, TWinampState } from "../music/types"
 import StereoBalanceNode from "./StereoBalanceNode"
-import { TimeMode } from "./types"
 
 interface StereoBalanceNodeType extends AudioNode {
     constructor(context: AudioContext): StereoBalanceNodeType
@@ -280,6 +278,16 @@ sample({
     target: $Media,
 })
 
+const $winampState = createStore<TWinampState>(WINAMP_STATE.DESTROYED).on(
+    initWinamp,
+    () => WINAMP_STATE.INIT
+)
+
+const $visiblePlayer = createStore<boolean>(false)
+
+const toggleVisibleEQ = createEvent()
+const $visibleEQ = createStore<boolean>(false).on(toggleVisibleEQ, (state, _) => !state)
+
 //function has load track in Media._audio
 const loadUrl = createEvent<string>()
 sample({
@@ -312,6 +320,42 @@ const addTrackToPlaylist = createEvent<Song>()
 const removeTrackFromPlaylist = createEvent<number>()
 
 const selectTrackFromList = createEvent<Song>()
+const toggleVisiblePlaylist = createEvent()
+const $visiblePlaylist = createStore<boolean>(false).on(toggleVisiblePlaylist, (state, _) => !state)
+
+const checkInitWinamp = guard({
+    clock: selectTrackFromList,
+    source: $winampState,
+    filter: (state, _) => state === WINAMP_STATE.INIT,
+})
+
+sample({
+    clock: checkInitWinamp,
+    fn: () => WINAMP_STATE.FIRSTRACKLOADED,
+    target: $winampState,
+})
+
+const checkLoadedFirstTrack = guard({
+    clock: $winampState,
+    filter: (state) => state === WINAMP_STATE.FIRSTRACKLOADED,
+})
+
+sample({
+    clock: checkLoadedFirstTrack,
+    fn: () => true,
+    target: [$visibleEQ, $visiblePlaylist, $visiblePlayer],
+})
+
+const checkDestroyWinamp = guard({
+    clock: $winampState,
+    filter: (state) => state === WINAMP_STATE.DESTROYED,
+})
+
+sample({
+    clock: checkDestroyWinamp,
+    fn: () => false,
+    target: [$visiblePlaylist, $visibleEQ, $visiblePlayer],
+})
 
 const $currentTrack = createStore<Nullable<Song>>(null).on(selectTrackFromList, (_, track) => track)
 
@@ -782,7 +826,23 @@ sample({
     target: $frequency,
 })
 
-//set MAX BANDS in UI
+const resetEqBand = createEvent<string>()
+const resetEqBandFx = createEffect<[MediaElement, string], string>(([media, name]) => {
+    const bandName = Number(name) as keyof _BANDS
+    media._bands[bandName].gain.value = 0
+    return name
+})
+
+sample({
+    clock: resetEqBand,
+    source: $Media,
+    fn: (media, name) => [media, name] as [MediaElement, string],
+    target: resetEqBandFx,
+})
+
+$frequency.on(resetEqBandFx.doneData, (state, name) => ({ ...state, [name]: 50 }))
+
+//set MAX/MIN/RESET all BANDS in UI
 
 const changeAllBandsValues = createEvent<string>()
 
@@ -838,6 +898,32 @@ $frequency.on(setMaxMinResetValuesBandsFx.doneData, (state, event) => {
     return result
 })
 
+//control preamp in EQ from UI
+
+const changePreampValue = createEvent<ChangeEvent<HTMLInputElement>>()
+
+const changePreampValueFx = createEffect<
+    [MediaElement, ChangeEvent<HTMLInputElement>],
+    ChangeEvent<HTMLInputElement>
+>(([media, event]) => {
+    const db = (Number(event.target.value) / 100) * 24 - 12
+    media._preamp.gain.value = Math.pow(10, db / 20)
+    return event
+})
+
+sample({
+    clock: changePreampValue,
+    source: $Media,
+    fn: (media, event) => [media, event] as [MediaElement, ChangeEvent<HTMLInputElement>],
+    target: changePreampValueFx,
+})
+
+sample({
+    clock: changePreampValueFx.doneData,
+    fn: (event) => event,
+    target: changePreamp,
+})
+
 export const balance = {
     $currentBalance,
     changeBalance,
@@ -860,6 +946,8 @@ export const playlist = {
     selectTrack: selectTrackInPlayList,
     $currentPlayedTrackIndexPlaylist,
     addTrackToPlaylist,
+    $visiblePlaylist,
+    toggleVisiblePlaylist,
 }
 
 export const progress = {
@@ -896,7 +984,8 @@ export const winamp = {
     $loop,
 }
 
-export const winampWindowsState = {
+export const winampStates = {
+    $winampState,
     activeWindow: "",
     playlistWindowState: "",
     eqWindowState: "",
@@ -905,10 +994,15 @@ export const winampWindowsState = {
 
 export const eq = {
     changeAllBandsValues,
+    changePreampValue,
+    changeEQBand,
+    disableClickedEQ,
+    enableClickedEQ,
+    resetEqBand,
+    $visibleEQ,
+    toggleVisibleEQ,
 }
-
-$Media.watch(console.log)
 
 export const $baseSkinColors = createStore<string[]>(baseSkinColors)
 
-export { loadUrl, selectTrackFromList, $Media, changeEQBand, disableClickedEQ, enableClickedEQ }
+export { loadUrl, selectTrackFromList, $Media }

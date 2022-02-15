@@ -1,5 +1,4 @@
 import { duration, playlist, winamp } from "@/features/media/winamp"
-import { player } from "@/features/music/player"
 import { Nullable } from "@/types"
 import clsx from "clsx"
 import { useEvent, useList, useStore } from "effector-react/scope"
@@ -12,7 +11,7 @@ const PlayList: FC<PlayListProps> = () => {
     const [selectedTrack, setSelectedTrack] = useState<Nullable<number>>(null)
     const durationTracksInPlaylist = useStore(duration.$durationTracksInPlaylist)
 
-    const visible = useStore(player.playList.$visiblePlaylist)
+    const visible = useStore(playlist.$visiblePlaylist)
     const currentIndex = useStore(playlist.$currentPlayedTrackIndexPlaylist)
 
     const playing = useStore(winamp.$mediaStatus)
@@ -21,9 +20,9 @@ const PlayList: FC<PlayListProps> = () => {
     const handleSelectNewTrack = useEvent(playlist.doubleClick)
 
     const [pos, setpos] = useState<{ [key: string]: number | string }>({
-        clientX: "unset",
-        clientY: "unset",
-        bottom: "1rem",
+        clientX: "1rem",
+        clientY: "327px",
+        bottom: "unset",
     })
 
     const [diff, setDiff] = useState({

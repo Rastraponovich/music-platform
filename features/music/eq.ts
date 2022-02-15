@@ -3,10 +3,7 @@ import { ChangeEvent } from "react"
 import { Band } from "./types"
 
 const destroyEQ = createEvent<void>()
-const toggleVisibleEQ = createEvent()
-const $visibleEQ = createStore<boolean>(false)
-    .on(toggleVisibleEQ, (state, _) => !state)
-    .on(destroyEQ, () => false)
+
 // .on(player.$playerState, (_, state) => state === EPLAYER_STATE.DESTROYED && false) // not work
 
 const toggleMinimizeEQ = createEvent()
@@ -24,7 +21,6 @@ const $preamp = createStore<number>(50)
     .on(changePreamp, (_, event) => Number(event.target.value))
     .reset(resetPreamp)
 
-const resetFrequency = createEvent<string>()
 const $frequency = createStore<Record<Band, number>>({
     "60": 50,
     "170": 50,
@@ -36,18 +32,15 @@ const $frequency = createStore<Record<Band, number>>({
     "12000": 50,
     "14000": 50,
     "16000": 50,
-}).on(resetFrequency, (state, id) => ({ ...state, [id]: 50 }))
+})
 
 export {
     destroyEQ,
-    $visibleEQ,
-    toggleVisibleEQ,
     toggleEnabledEQ,
     toggleAutoEQ,
     $autoEQ,
     $enabledEQ,
     $frequency,
-    resetFrequency,
     $preamp,
     changePreamp,
     resetPreamp,
@@ -57,10 +50,6 @@ export {
 
 export const createEQFactory = () => {
     const destroyEQ = createEvent<void>()
-    const toggleVisibleEQ = createEvent()
-    const $visibleEQ = createStore<boolean>(false)
-        .on(toggleVisibleEQ, (state, _) => !state)
-        .on(destroyEQ, () => false)
 
     const toggleMinimizeEQ = createEvent()
     const $minimizedEQ = createStore<boolean>(false).on(toggleMinimizeEQ, (state, _) => !state)
@@ -95,8 +84,6 @@ export const createEQFactory = () => {
 
     return {
         destroyEQ,
-        $visibleEQ,
-        toggleVisibleEQ,
         toggleEnabledEQ,
         toggleAutoEQ,
         $autoEQ,

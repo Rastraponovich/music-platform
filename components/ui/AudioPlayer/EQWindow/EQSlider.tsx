@@ -5,7 +5,7 @@ interface EQSliderProps {
     name: string
     value: number
     onChange: (e: ChangeEvent<HTMLInputElement>) => void
-    reset: (id: string) => void
+    reset?: (id: string) => void
 }
 
 const spriteOffsets = (number: number): { x: number; y: number } => {
@@ -29,7 +29,7 @@ const EQSlider = ({ name, value, onChange, reset }: EQSliderProps) => {
         return `-${xOffset}px -${yOffset}px`
     }, [value])
 
-    const handleDblClick = () => reset(name)
+    const handleDblClick = () => reset && reset(name)
     return (
         <label
             className="inline-block, band-bg ml-[1px] flex h-[62px] w-3.5 p-0"
@@ -48,6 +48,7 @@ const EQSlider = ({ name, value, onChange, reset }: EQSliderProps) => {
                 min="0"
                 max="100"
                 value={value}
+                title={`${name}: ${String(value)}`}
                 onMouseDown={() => setActive(true)}
                 onMouseUp={() => setActive(false)}
                 onChange={onChange}

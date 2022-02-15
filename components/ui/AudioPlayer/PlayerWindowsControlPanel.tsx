@@ -1,5 +1,4 @@
-import { $visibleEQ, toggleVisibleEQ } from "@/features/music/eq"
-import { player } from "@/features/music/player"
+import { eq, playlist } from "@/features/media/winamp"
 import clsx from "clsx"
 import { useEvent, useStore } from "effector-react"
 import React, { memo, FC, useState, MouseEvent } from "react"
@@ -36,10 +35,10 @@ const Button = ({ id, title, active = false, onClick }: ButtonProps) => {
 }
 
 const PlayerWindowsControlPanel: FC<PlayerWindowsControlPanelProps> = () => {
-    const visiblePlaylist = useStore(player.playList.$visiblePlaylist)
-    const setVisiblePlaylist = useEvent(player.playList.setShowVisiblePlaylist)
-    const toggleEQ = useEvent(toggleVisibleEQ)
-    const visibleEQ = useStore($visibleEQ)
+    const visiblePlaylist = useStore(playlist.$visiblePlaylist)
+    const setVisiblePlaylist = useEvent(playlist.toggleVisiblePlaylist)
+    const toggleEQ = useEvent(eq.toggleVisibleEQ)
+    const visibleEQ = useStore(eq.$visibleEQ)
 
     return (
         <div className="windows">

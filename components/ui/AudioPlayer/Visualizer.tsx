@@ -52,8 +52,6 @@ const Visualizer: FC<VisualizerProps> = () => {
     const analyser = media._analyser
     const toggleVisualizer = useEvent(toggleVisualizerStyle)
 
-    console.log(media._bands)
-
     const windowShade = false
 
     const renderWidth = windowShade ? 38 : 76

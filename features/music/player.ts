@@ -13,7 +13,6 @@ import { ChangeEvent, MouseEvent } from "react"
 import { EPLAYER_STATE, Song, TIME_MODE } from "./types"
 import { getClientScope } from "@/hooks/useScope"
 import { Nullable } from "@/types"
-import { $visibleEQ, destroyEQ } from "./eq"
 
 export const initPlayer = createEvent()
 export const destroyPlayer = createEvent()
@@ -597,15 +596,15 @@ const $timeMode = createStore<TIME_MODE>(TIME_MODE.ELAPSED).on(switchTimeMode, (
     state === TIME_MODE.ELAPSED ? TIME_MODE.REMAINING : TIME_MODE.ELAPSED
 )
 
-guard({
-    clock: $playerState,
-    source: $visibleEQ,
-    filter: (visible, state) => state === EPLAYER_STATE.DESTROYED,
-    target: createEffect(() => {
-        const callDestroyEQ = scopeBind(destroyEQ, { scope: getClientScope()! })
-        callDestroyEQ()
-    }),
-})
+// guard({
+//     clock: $playerState,
+//     source: $visibleEQ,
+//     filter: (visible, state) => state === EPLAYER_STATE.DESTROYED,
+//     target: createEffect(() => {
+//         const callDestroyEQ = scopeBind(destroyEQ, { scope: getClientScope()! })
+//         callDestroyEQ()
+//     }),
+// })
 
 const playList = {
     $playList,

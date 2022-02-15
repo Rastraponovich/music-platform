@@ -1,5 +1,4 @@
 import { winamp, winampControls } from "@/features/media/winamp"
-import { player } from "@/features/music/player"
 import clsx from "clsx"
 import { useEvent, useStore } from "effector-react"
 import Link from "next/link"
@@ -10,7 +9,7 @@ interface PlayerControlPanelProps {}
 
 const PlayerControlPanel: FC<PlayerControlPanelProps> = () => {
     const playing = useStore(winamp.$mediaStatus)
-    const loop = useStore(player.$loop)
+    const loop = useStore(winamp.$loop)
     const [
         handlePlay,
         handlePause,
@@ -21,7 +20,7 @@ const PlayerControlPanel: FC<PlayerControlPanelProps> = () => {
     ] = useEvent([
         winampControls.play,
         winampControls.pause,
-        player.onSetLoopEnabled,
+        winampControls.toggleLoop,
         winampControls.prevTrack,
         winampControls.nextTrack,
         winampControls.stop,
