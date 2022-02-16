@@ -1,4 +1,4 @@
-import { Band, TVISUALIZERS, TWinampState } from "./types"
+import { Band, TVISUALIZERS, TWinampState, TWinampWindow } from "./types"
 
 export const VISUALIZERS: TVISUALIZERS = {
     OSCILLOSCOPE: "OSCILLOSCOPE",
@@ -16,4 +16,11 @@ export const WINAMP_STATE: Record<TWinampState, TWinampState> = {
     TRACKLOADED: "TRACKLOADED",
     DESTROYED: "DESTROYED",
     CLOSED: "CLOSED",
+}
+
+export const WINAMP_WINDOW_STATE: Record<TWinampWindow, TWinampWindow> = {
+    EQUALIZER: "EQUALIZER",
+    NONE: "NONE",
+    PLAYER: "PLAYER",
+    PLAYLIST: "PLAYLIST",
 }

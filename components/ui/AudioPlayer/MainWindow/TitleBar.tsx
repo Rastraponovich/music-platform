@@ -1,7 +1,8 @@
-import { winamp } from "@/features/media/winamp"
+import { winamp, winampStates } from "@/features/media/winamp"
+import { WINAMP_WINDOW_STATE } from "@/features/music/constants"
 import { player } from "@/features/music/player"
 import clsx from "clsx"
-import { useEvent } from "effector-react"
+import { useEvent, useStore } from "effector-react"
 import React, { memo, FC, useState, useCallback, MouseEvent } from "react"
 
 interface TitleBarProps {
@@ -11,20 +12,26 @@ interface TitleBarProps {
     onMouseLeave: (e: MouseEvent<HTMLElement>) => void
 }
 
+const WINDOW_NAME = "PLAYER"
+
 const TitleBar: FC<TitleBarProps> = ({ onMouseDown, onMouseMove, onMouseUp, onMouseLeave }) => {
-    const [selected, setSelected] = useState(false)
+    const windowState = useStore(winampStates.$activeWindow)
+    const handleActiveWindow = useEvent(winampStates.changeWindowState)
     const handleSetCompact = useEvent(player.onSetCompact)
     const handleClose = useEvent(winamp.close)
 
     const handleOnMouseDown = (e: MouseEvent<HTMLElement>) => {
-        setSelected(true)
+        handleActiveWindow(WINDOW_NAME)
         onMouseDown(e)
     }
 
     return (
         <div
             id="titlebar"
-            className={clsx("draggable title-bar relative flex", selected && "selected")}
+            className={clsx(
+                "draggable title-bar relative flex",
+                windowState === WINDOW_NAME && "selected"
+            )}
             onMouseDown={handleOnMouseDown}
             onMouseMove={onMouseMove}
             onMouseUp={onMouseUp}

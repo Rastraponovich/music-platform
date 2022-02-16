@@ -12,7 +12,7 @@ import RefreshIcon from "../icons/RefreshIcon/RefreshIcon"
 import DocumentTextIcon from "../icons/DocumentTextIcon/DocumentTextIcon"
 import TrackTimer from "@/components/TrackListItem/TrackTimer"
 import AudioPlayerTimer from "./AudioPlayerTimer"
-import PlayList from "../PlayList/PlayList"
+import PlayListWindow from "./PlayListWindow/PlayListWindow"
 
 interface AudioPlayerProps {
     className?: string
@@ -108,7 +108,7 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ className }) => {
                     </button>
                 </div>
             </div>
-            <PlayList />
+            <PlayListWindow />
         </div>
     )
 }

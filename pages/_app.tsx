@@ -11,7 +11,7 @@ import "tailwindcss/tailwind.css"
 import { useScope } from "../hooks/useScope"
 import Layout from "@/components/ui/Layout/Layout"
 import AsidePlayer from "@/components/AsidePlayer/AsidePlayer"
-import PlayList from "@/components/ui/PlayList/PlayList"
+import PlayListWindow from "@/components/ui/AudioPlayer/PlayListWindow/PlayListWindow"
 import EQWindow from "@/components/ui/AudioPlayer/EQWindow/EQWindow"
 
 let clientScope: Scope
@@ -38,7 +38,7 @@ const App: NextPage<AppProps> = ({ Component, pageProps, router }) => {
                 <Component {...pageProps} router={router} />
                 <AsidePlayer />
                 <EQWindow />
-                <PlayList />
+                <PlayListWindow />
             </Layout>
         </Provider>
     )

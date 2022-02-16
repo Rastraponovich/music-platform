@@ -1,4 +1,4 @@
-import { eq } from "@/features/media/winamp"
+import { eq, winampStates } from "@/features/media/winamp"
 import { $minimizedEQ } from "@/features/music/eq"
 import useChangeCurentTime from "@/hooks/useChangeCurrentTime"
 import clsx from "clsx"

@@ -6,7 +6,7 @@ import clsx from "clsx"
 import { useEvent, useStore } from "effector-react"
 import React, { memo, FC, useState, useEffect } from "react"
 
-import CharacterString from "../CharacterStrings/CharacterString"
+import CharacterString from "../../CharacterStrings/CharacterString"
 
 interface MiniTimerProps {}
 

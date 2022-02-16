@@ -1,7 +1,8 @@
-import { $minimizedEQ, toggleMinimizeEQ, toggleVisibleEQ } from "@/features/music/eq"
 import clsx from "clsx"
+import { memo, MouseEvent } from "react"
 import { useEvent, useStore } from "effector-react"
-import { memo, MouseEvent, useState } from "react"
+import { eq, winampStates } from "@/features/media/winamp"
+import { $minimizedEQ, toggleMinimizeEQ } from "@/features/music/eq"
 
 interface EQHeaderProps {
     onMouseDown: (e: MouseEvent<HTMLElement>) => void
@@ -10,15 +11,18 @@ interface EQHeaderProps {
     onMouseLeave: (e: MouseEvent<HTMLElement>) => void
 }
 
+const WINDOW_NAME = "EQUALIZER"
+
 const EQHeader = ({ onMouseDown, onMouseMove, onMouseUp, onMouseLeave }: EQHeaderProps) => {
-    const [active, setActive] = useState(false)
     const minimized = useStore($minimizedEQ)
+    const windowState = useStore(winampStates.$activeWindow)
+    const handleActiveWinow = useEvent(winampStates.changeWindowState)
 
     const handleMinimize = useEvent(toggleMinimizeEQ)
-    const handleCloseEQ = useEvent(toggleVisibleEQ)
+    const handleCloseEQ = useEvent(eq.toggleVisibleEQ)
 
     const handleOnMouseDown = (e: MouseEvent<HTMLElement>) => {
-        setActive(true)
+        handleActiveWinow(WINDOW_NAME)
         onMouseDown(e)
     }
 
@@ -26,10 +30,9 @@ const EQHeader = ({ onMouseDown, onMouseMove, onMouseUp, onMouseLeave }: EQHeade
         <div
             className={clsx(
                 "equalizer-top relative flex h-3.5 justify-end",
-                active && "active",
+                windowState === WINDOW_NAME && "active",
                 minimized && "shade"
             )}
-            onClick={() => setActive(true)}
             onMouseDown={handleOnMouseDown}
             onMouseMove={onMouseMove}
             onMouseUp={onMouseUp}

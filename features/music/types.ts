@@ -108,3 +108,5 @@ export type DummyVizData = {
 export type Band = 60 | 170 | 310 | 600 | 1000 | 3000 | 6000 | 12000 | 14000 | 16000
 
 export type TWinampState = "DESTROYED" | "CREATED" | "INIT" | "TRACKLOADED" | "CLOSED"
+
+export type TWinampWindow = "PLAYER" | "EQUALIZER" | "PLAYLIST" | "NONE"

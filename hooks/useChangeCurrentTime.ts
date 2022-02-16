@@ -9,6 +9,10 @@ const useChangeCurentTime = () => {
         const handler = (event: globalThis.KeyboardEvent) => {
             if (event.key === "ArrowLeft") return changeCurrentTime("backward")
             if (event.key === "ArrowRight") return changeCurrentTime("forward")
+
+            if (event.key === "Delete") {
+                console.log(event)
+            }
         }
         window.addEventListener("keydown", handler)
         window.addEventListener("keypress", handler)

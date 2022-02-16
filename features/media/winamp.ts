@@ -3,9 +3,9 @@ import { Nullable } from "@/types"
 import { baseSkinColors } from "@/types/ui.types"
 import { sample, createEffect, createEvent, createStore, guard, scopeBind } from "effector"
 import { ChangeEvent, MouseEvent } from "react"
-import { BANDS, WINAMP_STATE } from "../music/constants"
+import { BANDS, WINAMP_STATE, WINAMP_WINDOW_STATE } from "../music/constants"
 import { $frequency, changePreamp, toggleEnabledEQ } from "../music/eq"
-import { Band, Song, TIME_MODE, TWinampState } from "../music/types"
+import { Band, Song, TIME_MODE, TWinampState, TWinampWindow } from "../music/types"
 import StereoBalanceNode from "./StereoBalanceNode"
 
 interface StereoBalanceNodeType extends AudioNode {
@@ -404,6 +404,10 @@ sample({
     target: $currentTrack,
 })
 
+const startPlayFromBegginingFx = createEffect<MediaElement, void>((media) => {
+    media._audio.currentTime = 0
+})
+
 //when track ended check next track in playlist exists
 const checkNextTrack = createEvent()
 // checking playlist is emtpy state
@@ -687,6 +691,21 @@ sample({
     target: $mediaStatus,
 })
 
+sample({
+    clock: onDoubleClickedTrackInPlaylist,
+    fn: () => "STOPPED" as MediaStatus,
+    target: onStopButtonClicked,
+})
+
+sample({
+    clock: onDoubleClickedTrackInPlaylist,
+    source: $Media,
+    fn: (media, _) => media as MediaElement,
+    target: startPlayFromBegginingFx,
+})
+
+sample({ clock: startPlayFromBegginingFx.done, target: onPlayClicked })
+
 const nextTrackClicked = createEvent()
 
 const checkNextTrackClicked = guard({
@@ -949,6 +968,13 @@ sample({
     target: $winampState,
 })
 
+//winamp window active state
+
+const changeWindowState = createEvent<TWinampWindow>()
+const $activeWindow = createStore<TWinampWindow>(WINAMP_WINDOW_STATE.NONE)
+    .on(changeWindowState, (_, currentWindow) => currentWindow)
+    .reset([closeWinamp, selectTrackFromList])
+
 export const balance = {
     $currentBalance,
     changeBalance,
@@ -1012,10 +1038,11 @@ export const winamp = {
 
 export const winampStates = {
     $winampState,
-    activeWindow: "",
     playlistWindowState: "",
     eqWindowState: "",
     playerWindowState: "",
+    $activeWindow,
+    changeWindowState,
 }
 
 export const eq = {

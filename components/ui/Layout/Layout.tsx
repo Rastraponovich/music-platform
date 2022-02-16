@@ -4,8 +4,6 @@ import Link from "next/link"
 import { memo, FC, ReactNode } from "react"
 import { useInitPlayer } from "@/hooks/useInitPlayer"
 
-import PlayList from "../PlayList/PlayList"
-
 interface LayoutProps {
     children: ReactNode
 }
