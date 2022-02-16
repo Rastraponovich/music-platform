@@ -1,6 +1,6 @@
 import { player } from "@/features/music/player"
 import clsx from "clsx"
-import { useStore, useEvent } from "effector-react"
+import { useStore } from "effector-react"
 import React, { memo, FC, useState, MouseEvent, useCallback } from "react"
 import Progressbar from "../ui/Progressbar/Progressbar"
 
@@ -11,11 +11,14 @@ import VolumeBar from "../ui/AudioPlayer/VolumeBar"
 import BalanceBar from "../ui/AudioPlayer/BalanceBar"
 import PlayerWindowsControlPanel from "../ui/AudioPlayer/PlayerWindowsControlPanel"
 import MediaInfo from "../ui/AudioPlayer/MediaInfo/MediaInfo"
-import { winamp, winampStates } from "@/features/media/winamp"
-import useChangeCurentTime from "@/hooks/useChangeCurrentTime"
+import { winampStates } from "@/features/media/winamp"
+import { useChangeCurentTime } from "@/hooks/useChangeCurrentTime"
 import { WINAMP_STATE } from "@/features/music/constants"
+import { useDraggable } from "@/hooks/useDraggable"
 
 interface AsidePlayerProps {}
+
+const WINDOW_NAME = "PLAYER"
 
 const AsidePlayer: FC<AsidePlayerProps> = () => {
     // console.log("render asidePlayer")
@@ -23,52 +26,8 @@ const AsidePlayer: FC<AsidePlayerProps> = () => {
     const hidden = useStore(player.$compact)
     const useChangeCurentTimeHook = useChangeCurentTime()
 
-    const [pos, setpos] = useState<{ [key: string]: number | string }>({
-        clientX: "1rem",
-        clientY: "95px",
-        bottom: "1rem",
-    })
+    const { position, onDragging, onDragEnd, onDragStart } = useDraggable(WINDOW_NAME)
 
-    const [diff, setDiff] = useState({
-        diffX: 0,
-        diffY: 0,
-    })
-
-    const [allowDragging, setAllowDragging] = useState<boolean>(false)
-
-    const handleDragStart = useCallback(
-        (e: MouseEvent<HTMLElement>) => {
-            e.preventDefault()
-            setDiff({
-                diffX: e.screenX - e.currentTarget.getBoundingClientRect().left,
-                diffY: e.screenY - e.currentTarget.getBoundingClientRect().top,
-            })
-            setpos({ ...pos, bottom: "unset" })
-            setAllowDragging(true)
-        },
-        [allowDragging, diff, pos]
-    )
-    const handleDragging = useCallback(
-        (e: MouseEvent<HTMLElement>) => {
-            if (allowDragging) {
-                const left = e.screenX - diff.diffX
-                const top = e.screenY - diff.diffY
-
-                if (e.pageX === 0) {
-                    return setTimeout(() => {
-                        setpos({ ...pos, clientX: 0 })
-                    }, 500)
-                }
-
-                setpos({ ...pos, clientX: left, clientY: top })
-            }
-        },
-        [allowDragging, pos]
-    )
-    const handleDragEnd = useCallback(
-        (e: MouseEvent<HTMLElement>) => setAllowDragging(false),
-        [allowDragging]
-    )
     return (
         <aside
             id="main-window"
@@ -78,13 +37,13 @@ const AsidePlayer: FC<AsidePlayerProps> = () => {
                 "w-[275px]",
                 winampState !== WINAMP_STATE.TRACKLOADED && "hidden"
             )}
-            style={{ top: pos.clientY, left: pos.clientX, bottom: pos.bottom }}
+            style={{ top: position.clientY, left: position.clientX }}
         >
             <TitleBar
-                onMouseDown={handleDragStart}
-                onMouseMove={handleDragging}
-                onMouseUp={handleDragEnd}
-                onMouseLeave={handleDragEnd}
+                onMouseDown={onDragStart}
+                onMouseMove={onDragging}
+                onMouseUp={onDragEnd}
+                onMouseLeave={onDragEnd}
             />
             <div className="my-2 flex pr-2 pl-2.5">
                 <StatusBar />

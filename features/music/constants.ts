@@ -1,4 +1,4 @@
-import { Band, TVISUALIZERS, TWinampState, TWinampWindow } from "./types"
+import { Band, TVISUALIZERS, TWinampState, TWinampWindow, UseDraggblePosition } from "./types"
 
 export const VISUALIZERS: TVISUALIZERS = {
     OSCILLOSCOPE: "OSCILLOSCOPE",
@@ -23,4 +23,22 @@ export const WINAMP_WINDOW_STATE: Record<TWinampWindow, TWinampWindow> = {
     NONE: "NONE",
     PLAYER: "PLAYER",
     PLAYLIST: "PLAYLIST",
+}
+export const DEFALUT_WINDOW_STATE: Record<TWinampWindow, UseDraggblePosition> = {
+    PLAYER: {
+        clientX: "1rem",
+        clientY: "95px",
+    },
+    EQUALIZER: {
+        clientX: "1rem",
+        clientY: "211px",
+    },
+    PLAYLIST: {
+        clientX: "1rem",
+        clientY: "327px",
+    },
+    NONE: {
+        clientX: "unset",
+        clientY: "unset",
+    },
 }

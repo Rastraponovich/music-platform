@@ -385,18 +385,36 @@ const $playList = createStore<Song[]>([])
 
 const $playListLength = $playList.map((state) => state.length)
 
-const selectTrackInPlayList = createEvent<number>()
+const highlightTrackInPlaylist = createEvent<number>()
 
-const $selectedTrackInPlayList = createStore<Nullable<number>>(null).on(
-    selectTrackInPlayList,
-    (_, id) => id
-)
+const $selectedTrackInPlayList = createStore<Nullable<number>>(null)
+    .on(highlightTrackInPlaylist, (_, id) => id)
+    .reset(removeTrackFromPlaylist)
 
 const onDoubleClickedTrackInPlaylist = createEvent<number>()
 
+const selectTrackInPlayList = createEvent<number>()
 const $currentPlayedTrackIndexPlaylist = createStore<Nullable<number>>(null)
     .on(selectTrackFromList, () => 0)
     .on(onDoubleClickedTrackInPlaylist, (_, id) => id)
+
+const checkDecrementCurrentPlayedIndex = guard({
+    clock: removeTrackFromPlaylist,
+    source: $currentPlayedTrackIndexPlaylist,
+    filter: (currentIndex, removedIndex) => {
+        if (currentIndex !== null) {
+            if (currentIndex > removedIndex) return true
+        }
+        return false
+    },
+})
+
+sample({
+    clock: checkDecrementCurrentPlayedIndex,
+    source: $currentPlayedTrackIndexPlaylist,
+    fn: (currentIndex, _) => currentIndex! - 1,
+    target: $currentPlayedTrackIndexPlaylist,
+})
 
 sample({
     clock: $currentPlayedTrackIndexPlaylist,
@@ -1001,11 +1019,13 @@ export const playlist = {
     doubleClick: onDoubleClickedTrackInPlaylist,
     $playList,
     $selectedTrackInPlayList,
+    highlightTrackInPlaylist,
     selectTrack: selectTrackInPlayList,
     $currentPlayedTrackIndexPlaylist,
     addTrackToPlaylist,
     $visiblePlaylist,
     toggleVisiblePlaylist,
+    removeTrackFromPlaylist,
 }
 
 export const progress = {

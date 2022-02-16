@@ -1,4 +1,5 @@
 import { Nullable } from "@/types"
+import { MouseEvent } from "react"
 import { Playlist } from "../playlist/types"
 
 export enum EPLAYER_STATE {
@@ -110,3 +111,14 @@ export type Band = 60 | 170 | 310 | 600 | 1000 | 3000 | 6000 | 12000 | 14000 | 1
 export type TWinampState = "DESTROYED" | "CREATED" | "INIT" | "TRACKLOADED" | "CLOSED"
 
 export type TWinampWindow = "PLAYER" | "EQUALIZER" | "PLAYLIST" | "NONE"
+
+export type UseDraggblePosition = {
+    clientX: string | number
+    clientY: string | number
+}
+export interface UseDraggbleReturnProps {
+    position: UseDraggblePosition
+    onDragStart: (e: MouseEvent<HTMLElement>) => void
+    onDragging: (e: MouseEvent<HTMLElement>) => void
+    onDragEnd: (e: MouseEvent<HTMLElement>) => void
+}

@@ -1,5 +1,6 @@
 import { playlist, winamp, winampStates } from "@/features/media/winamp"
-import { Nullable } from "@/types"
+import { useDelPressKeyButton } from "@/hooks/useChangeCurrentTime"
+import { useDraggable } from "@/hooks/useDraggable"
 import clsx from "clsx"
 import { useEvent, useList, useStore } from "effector-react/scope"
 import React, { FC, useState, MouseEvent, useCallback } from "react"
@@ -12,66 +13,18 @@ interface PlayListWindowProps {}
 const WINDOW_NAME = "PLAYLIST"
 
 const PlayListWindow: FC<PlayListWindowProps> = () => {
-    const [selectedTrack, setSelectedTrack] = useState<Nullable<number>>(null)
+    const handler = useDelPressKeyButton()
 
     const handleActiveWindow = useEvent(winampStates.changeWindowState)
     const visible = useStore(playlist.$visiblePlaylist)
     const currentIndex = useStore(playlist.$currentPlayedTrackIndexPlaylist)
+    const highlightTrackInPlaylist = useStore(playlist.$selectedTrackInPlayList)
 
     const playing = useStore(winamp.$mediaStatus)
     const playList = useStore(playlist.$playList)
 
-    const [pos, setpos] = useState<{ [key: string]: number | string }>({
-        clientX: "1rem",
-        clientY: "327px",
-        bottom: "unset",
-    })
+    const { position, onDragging, onDragEnd, onDragStart } = useDraggable(WINDOW_NAME)
 
-    const [diff, setDiff] = useState({
-        diffX: 0,
-        diffY: 0,
-    })
-
-    const [allowDragging, setAllowDragging] = useState<boolean>(false)
-
-    const handleSetSelectedTrack = useCallback((id) => setSelectedTrack(id), [selectedTrack])
-
-    const handleDragStart = useCallback(
-        (e: MouseEvent<HTMLElement>) => {
-            handleActiveWindow(WINDOW_NAME)
-            e.preventDefault()
-            setDiff({
-                diffX: e.screenX - e.currentTarget.getBoundingClientRect().left,
-                diffY: e.screenY - e.currentTarget.getBoundingClientRect().top,
-            })
-            setpos({ ...pos, bottom: "unset" })
-            setAllowDragging(true)
-        },
-        [diff, pos, allowDragging]
-    )
-
-    const handleDragging = useCallback(
-        (e: MouseEvent<HTMLElement>) => {
-            if (allowDragging) {
-                const left = e.screenX - diff.diffX
-                const top = e.screenY - diff.diffY
-
-                if (e.pageX === 0) {
-                    return setTimeout(() => {
-                        setpos({ ...pos, clientX: 0 })
-                    }, 500)
-                }
-
-                setpos({ ...pos, clientX: left, clientY: top })
-            }
-        },
-        [pos, allowDragging]
-    )
-
-    const handleDragEnd = useCallback(
-        (e: MouseEvent<HTMLElement>) => setAllowDragging(false),
-        [allowDragging]
-    )
     return (
         <aside
             className={clsx(
@@ -79,19 +32,18 @@ const PlayListWindow: FC<PlayListWindowProps> = () => {
                 !visible && "hidden"
             )}
             style={{
-                top: pos.clientY,
-                left: pos.clientX,
-                bottom: pos.bottom,
+                top: position.clientY,
+                left: position.clientX,
                 imageRendering: "pixelated",
             }}
         >
             <PlaylistHeader
-                onMouseDown={handleDragStart}
-                onMouseMove={handleDragging}
-                onMouseUp={handleDragEnd}
-                onMouseLeave={handleDragEnd}
+                onMouseDown={onDragStart}
+                onMouseMove={onDragging}
+                onMouseUp={onDragEnd}
+                onMouseLeave={onDragEnd}
             />
-            <div className="flex">
+            <div className="flex" onClick={() => handleActiveWindow(WINDOW_NAME)}>
                 <div
                     style={{
                         backgroundImage: `url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAdAgMAAADjkWVKAAAADFBMVEUAAAAdHS0pKUBqano8VvpZAAAAD0lEQVQI12OoilvCQGcMALzxKw1EtyFgAAAAAElFTkSuQmCC)`,
@@ -105,15 +57,8 @@ const PlayListWindow: FC<PlayListWindowProps> = () => {
                     }
                 >
                     {useList(playlist.$playList, {
-                        keys: [playList.length, currentIndex, playing, selectedTrack],
-                        fn: (track, index) => (
-                            <PlaylistTrack
-                                track={track}
-                                index={index}
-                                setSelectedTrack={handleSetSelectedTrack}
-                                selectedTrack={selectedTrack}
-                            />
-                        ),
+                        keys: [playList.length, currentIndex, playing, highlightTrackInPlaylist],
+                        fn: (track, index) => <PlaylistTrack track={track} index={index} />,
                     })}
                 </div>
 

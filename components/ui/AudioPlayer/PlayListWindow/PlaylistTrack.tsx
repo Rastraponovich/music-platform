@@ -1,24 +1,18 @@
 import { playlist } from "@/features/media/winamp"
 import { Song } from "@/features/music/types"
-import { Nullable } from "@/types"
 import clsx from "clsx"
 import { useStore, useEvent } from "effector-react"
-import React, { memo, FC, useMemo, useState } from "react"
+import React, { memo, FC, useMemo } from "react"
 
 interface PlaylistTrackProps {
     track: Song
     index: number
-    setSelectedTrack: (id: number) => void
-    selectedTrack: Nullable<number>
 }
 
-const PlaylistTrack: FC<PlaylistTrackProps> = ({
-    track,
-    index,
-    setSelectedTrack,
-    selectedTrack,
-}) => {
+const PlaylistTrack: FC<PlaylistTrackProps> = ({ track, index }) => {
     const currentIndex = useStore(playlist.$currentPlayedTrackIndexPlaylist)
+    const highlightTrackInPlaylist = useStore(playlist.$selectedTrackInPlayList)
+    const handleHighLightTrack = useEvent(playlist.highlightTrackInPlaylist)
     const handleSelectNewTrack = useEvent(playlist.doubleClick)
 
     const firstMinute = useMemo(() => Math.floor(track.metaData.format.duration / 60), [track])
@@ -27,13 +21,13 @@ const PlaylistTrack: FC<PlaylistTrackProps> = ({
 
     return (
         <div
-            onClick={() => setSelectedTrack(index)}
+            onClick={() => handleHighLightTrack(index)}
             onDoubleClick={() => handleSelectNewTrack(index)}
             // onKeyPress={(e) => useEscapeFn(e)}
             // onKeyDown={(e) => useEscapeFn(e)}
             className={clsx(
                 "flex select-none justify-between px-1 text-[9px]",
-                selectedTrack === index && "bg-[#0000C6]",
+                highlightTrackInPlaylist === index && "bg-[#0000C6]",
                 currentIndex === index ? "text-white" : "text-[#00FF00] "
             )}
         >
