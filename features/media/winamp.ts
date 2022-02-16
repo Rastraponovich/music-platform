@@ -167,6 +167,8 @@ const createAudioElement = (context: AudioContext, destination: GainNode) => {
 const initWinamp = createEvent()
 const destroyWinamp = createEvent()
 
+const closeWinamp = createEvent()
+
 const $Media = createStore<Nullable<MediaElement>>(null)
 
 const createWinampFx = createEffect<any, any, any>(() => {
@@ -320,6 +322,9 @@ const addTrackToPlaylist = createEvent<Song>()
 const removeTrackFromPlaylist = createEvent<number>()
 
 const selectTrackFromList = createEvent<Song>()
+
+$winampState.on(selectTrackFromList, () => WINAMP_STATE.TRACKLOADED)
+
 const toggleVisiblePlaylist = createEvent()
 const $visiblePlaylist = createStore<boolean>(false).on(toggleVisiblePlaylist, (state, _) => !state)
 
@@ -331,13 +336,13 @@ const checkInitWinamp = guard({
 
 sample({
     clock: checkInitWinamp,
-    fn: () => WINAMP_STATE.FIRSTRACKLOADED,
+    fn: () => WINAMP_STATE.TRACKLOADED,
     target: $winampState,
 })
 
 const checkLoadedFirstTrack = guard({
     clock: $winampState,
-    filter: (state) => state === WINAMP_STATE.FIRSTRACKLOADED,
+    filter: (state) => state === WINAMP_STATE.TRACKLOADED,
 })
 
 sample({
@@ -924,6 +929,26 @@ sample({
     target: changePreamp,
 })
 
+//closing Winamp
+
+sample({
+    clock: closeWinamp,
+    fn: () => "STOPPED" as MediaStatus,
+    target: onStopButtonClicked,
+})
+
+sample({
+    clock: closeWinamp,
+    fn: () => false,
+    target: [$visibleEQ, $visiblePlayer, $visiblePlaylist],
+})
+
+sample({
+    clock: closeWinamp,
+    fn: () => "CLOSED" as TWinampState,
+    target: $winampState,
+})
+
 export const balance = {
     $currentBalance,
     changeBalance,
@@ -976,6 +1001,7 @@ export const duration = {
 export const winamp = {
     init: initWinamp,
     destroy: destroyWinamp,
+    close: closeWinamp,
     $mediaStatus,
     $currentTrack,
     selectTrackFromList,

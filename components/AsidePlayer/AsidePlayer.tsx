@@ -11,14 +11,15 @@ import VolumeBar from "../ui/AudioPlayer/VolumeBar"
 import BalanceBar from "../ui/AudioPlayer/BalanceBar"
 import PlayerWindowsControlPanel from "../ui/AudioPlayer/PlayerWindowsControlPanel"
 import MediaInfo from "../ui/AudioPlayer/MediaInfo/MediaInfo"
-import { winamp } from "@/features/media/winamp"
+import { winamp, winampStates } from "@/features/media/winamp"
 import useChangeCurentTime from "@/hooks/useChangeCurrentTime"
+import { WINAMP_STATE } from "@/features/music/constants"
 
 interface AsidePlayerProps {}
 
 const AsidePlayer: FC<AsidePlayerProps> = () => {
     // console.log("render asidePlayer")
-    const currentTrack = useStore(winamp.$currentTrack)
+    const winampState = useStore(winampStates.$winampState)
     const hidden = useStore(player.$compact)
     const useChangeCurentTimeHook = useChangeCurentTime()
 
@@ -75,7 +76,7 @@ const AsidePlayer: FC<AsidePlayerProps> = () => {
                 "fixed z-50  flex h-[116px] max-h-[116px] cursor-winamp flex-col bg-transparent pb-[9px] shadow-md",
                 hidden && " overflow-hidden",
                 "w-[275px]",
-                !currentTrack && "hidden"
+                winampState !== WINAMP_STATE.TRACKLOADED && "hidden"
             )}
             style={{ top: pos.clientY, left: pos.clientX, bottom: pos.bottom }}
         >

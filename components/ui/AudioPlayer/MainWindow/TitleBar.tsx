@@ -1,4 +1,5 @@
-import { destroyPlayer, player } from "@/features/music/player"
+import { winamp } from "@/features/media/winamp"
+import { player } from "@/features/music/player"
 import clsx from "clsx"
 import { useEvent } from "effector-react"
 import React, { memo, FC, useState, useCallback, MouseEvent } from "react"
@@ -13,7 +14,7 @@ interface TitleBarProps {
 const TitleBar: FC<TitleBarProps> = ({ onMouseDown, onMouseMove, onMouseUp, onMouseLeave }) => {
     const [selected, setSelected] = useState(false)
     const handleSetCompact = useEvent(player.onSetCompact)
-    const handleDestroy = useEvent(destroyPlayer)
+    const handleClose = useEvent(winamp.close)
 
     const handleOnMouseDown = (e: MouseEvent<HTMLElement>) => {
         setSelected(true)
@@ -41,7 +42,7 @@ const TitleBar: FC<TitleBarProps> = ({ onMouseDown, onMouseMove, onMouseUp, onMo
                 className=""
                 onClick={handleSetCompact}
             ></button>
-            <button id="close" title="Close" className="" onClick={handleDestroy}></button>
+            <button id="close" title="Close" className="" onClick={handleClose}></button>
         </div>
     )
 }
