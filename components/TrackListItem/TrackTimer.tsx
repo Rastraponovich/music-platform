@@ -1,27 +1,24 @@
-import { player } from "@/features/music/player"
-import { Song } from "@/features/music/types"
+import { TIME_MODE } from "@/features/media/constants"
+import { progress, winamp } from "@/features/media/winamp"
+
 import { useStore } from "effector-react"
-import React, { memo, FC, useEffect, useState } from "react"
+import React, { memo, FC } from "react"
 
 interface TrackTimerProps {}
 
 const TrackTimer: FC<TrackTimerProps> = () => {
-    const currentTime = useStore(player.progress.$currentTime)
+    const timeMode = useStore(winamp.$timeMode)
 
-    const [seconds, setSeconds] = useState(0)
-    const [minutes, setMinutes] = useState(0)
+    const timer = useStore(progress.$timer)
 
-    useEffect(() => {
-        if (currentTime < 60) {
-            setSeconds(Math.ceil(currentTime))
-        } else {
-            setSeconds(Math.ceil(currentTime % 60))
-            setMinutes(Math.floor(currentTime / 60))
-        }
-    }, [currentTime])
+    const { firstSecond, lastSecond, firstMinute, lastMinute } = timer
+
     return (
         <span className="after:mx-1 after:content-['/']">
-            {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+            {timeMode === TIME_MODE.REMAINING && "-"}
+            {firstMinute}
+            {lastMinute}:{firstSecond}
+            {lastSecond}
         </span>
     )
 }

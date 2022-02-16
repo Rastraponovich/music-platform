@@ -13,6 +13,7 @@ import PauseIcon from "../ui/icons/PauseIcon/PauseIcon"
 import Progressbar from "../ui/Progressbar/Progressbar"
 import Annotation from "../ui/icons/Annotation/Annotation"
 import { playlist, winamp, winampControls } from "@/features/media/winamp"
+import { MEDIA_STATUS } from "@/features/media/constants"
 
 interface TrackListItemProps {
     track: Song
@@ -22,6 +23,10 @@ interface TrackListItemProps {
 const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
     // console.log("render track", track.name)
     const mediaStatus = useStore(winamp.$mediaStatus)
+
+    const firstMinute = Math.floor(track?.metaData?.format?.duration / 60)
+    const lastMinute = Math.floor(track?.metaData.format?.duration % 60)
+    const seconds = Math.floor(track?.metaData?.format?.duration % 60)
 
     const [handleSelectTrack, handlePlay, handlePause, handleAddToPlayList] = useEvent([
         winamp.selectTrackFromList,
@@ -66,17 +71,14 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
 
                             <span className=" truncate font-semibold">{track.name}</span>
                         </div>
-                        {isCurrentTrack && <Progressbar />}
+                        {isCurrentTrack && mediaStatus !== MEDIA_STATUS.STOPPED && <Progressbar />}
                     </div>
                 </div>
                 <div className="col-span-1 col-start-10 mr-2 flex justify-self-end text-sm text-gray-800">
                     {isCurrentTrack && <TrackTimer />}
 
                     <span>
-                        {Math.floor(track?.metaData?.format?.duration / 60)}:
-                        {track?.metaData.format?.duration % 60 < 10
-                            ? `0${Math.ceil(track?.metaData?.format?.duration % 60)}`
-                            : Math.ceil(track?.metaData?.format?.duration % 60)}
+                        {firstMinute}:{lastMinute < 10 ? `0${lastMinute}` : seconds}
                     </span>
                 </div>
 

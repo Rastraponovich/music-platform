@@ -14,9 +14,8 @@ import {
     uploadFile,
 } from "@/features/music"
 
-import Layout from "@/components/ui/Layout/Layout"
 import TrackListItem from "@/components/TrackListItem/TrackListItem"
-import { player } from "@/features/music/player"
+import { winamp } from "@/features/media/winamp"
 
 interface MusicPageProps {}
 
@@ -30,7 +29,7 @@ const MusicPage: FC<MusicPageProps> = () => {
         searchTrack,
     ])
 
-    const currentTrack = useStore(player.$currentTrack)
+    const currentTrack = useStore(winamp.$currentTrack)
     console.log("render list")
 
     const countSongs = useStore($countSongs)

@@ -2,6 +2,7 @@ import { getClientScope, useScope } from "@/hooks/useScope"
 import { Nullable } from "@/types"
 import { baseSkinColors } from "@/types/ui.types"
 import { sample, createEffect, createEvent, createStore, guard, scopeBind } from "effector"
+import { delay } from "patronum"
 import { ChangeEvent, MouseEvent } from "react"
 import { BANDS, WINAMP_STATE, WINAMP_WINDOW_STATE } from "../music/constants"
 import { $frequency, changePreamp, toggleEnabledEQ } from "../music/eq"
@@ -684,6 +685,12 @@ guard({
     filter: (Media, _): Media is MediaElement => Media?._audio instanceof HTMLAudioElement,
     target: onStopButtonClickedFx,
 })
+
+// const delayedStopButtonClicked = delay({
+//     source: onStopButtonClicked,
+//     timeout: 300,
+//     target: $mediaStatus,
+// })
 
 sample({
     clock: onStopButtonClickedFx.done,

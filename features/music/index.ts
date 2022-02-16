@@ -64,7 +64,7 @@ submitted.watch((e: ChangeEvent<HTMLFormElement>) => e.preventDefault())
 sample({
     clock: submitted,
     source: [$currentSong, $files],
-    fn: ([song, files], _) => ({ ...song, ...files }),
+    fn: ([song, files], _) => ({ ...song, ...files } as Song & { image: File; music: File }),
     target: MusicAPI.saveSongFx,
 })
 
