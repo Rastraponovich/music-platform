@@ -1,15 +1,14 @@
 import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
-import { memo, FC, ReactNode } from "react"
-import { useInitPlayer } from "@/hooks/useInitPlayer"
+import { memo, ReactNode } from "react"
 
 interface LayoutProps {
     children: ReactNode
 }
 
-const Layout: FC<LayoutProps> = ({ children }) => {
-    useInitPlayer()
+const Layout = ({ children }: LayoutProps) => {
+    // useInitPlayer()
     console.log("render layout")
 
     return (
@@ -21,7 +20,7 @@ const Layout: FC<LayoutProps> = ({ children }) => {
             <header className="grid w-full grid-cols-12 content-center items-center px-8 py-4 ">
                 <Link href="/" shallow>
                     <a className="col-span-3 flex items-center text-xl">
-                        <Image src="/img/winamp-logo.svg" height={50} width={50} />
+                        <Image src="/img/winamp-logo.svg" height={50} width={50} alt="Лого" />
                         <h2>Шinamp</h2>
                     </a>
                 </Link>
@@ -49,7 +48,7 @@ const Layout: FC<LayoutProps> = ({ children }) => {
             <footer className="grid grid-cols-12 items-center bg-gray-400 px-8 py-4 text-xl">
                 <Link href="/" shallow>
                     <a className="col-span-3 flex items-center text-xl">
-                        <Image src="/img/winamp-logo.svg" height={50} width={50} />
+                        <Image src="/img/winamp-logo.svg" height={50} width={50} alt="Лого" />
                         <h2>Шinamp</h2>
                     </a>
                 </Link>

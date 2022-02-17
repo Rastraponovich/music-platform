@@ -2,12 +2,21 @@ import { winampStates } from "@/features/media/winamp"
 import { DEFALUT_WINDOW_STATE } from "@/features/music/constants"
 import { TWinampWindow, UseDraggblePosition, UseDraggbleReturnProps } from "@/features/music/types"
 import { useEvent } from "effector-react"
-import { MouseEvent, useCallback, useState } from "react"
+import { MouseEvent, Ref, useCallback, useEffect, useMemo, useState } from "react"
 
-export const useDraggable = (WINDOW_NAME: TWinampWindow): UseDraggbleReturnProps => {
+export const useDraggable = (WINDOW_NAME: TWinampWindow, ref: any): UseDraggbleReturnProps => {
     const handleActiveWindow = useEvent(winampStates.changeWindowState)
 
-    const [position, setPosition] = useState<UseDraggblePosition>(DEFALUT_WINDOW_STATE[WINDOW_NAME])
+    const position = useMemo(() => {
+        console.log(WINDOW_NAME, "rebind")
+
+        return <UseDraggblePosition>DEFALUT_WINDOW_STATE[WINDOW_NAME]
+    }, [WINDOW_NAME])
+
+    useEffect(() => {
+        ref.current.style.left = position.clientX + "px"
+        ref.current.style.top = position.clientY + "px"
+    }, [])
 
     const [diff, setDiff] = useState({
         diffX: 0,
@@ -15,39 +24,43 @@ export const useDraggable = (WINDOW_NAME: TWinampWindow): UseDraggbleReturnProps
     })
 
     const [allowDragging, setAllowDragging] = useState<boolean>(false)
+    const [picked, setPicked] = useState(false)
 
     const onDragStart = useCallback(
         (e: MouseEvent<HTMLElement>) => {
+            setPicked(true)
             handleActiveWindow(WINDOW_NAME)
             e.preventDefault()
             setDiff({
                 diffX: e.screenX - e.currentTarget.getBoundingClientRect().left,
                 diffY: e.screenY - e.currentTarget.getBoundingClientRect().top,
             })
-            setPosition(position)
             setAllowDragging(true)
         },
-        [diff, position, allowDragging]
+        [picked, diff, allowDragging]
     )
     const onDragging = useCallback(
         (e: MouseEvent<HTMLElement>) => {
-            console.log(e)
             if (allowDragging) {
                 const left = e.screenX - diff.diffX
                 const top = e.screenY - diff.diffY
 
-                if (e.pageX === 0) {
-                    return setTimeout(() => {
-                        setPosition({ ...position, clientX: 0 })
-                    }, 500)
-                }
+                // if (e.pageX === 0) {
+                //     return setTimeout(() => {
+                //         setPosition({ ...position, clientX: 0 })
+                //     }, 500)
+                // }
 
-                setPosition({ ...position, clientX: left, clientY: top })
+                // setPosition({ ...position, clientX: left, clientY: top })
+                ref.current.style.left = left + "px"
+                ref.current.style.top = top + "px"
             }
         },
-        [position, allowDragging]
+        [allowDragging, ref]
     )
-    const onDragEnd = useCallback((e: MouseEvent<HTMLElement>) => setAllowDragging(false), [])
+    const onDragEnd = useCallback((e: MouseEvent<HTMLElement>) => {
+        setAllowDragging(false)
+    }, [])
 
-    return { position, onDragStart, onDragging, onDragEnd }
+    return [onDragStart, onDragging, onDragEnd]
 }

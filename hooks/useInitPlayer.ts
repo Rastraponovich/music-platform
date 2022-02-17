@@ -1,6 +1,5 @@
 import { useEffect } from "react"
 import { useEvent } from "effector-react/scope"
-import { destroyPlayer, initPlayer } from "@/features/music/player"
 import { winamp } from "@/features/media/winamp"
 
 export const useInitPlayer = () => {
@@ -10,6 +9,10 @@ export const useInitPlayer = () => {
         init()
         console.log("init")
 
-        // return () => destroy()
+        return () => {
+            console.log("destroy")
+
+            destroy()
+        }
     }, [])
 }

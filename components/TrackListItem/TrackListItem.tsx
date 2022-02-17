@@ -12,8 +12,9 @@ import PlusIcon from "../ui/icons/PlusIcon/PlusIcon"
 import PauseIcon from "../ui/icons/PauseIcon/PauseIcon"
 import Progressbar from "../ui/Progressbar/Progressbar"
 import Annotation from "../ui/icons/Annotation/Annotation"
-import { playlist, winamp, winampControls } from "@/features/media/winamp"
+import { playlist, winamp, winampControls, winampStates } from "@/features/media/winamp"
 import { MEDIA_STATUS } from "@/features/media/constants"
+import { WINAMP_STATE } from "@/features/music/constants"
 
 interface TrackListItemProps {
     track: Song
@@ -42,6 +43,9 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
     }
 
     const [comments, showComments] = useState(false)
+
+    const needToShow = isCurrentTrack && mediaStatus !== MEDIA_STATUS.STOPPED
+
     return (
         <div className="flex  flex-col">
             <div className="grid grid-cols-12 items-center rounded bg-white py-2 shadow-sm">
@@ -62,6 +66,7 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
                         objectFit="contain"
                         height={40}
                         width={40}
+                        alt={`${track.artist} ${track.name}`}
                     />
                     <div className=" flex grow flex-col justify-center text-base">
                         <div className="flex grow">
@@ -71,11 +76,11 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
 
                             <span className=" truncate font-semibold">{track.name}</span>
                         </div>
-                        {isCurrentTrack && mediaStatus !== MEDIA_STATUS.STOPPED && <Progressbar />}
+                        {needToShow && <Progressbar />}
                     </div>
                 </div>
                 <div className="col-span-1 col-start-10 mr-2 flex justify-self-end text-sm text-gray-800">
-                    {isCurrentTrack && <TrackTimer />}
+                    {needToShow && <TrackTimer />}
 
                     <span>
                         {firstMinute}:{lastMinute < 10 ? `0${lastMinute}` : seconds}

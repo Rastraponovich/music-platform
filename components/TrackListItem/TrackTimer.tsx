@@ -1,12 +1,10 @@
+import { useStore } from "effector-react"
 import { TIME_MODE } from "@/features/media/constants"
 import { progress, winamp } from "@/features/media/winamp"
 
-import { useStore } from "effector-react"
-import React, { memo, FC } from "react"
-
 interface TrackTimerProps {}
 
-const TrackTimer: FC<TrackTimerProps> = () => {
+const TrackTimer = () => {
     const timeMode = useStore(winamp.$timeMode)
 
     const timer = useStore(progress.$timer)
@@ -23,4 +21,4 @@ const TrackTimer: FC<TrackTimerProps> = () => {
     )
 }
 
-export default memo(TrackTimer)
+export default TrackTimer

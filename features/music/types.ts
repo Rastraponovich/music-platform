@@ -116,9 +116,10 @@ export type UseDraggblePosition = {
     clientX: string | number
     clientY: string | number
 }
-export interface UseDraggbleReturnProps {
-    position: UseDraggblePosition
-    onDragStart: (e: MouseEvent<HTMLElement>) => void
-    onDragging: (e: MouseEvent<HTMLElement>) => void
+export type UseDraggbleReturnProps = [
+    onDragStart: (e: MouseEvent<HTMLElement>) => void,
+    onDragging: (e: MouseEvent<HTMLElement>) => void,
     onDragEnd: (e: MouseEvent<HTMLElement>) => void
-}
+]
+
+export interface Track extends Song {}

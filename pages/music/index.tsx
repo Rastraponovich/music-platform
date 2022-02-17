@@ -21,6 +21,7 @@ interface MusicPageProps {}
 
 const MusicPage: FC<MusicPageProps> = () => {
     const currentSong = useStore($currentSong)
+    const hanldePlayAll = useEvent(winamp.playAllTracksFromList)
 
     const [onUpload, onSubmit, onChange, handleSearch] = useEvent([
         uploadFile,
@@ -30,6 +31,8 @@ const MusicPage: FC<MusicPageProps> = () => {
     ])
 
     const currentTrack = useStore(winamp.$currentTrack)
+
+    const handleShowWinamp = useEvent(winamp.show)
     console.log("render list")
 
     const countSongs = useStore($countSongs)
@@ -44,6 +47,9 @@ const MusicPage: FC<MusicPageProps> = () => {
                     onChange={(e) => handleSearch(e.target.value)}
                 />
             </label>
+
+            <button onClick={handleShowWinamp}>showPlayer</button>
+            <button onClick={hanldePlayAll}>play all tracks</button>
 
             <section className="flex flex-col">
                 <div className="flex  flex-col divide-y-2 divide-gray-200">

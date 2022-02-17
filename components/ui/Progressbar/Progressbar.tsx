@@ -1,7 +1,8 @@
-import { duration, progress } from "@/features/media/winamp"
 import clsx from "clsx"
 import { useEvent, useStore } from "effector-react"
 import { memo, InputHTMLAttributes, useState, MouseEvent } from "react"
+
+import { duration, progress } from "@/features/media/winamp"
 
 interface ProgressbarProps {
     className?: InputHTMLAttributes<HTMLInputElement>["className"]

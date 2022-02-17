@@ -26,7 +26,7 @@ export default PlaylistPage
 export const getServerSideProps: GetServerSideProps = async () => {
     const scope = fork()
 
-    await allSettled(getPlaylists, { scope })
+    // await allSettled(getPlaylists, { scope })
 
     return {
         props: {

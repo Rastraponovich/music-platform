@@ -1,18 +1,16 @@
-import { NextPage } from "next"
-
-import { Provider } from "effector-react/scope"
-import { Scope } from "effector"
-
-import { AppProps } from "next/app"
 import Head from "next/head"
+import { NextPage } from "next"
+import { AppProps } from "next/app"
+import { Scope } from "effector"
+import { Provider } from "effector-react/scope"
 
 import "@/styles/globals.css"
 import "tailwindcss/tailwind.css"
 import { useScope } from "../hooks/useScope"
 import Layout from "@/components/ui/Layout/Layout"
-import AsidePlayer from "@/components/AsidePlayer/AsidePlayer"
-import PlayListWindow from "@/components/ui/AudioPlayer/PlayListWindow/PlayListWindow"
-import EQWindow from "@/components/ui/AudioPlayer/EQWindow/EQWindow"
+import EQWindow from "@/components/ui/Winamp/EQWindow/EQWindow"
+import MainWindow from "@/components/ui/Winamp/MainWindow/MainWindow"
+import PlayListWindow from "@/components/ui/Winamp/PlayListWindow/PlayListWindow"
 
 let clientScope: Scope
 
@@ -36,7 +34,7 @@ const App: NextPage<AppProps> = ({ Component, pageProps, router }) => {
                 ></script> */}
                 </Head>
                 <Component {...pageProps} router={router} />
-                <AsidePlayer />
+                <MainWindow />
                 <EQWindow />
                 <PlayListWindow />
             </Layout>
