@@ -16,6 +16,7 @@ import BalanceBar from "./BalanceBar"
 import WindowControls from "./WindowControls"
 import MediaInfo from "./MediaInfo/MediaInfo"
 import Progressbar from "../../Progressbar/Progressbar"
+import Draggable from "@/components/Draggable/Draggable"
 
 interface AsidePlayerProps {}
 

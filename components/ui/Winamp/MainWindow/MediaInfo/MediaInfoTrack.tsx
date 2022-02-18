@@ -19,7 +19,10 @@ const MediaInfoTrack = ({ currentTrack, currentId }: MediaInfoTrackProps) => {
     const ref = useRef<Nullable<HTMLDivElement>>(null)
 
     const [pos, setpos] = useState(0)
+    const [diff, setDiff] = useState(0)
+
     const [track, setTrack] = useState(SEPARATOR)
+    const [allowDragging, setAllowDragging] = useState<boolean>(false)
 
     const min = useMemo(
         () => Math.floor(currentTrack.metaData.format.duration / 60),
@@ -32,26 +35,22 @@ const MediaInfoTrack = ({ currentTrack, currentId }: MediaInfoTrackProps) => {
 
     useEffect(() => {
         setpos(0)
-
-        return () => setpos(0)
     }, [currentTrack])
 
     useEffect(() => {
-        const total = `(${min < 10 ? `0${min}` : min} :${sec < 10 ? `0${sec}` : sec})`
+        const total = `(${min < 10 ? `0${min}` : min}:${sec < 10 ? `0${sec}` : sec})`
         const text = `${currentId !== null && currentId + 1}. ${currentTrack.artist} - ${
             currentTrack.name
         }   ${total}`
 
         setTrack(isLong(text) ? `${text}${SEPARATOR}${text}` : text.padEnd(MARQUEE_MAX_LENGTH, " "))
 
-        return () => setpos(track.length * 2.6)
-    }, [currentTrack, currentId, min, sec, track.length, ref])
-
-    const [allowDragging, setAllowDragging] = useState<boolean>(false)
+        return () => setpos(1)
+    }, [currentId, min, sec, track.length])
 
     useEffect(() => {
         timerId.current = setInterval(() => {
-            if (!allowDragging) {
+            if (!allowDragging && track.length > MARQUEE_MAX_LENGTH) {
                 if (pos <= -track.length * 2.6) return setpos(0)
                 setpos(pos - 5)
             }
@@ -59,18 +58,14 @@ const MediaInfoTrack = ({ currentTrack, currentId }: MediaInfoTrackProps) => {
         return () => clearInterval(timerId.current)
     }, [pos, currentId, allowDragging])
 
-    const [diff, setDiff] = useState(0)
-
     const handleDragStart = (e: MouseEvent<HTMLElement>) => {
         e.preventDefault()
-        setDiff(e.screenX - e.currentTarget.getBoundingClientRect().left)
+        setDiff(e.screenX)
         setAllowDragging(true)
     }
     const handleDragging = (e: MouseEvent<HTMLElement>) => {
         if (allowDragging) {
-            const left = e.screenX - diff
-
-            setpos(left)
+            setpos(e.screenX - diff)
         }
     }
     const handleDragEnd = (e: MouseEvent<HTMLElement>) => {
@@ -79,12 +74,12 @@ const MediaInfoTrack = ({ currentTrack, currentId }: MediaInfoTrackProps) => {
     return (
         <div
             id="marquee"
-            className="text"
+            className="text relative"
             title="Song Title"
             onMouseDown={handleDragStart}
             onMouseMove={handleDragging}
             onMouseUp={handleDragEnd}
-            // onMouseLeave={handleDragEnd}
+            onMouseLeave={handleDragEnd}
         >
             <div
                 className="whitespace-nowrap text-[8px]  text-[#00FF00] will-change-transform"

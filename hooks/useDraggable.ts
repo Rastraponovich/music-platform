@@ -2,7 +2,16 @@ import { winampStates } from "@/features/media/winamp"
 import { DEFALUT_WINDOW_STATE } from "@/features/music/constants"
 import { TWinampWindow, UseDraggblePosition, UseDraggbleReturnProps } from "@/features/music/types"
 import { useEvent } from "effector-react"
-import { MouseEvent, Ref, useCallback, useEffect, useMemo, useState } from "react"
+import {
+    MouseEvent,
+    Ref,
+    TouchEvent,
+    TouchEventHandler,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+} from "react"
 
 export const useDraggable = (WINDOW_NAME: TWinampWindow, ref: any): UseDraggbleReturnProps => {
     const handleActiveWindow = useEvent(winampStates.changeWindowState)

@@ -5,7 +5,11 @@
             "effector/babel-plugin",
             {
                 "reactSsr": true,
-                "factories": ["/models/factories", "/features/music/player", "/features/music"]
+                "factories": [
+                    "/models/factories",
+                    "/features/music/winamp-eq",
+                    "/features/music/winamp-progress"
+                ]
             }
         ]
     ]

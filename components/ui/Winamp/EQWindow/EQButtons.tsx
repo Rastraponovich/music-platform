@@ -1,5 +1,4 @@
 import { eq } from "@/features/media/winamp"
-import { $autoEQ, $enabledEQ, toggleAutoEQ } from "@/features/music/eq"
 import { useEvent, useStore } from "effector-react"
 import WinampButton from "../WinampButton"
 import EQGraph from "./EQGraph"
@@ -7,11 +6,11 @@ import EQGraph from "./EQGraph"
 interface EQButtonsProps {}
 
 const EQButtons = () => {
-    const autoEQ = useStore($autoEQ)
-    const enabledEQ = useStore($enabledEQ)
-
+    const autoEQ = useStore(eq.$auto)
+    const enabledEQ = useStore(eq.$enabled)
     const handleEnableEQ = useEvent(eq.enableClickedEQ)
     const handleDisableEQ = useEvent(eq.disableClickedEQ)
+    const toggleAutoEQ = useEvent(eq.toggleAutoEQ)
 
     const handleToggleONEQ = () => {
         if (enabledEQ) {

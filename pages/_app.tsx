@@ -8,9 +8,8 @@ import "@/styles/globals.css"
 import "tailwindcss/tailwind.css"
 import { useScope } from "../hooks/useScope"
 import Layout from "@/components/ui/Layout/Layout"
-import EQWindow from "@/components/ui/Winamp/EQWindow/EQWindow"
-import MainWindow from "@/components/ui/Winamp/MainWindow/MainWindow"
-import PlayListWindow from "@/components/ui/Winamp/PlayListWindow/PlayListWindow"
+
+import Winamp from "@/components/ui/Winamp/Winamp"
 
 let clientScope: Scope
 
@@ -34,9 +33,7 @@ const App: NextPage<AppProps> = ({ Component, pageProps, router }) => {
                 ></script> */}
                 </Head>
                 <Component {...pageProps} router={router} />
-                <MainWindow />
-                <EQWindow />
-                <PlayListWindow />
+                <Winamp />
             </Layout>
         </Provider>
     )

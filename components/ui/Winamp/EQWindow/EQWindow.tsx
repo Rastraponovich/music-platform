@@ -1,9 +1,8 @@
 import { eq } from "@/features/media/winamp"
-import { $minimizedEQ } from "@/features/music/eq"
 import { useDraggable } from "@/hooks/useDraggable"
 import clsx from "clsx"
 import { useStore } from "effector-react"
-import React, { memo, FC, useState, MouseEvent, useCallback, useRef } from "react"
+import { useRef } from "react"
 import EQButtons from "./EQButtons"
 import EQHeader from "./EQHeader"
 import EQSliders from "./EQSliders"
@@ -12,8 +11,8 @@ interface EQWindowProps {}
 
 const WINDOW_NAME = "EQUALIZER"
 
-const EQWindow: FC<EQWindowProps> = () => {
-    const minimized = useStore($minimizedEQ)
+const EQWindow = () => {
+    const minimized = useStore(eq.$minimized)
     const visible = useStore(eq.$visibleEQ)
     const ref = useRef(null)
 
@@ -41,4 +40,4 @@ const EQWindow: FC<EQWindowProps> = () => {
     )
 }
 
-export default memo(EQWindow)
+export default EQWindow

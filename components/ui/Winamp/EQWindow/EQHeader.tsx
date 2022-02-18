@@ -2,7 +2,6 @@ import clsx from "clsx"
 import { memo, MouseEvent } from "react"
 import { useEvent, useStore } from "effector-react"
 import { eq, winampStates } from "@/features/media/winamp"
-import { $minimizedEQ, toggleMinimizeEQ } from "@/features/music/eq"
 
 interface EQHeaderProps {
     onMouseDown: (e: MouseEvent<HTMLElement>) => void
@@ -14,11 +13,11 @@ interface EQHeaderProps {
 const WINDOW_NAME = "EQUALIZER"
 
 const EQHeader = ({ onMouseDown, onMouseMove, onMouseUp, onMouseLeave }: EQHeaderProps) => {
-    const minimized = useStore($minimizedEQ)
+    const minimized = useStore(eq.$minimized)
     const windowState = useStore(winampStates.$activeWindow)
     const handleActiveWinow = useEvent(winampStates.changeWindowState)
 
-    const handleMinimize = useEvent(toggleMinimizeEQ)
+    const handleMinimize = useEvent(eq.toggleMinimized)
     const handleCloseEQ = useEvent(eq.toggleVisibleEQ)
 
     const handleOnMouseDown = (e: MouseEvent<HTMLElement>) => {

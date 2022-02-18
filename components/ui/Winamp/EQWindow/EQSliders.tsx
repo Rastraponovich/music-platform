@@ -1,17 +1,16 @@
+import { useEvent, useStore } from "effector-react"
+
 import { eq } from "@/features/media/winamp"
-import { $frequency, $preamp, changePreamp, resetPreamp } from "@/features/music/eq"
-import { useEvent, useList, useStore } from "effector-react"
-import React, { memo, FC } from "react"
+
 import EQSlider from "./EQSlider"
 
 interface EQSlidersProps {}
 
-const EQSliders: FC<EQSlidersProps> = () => {
-    const freq = useStore($frequency)
-    const preamp = useStore($preamp)
+const EQSliders = () => {
+    const bands = useStore(eq.$bands)
+    const preamp = useStore(eq.$preamp)
     const handleChangePreamp = useEvent(eq.changePreampValue)
     const handleResetEQ = useEvent(eq.resetEqBand)
-    const handleResetPreamp = useEvent(resetPreamp)
 
     const handleChangeAllBandsValues = useEvent(eq.changeAllBandsValues)
 
@@ -37,7 +36,7 @@ const EQSliders: FC<EQSlidersProps> = () => {
                 ></button>
             </div>
 
-            {Object.entries(freq).map(([key, value]) => (
+            {Object.entries(bands).map(([key, value]) => (
                 <EQSlider
                     name={key}
                     value={value}
@@ -50,4 +49,4 @@ const EQSliders: FC<EQSlidersProps> = () => {
     )
 }
 
-export default memo(EQSliders)
+export default EQSliders

@@ -108,7 +108,9 @@ export type DummyVizData = {
 
 export type Band = 60 | 170 | 310 | 600 | 1000 | 3000 | 6000 | 12000 | 14000 | 16000
 
-export type TWinampState = "DESTROYED" | "CREATED" | "INIT" | "TRACKLOADED" | "CLOSED"
+export type TWinampState = "DESTROYED" | "CREATED" | "INIT" | "TRACKLOADED" | "CLOSED" | "OPENED"
+
+export type TMediaStatus = "PLAYING" | "STOPPED" | "PAUSED"
 
 export type TWinampWindow = "PLAYER" | "EQUALIZER" | "PLAYLIST" | "NONE"
 
@@ -123,3 +125,24 @@ export type UseDraggbleReturnProps = [
 ]
 
 export interface Track extends Song {}
+
+export interface StereoBalanceNodeType extends AudioNode {
+    constructor(context: AudioContext): StereoBalanceNodeType
+    balance: {
+        value: number
+    }
+}
+
+export type _BANDS = { [key in Band]: BiquadFilterNode }
+
+export type MediaElement = {
+    _context: AudioContext
+    _staticSource: GainNode
+    _balance: StereoBalanceNodeType
+    _preamp: GainNode
+    _analyser: AnalyserNode
+    _gainNode: GainNode
+    _audio: HTMLAudioElement
+    _source: MediaElementAudioSourceNode
+    _bands: _BANDS
+}
