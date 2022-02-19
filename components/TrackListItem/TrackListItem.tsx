@@ -15,6 +15,8 @@ import Annotation from "../ui/icons/Annotation/Annotation"
 import { playlist, winamp, winampControls, winampStates } from "@/features/media/winamp"
 import { MEDIA_STATUS } from "@/features/media/constants"
 import { WINAMP_STATE } from "@/features/music/constants"
+import Comment from "./Comment"
+import clsx from "clsx"
 
 interface TrackListItemProps {
     track: Song
@@ -44,11 +46,13 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
 
     const [comments, showComments] = useState(false)
 
+    const [focus, setFocus] = useState(false)
+
     const needToShow = isCurrentTrack && mediaStatus !== MEDIA_STATUS.STOPPED
 
     return (
         <div className="flex  flex-col">
-            <div className="grid grid-cols-12 items-center rounded bg-white py-2 shadow-sm">
+            <div className="grid grid-cols-12 items-center rounded bg-white pt-2 shadow-sm">
                 <button onClick={play} className="col-span-1 justify-self-center">
                     {isCurrentTrack ? (
                         mediaStatus === "PLAYING" ? (
@@ -99,7 +103,35 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
                         <Annotation size="normal" />
                     </button>
                 </div>
-                {comments && <div className="col-span-12 bg-gray-600 p-10">asdsads</div>}
+                {comments && (
+                    <div className="col-span-12 mt-2 flex flex-col space-y-2 border pt-5">
+                        <Comment />
+
+                        <form
+                            onSubmit={(e) => e.preventDefault()}
+                            className="flex flex-col space-y-2 rounded border border-gray-300 p-4"
+                        >
+                            <label htmlFor="">
+                                <span
+                                    className={clsx(
+                                        "text-md text-gray-500 first-letter:capitalize",
+                                        focus && "text-black"
+                                    )}
+                                >
+                                    Новое сообщение
+                                </span>
+                            </label>
+                            <textarea
+                                className="resize-none rounded border border-gray-300 p-2 text-sm"
+                                rows={3}
+                                onFocus={() => setFocus((prev) => !prev)}
+                            />
+                            <button type="submit" className="btn btn-xs self-start">
+                                submit
+                            </button>
+                        </form>
+                    </div>
+                )}
             </div>
         </div>
     )

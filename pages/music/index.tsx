@@ -16,6 +16,8 @@ import {
 
 import TrackListItem from "@/components/TrackListItem/TrackListItem"
 import { winamp } from "@/features/media/winamp"
+import PlayIcon from "@/components/ui/icons/PlayIcon/PlayIcon"
+import WinampIcon from "@/components/ui/icons/WinampIcon/WinampIcon"
 
 interface MusicPageProps {}
 
@@ -47,9 +49,12 @@ const MusicPage: FC<MusicPageProps> = () => {
                     onChange={(e) => handleSearch(e.target.value)}
                 />
             </label>
-            <div className="mb-4 flex justify-end space-x-2">
-                <button onClick={handleShowWinamp}>showPlayer</button>
-                <button onClick={hanldePlayAll} className="btn">
+            <div className="flex justify-start space-x-2">
+                <button onClick={handleShowWinamp} className="btn no-animation btn-square btn-xs">
+                    <WinampIcon size="extraSmall" />
+                </button>
+                <button onClick={hanldePlayAll} className="btn no-animation btn-xs gap-2 ">
+                    <PlayIcon size="extraSmall" />
                     play all tracks
                 </button>
             </div>

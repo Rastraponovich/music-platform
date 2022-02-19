@@ -14,7 +14,8 @@ const PlayIcon: FC<PlayIconProps> = ({ size = "normal", color = "currentColor" }
             className={clsx(
                 size === "normal" && "h-16 w-16",
                 size === "small" && "h-8 w-8",
-                size === "large" && "h-20 w-20"
+                size === "large" && "h-20 w-20",
+                size === "extraSmall" && "h-4 w-4"
             )}
             viewBox="0 0 20 20"
             fill={color}

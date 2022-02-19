@@ -1,4 +1,4 @@
-export type TIconSize = "small" | "normal" | "large"
+export type TIconSize = "small" | "normal" | "large" | "extraSmall"
 
 export type TIconSizes = {
     [key in TIconSize]: string
