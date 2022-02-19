@@ -47,11 +47,14 @@ const MusicPage: FC<MusicPageProps> = () => {
                     onChange={(e) => handleSearch(e.target.value)}
                 />
             </label>
+            <div className="mb-4 flex justify-end space-x-2">
+                <button onClick={handleShowWinamp}>showPlayer</button>
+                <button onClick={hanldePlayAll} className="btn">
+                    play all tracks
+                </button>
+            </div>
 
-            <button onClick={handleShowWinamp}>showPlayer</button>
-            <button onClick={hanldePlayAll}>play all tracks</button>
-
-            <section className="flex flex-col">
+            <section className="flex flex-col py-4">
                 <div className="flex  flex-col divide-y-2 divide-gray-200">
                     {useList($songs, {
                         keys: [currentTrack, countSongs],

@@ -1,7 +1,16 @@
 import { getClientScope, useScope } from "@/hooks/useScope"
 import { Nullable } from "@/types"
 import { baseSkinColors } from "@/types/ui.types"
-import { sample, createEffect, createEvent, createStore, guard, scopeBind, split } from "effector"
+import {
+    sample,
+    createEffect,
+    createEvent,
+    createStore,
+    guard,
+    scopeBind,
+    split,
+    forward,
+} from "effector"
 import { debug, delay } from "patronum"
 import { ChangeEvent, MouseEvent } from "react"
 import { $songs } from "../music"
@@ -20,6 +29,8 @@ import {
 } from "../music/types"
 import StereoBalanceNode from "./StereoBalanceNode"
 import { createWinampProgressFactory } from "../music/winamp-progress"
+import { createWinampVolumeFactory } from "../music/winamp-volume"
+import { createWinampBalanceFactory } from "../music/winamp-balance"
 
 declare global {
     interface Window {
@@ -40,8 +51,8 @@ const Emitter = {
     },
     onEmptied: (e: Event) => {},
     onEnded: (e: Event) => {
-        const callCheckNextTrack = scopeBind(checkNextTrack, { scope: getClientScope()! })
-        callCheckNextTrack()
+        const callPlayNextTrack = scopeBind(playNextTrack, { scope: getClientScope()! })
+        callPlayNextTrack()
     },
     onError: (e: Event) => {},
     onLoadedData: (e: Event) => {},
@@ -82,7 +93,7 @@ const Emitter = {
     },
     onVolumeChange: (event: Event) => {
         const audioElement = event.currentTarget as HTMLAudioElement
-        const callSetVolume = scopeBind(setVolume, { scope: getClientScope()! })
+        const callSetVolume = scopeBind(winampVolume.setVolume, { scope: getClientScope()! })
         callSetVolume(audioElement.volume * 100)
     },
     onWaiting: (e: Event) => {},
@@ -331,8 +342,6 @@ sample({
     target: $winampState,
 })
 
-debug(checkInitWinamp, $winampState)
-
 const checkLoadedFirstTrack = guard({
     clock: $winampState,
     filter: (state) => state === WINAMP_STATE.TRACKLOADED,
@@ -372,6 +381,9 @@ sample({
     fn: (track, _) => `${process.env.NEXT_PUBLIC_BACKEND}/music/${track!.path}`,
     target: loadUrl,
 })
+
+const winampProgress = createWinampProgressFactory($Media, $currentTrack)
+const winampVolume = createWinampVolumeFactory($Media)
 
 const $playList = createStore<Track[]>([])
     .on(selectTrackFromList, (_, track) => [track])
@@ -430,34 +442,28 @@ const startPlayFromBegginingFx = createEffect<MediaElement, void>((media) => {
 })
 
 //when track ended check next track in playlist exists
-const checkNextTrack = createEvent()
+const playNextTrack = createEvent()
 // checking playlist is emtpy state
 
-const checkNextTrackInPlaylistQuene = guard({
-    clock: checkNextTrack,
+const checkPlayNextTrack = guard({
+    clock: playNextTrack,
     source: $playListLength,
     filter: (playlistLength, _) => playlistLength > 0,
 })
 
-const whenShuffleOn = guard({
-    clock: checkNextTrackInPlaylistQuene,
-    source: $shuffle,
-    filter: (shuffle, _) => shuffle,
-})
-const whenShuffleOff = guard({
-    clock: checkNextTrackInPlaylistQuene,
+const checkPlayNextTrackNoShuffle = guard({
+    clock: checkPlayNextTrack,
     source: $shuffle,
     filter: (shuffle, _) => !shuffle,
 })
 
 //when playlist is not empty check currentTrackIndex in playlist if not last put next, otherwise put first
-const selectNextTrackInPlaylistQueue = sample({
-    clock: checkNextTrackInPlaylistQuene,
-    source: $currentPlayedTrackIndexPlaylist,
+const playNextTrackNoShuffle = sample({
+    clock: checkPlayNextTrackNoShuffle,
+    source: [$currentPlayedTrackIndexPlaylist, $playListLength],
 
-    fn: (currentIndex, playListLength) => {
-        const lastTrack = currentIndex === playListLength - 1
-
+    fn: ([currentIndex, playListLength], _) => {
+        const lastTrack = currentIndex === playListLength! - 1
         if (lastTrack) return 0
         return currentIndex! + 1
     },
@@ -465,9 +471,39 @@ const selectNextTrackInPlaylistQueue = sample({
 
 //set new Track index in currentPlayedTrackIndexPlaylist
 sample({
-    clock: selectNextTrackInPlaylistQueue,
+    clock: playNextTrackNoShuffle,
     fn: (newTrackIndex) => newTrackIndex,
-    target: setCcurrentPlayedTrackIndexPlaylist,
+    target: $currentPlayedTrackIndexPlaylist,
+})
+
+// when Shuffle is ON
+const checkPlayNextTrackShuffled = guard({
+    clock: checkPlayNextTrack,
+    source: $shuffle,
+    filter: (shuffle, _) => shuffle,
+})
+
+sample({
+    clock: checkPlayNextTrackShuffled,
+    source: [$playListLength, $currentPlayedTrackIndexPlaylist],
+    fn: ([playListLength, currentTrack], _) => {
+        const max = playListLength!
+
+        const generateRandom = (max: number, exp: number) => {
+            let number
+            while (true) {
+                number = Math.floor(Math.random() * max)
+
+                if (number != exp) {
+                    return number
+                }
+            }
+        }
+        const result = generateRandom(max, currentTrack!)
+
+        return result
+    },
+    target: $currentPlayedTrackIndexPlaylist,
 })
 
 //setting new Track in CurrentTrack
@@ -477,16 +513,6 @@ sample({
     fn: (playlist, newTrackIndex) => ({ ...playlist[newTrackIndex!] }),
     target: $currentTrack,
 })
-debug($playList)
-
-//Timing
-
-// const toggleTimeMode = createEvent()
-// const $timeMode = createStore<TIME_MODE>(TIME_MODE.ELAPSED).on(toggleTimeMode, (state, _) =>
-//     state === TIME_MODE.ELAPSED ? TIME_MODE.REMAINING : TIME_MODE.ELAPSED
-// )
-
-const winampProgress = createWinampProgressFactory($Media, $currentTrack)
 
 const $durationTracksInPlaylist = createStore<number>(0).on($playList, (_, tracks) => {
     let initDuration = 0
@@ -495,39 +521,6 @@ const $durationTracksInPlaylist = createStore<number>(0).on($playList, (_, track
         initDuration
     )
     return currentDuration
-})
-//timer for UI
-
-//Volume
-const setVolume = createEvent<number>()
-const changeVolume = createEvent<ChangeEvent<HTMLInputElement>>()
-const $volume = createStore<number>(50).on(setVolume, (_, volume) => volume)
-
-//change Volume from UI
-guard({
-    source: sample({
-        clock: changeVolume,
-        source: $Media,
-        fn: (media, event) => [media?._audio, event],
-    }),
-    filter: (sourceTuple): sourceTuple is [HTMLAudioElement, ChangeEvent<HTMLInputElement>] =>
-        sourceTuple[0] instanceof HTMLAudioElement,
-    target: createEffect<[HTMLAudioElement, ChangeEvent<HTMLInputElement>], void>(
-        ([audio, event]) => {
-            audio.volume = Number(event.target.value) / 100
-        }
-    ),
-})
-
-//reset volume to default from ui
-const resetVolume = createEvent()
-guard({
-    source: sample({ clock: resetVolume, source: $Media, fn: (media) => [media!._audio] }),
-    filter: (sourceTuple): sourceTuple is [HTMLAudioElement] =>
-        sourceTuple[0] instanceof HTMLAudioElement,
-    target: createEffect<[HTMLAudioElement], void>(([audio]) => {
-        audio.volume = 0.5
-    }),
 })
 
 //Controls
@@ -603,34 +596,15 @@ sample({
 sample({
     clock: onDoubleClickedTrackInPlaylist,
     source: $Media,
-    fn: (media, _) => media as MediaElement,
-    target: startPlayFromBegginingFx,
+    filter: (Media, _): Media is MediaElement => Media?._audio instanceof HTMLAudioElement,
+    target: onPlayClicked,
 })
-
-sample({ clock: startPlayFromBegginingFx.done, target: onPlayClicked })
 
 const nextTrackClicked = createEvent()
 
-const checkNextTrackClicked = guard({
-    clock: nextTrackClicked,
-    source: $playListLength,
-    filter: (playListLength, _) => playListLength > 0,
-})
-
-const playNextTrackNoShuffle = guard({
-    clock: checkNextTrackClicked,
-    source: $shuffle,
-    filter: (shuffle, _) => !shuffle,
-})
-
-sample({
-    clock: playNextTrackNoShuffle,
-    source: [$playListLength, $currentPlayedTrackIndexPlaylist],
-    fn: ([playListLength, currentTrackId], _) => {
-        if (currentTrackId! === playListLength! - 1) return 0
-        return currentTrackId! + 1
-    },
-    target: $currentPlayedTrackIndexPlaylist,
+forward({
+    from: nextTrackClicked,
+    to: playNextTrack,
 })
 
 const prevTrackClicked = createEvent()
@@ -658,14 +632,14 @@ sample({
     target: $currentPlayedTrackIndexPlaylist,
 })
 
-const playNextShuffledTrack = guard({
-    clock: [checkNextTrackClicked, checkPrevTrackClicked],
+const checkPlayPrevTrackShuffled = guard({
+    clock: checkPrevTrackClicked,
     source: $shuffle,
     filter: (shuffle, _) => shuffle,
 })
 
 sample({
-    clock: playNextShuffledTrack,
+    clock: checkPlayPrevTrackShuffled,
     source: [$playListLength, $currentPlayedTrackIndexPlaylist],
     fn: ([playListLength, currentTrack], _) => {
         const max = playListLength!
@@ -689,44 +663,12 @@ sample({
 
 //balance Control
 
+const winampBalance = createWinampBalanceFactory($Media)
+
 const initbalace = (value: number) => {
-    const callSetBalance = scopeBind(setBalance, { scope: getClientScope()! })
+    const callSetBalance = scopeBind(winampBalance.setBalance, { scope: getClientScope()! })
     callSetBalance(value * 100)
 }
-
-const setBalance = createEvent<number>()
-const changeBalance = createEvent<ChangeEvent<HTMLInputElement>>()
-const resetBalance = createEvent()
-const $currentBalance = createStore<number>(0)
-    .on(setBalance, (_, newBalance) => newBalance)
-    .reset(resetBalance)
-//change balance from ui
-sample({
-    clock: changeBalance,
-    source: $Media,
-    fn: (media, event) => [media, event] as [Nullable<MediaElement>, ChangeEvent<HTMLInputElement>],
-    target: createEffect<[Nullable<MediaElement>, ChangeEvent<HTMLInputElement>], void>(
-        ([media, event]) => {
-            media!._balance.balance.value = Number(event.target.value) / 100
-        }
-    ),
-})
-
-sample({
-    clock: resetBalance,
-    source: $Media,
-    fn: (Media, _) => Media,
-    target: createEffect<Nullable<MediaElement>, void>((media) => {
-        media!._balance.balance.value = 0
-    }),
-})
-
-sample({
-    clock: changeBalance,
-    fn: (event) => Number(event.target.value),
-
-    target: setBalance,
-})
 
 /** ------------work with window winamp---------- */
 
@@ -811,9 +753,9 @@ guard({
 })
 
 export const balance = {
-    $currentBalance,
-    changeBalance,
-    resetBalance,
+    $currentBalance: winampBalance.$currentBalance,
+    changeBalance: winampBalance.changeBalance,
+    resetBalance: winampBalance.resetBalance,
 }
 
 export const winampControls = {
@@ -852,9 +794,9 @@ export const progress = {
 }
 
 export const volume = {
-    $volume,
-    resetVolume,
-    changeVolume,
+    $volume: winampVolume.$volume,
+    resetVolume: winampVolume.resetVolume,
+    changeVolume: winampVolume.changeVolume,
 }
 
 export const duration = {

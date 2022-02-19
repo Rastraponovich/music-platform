@@ -8,7 +8,9 @@
                 "factories": [
                     "/models/factories",
                     "/features/music/winamp-eq",
-                    "/features/music/winamp-progress"
+                    "/features/music/winamp-progress",
+                    "/features/music/winamp-volume",
+                    "/features/music/winamp-balance"
                 ]
             }
         ]

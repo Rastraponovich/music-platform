@@ -1,3 +1,4 @@
+import { getClientScope } from "@/hooks/useScope"
 import { Nullable } from "@/types"
 import { createEffect, createEvent, createStore, sample, scopeBind, Store } from "effector"
 import { debug } from "patronum"
@@ -33,21 +34,21 @@ export const createEQFactory = ($Media: Store<Nullable<MediaElement>>) => {
         media._staticSource.disconnect()
         media._staticSource.connect(media._preamp)
 
-        const callEnabledEQScoped = scopeBind(toggleEnabledEQ)
+        const callEnabledEQScoped = scopeBind(toggleEnabledEQ, { scope: getClientScope()! })
         callEnabledEQScoped()
     })
 
     const disableEQFx = createEffect<MediaElement, void>((media) => {
         media._staticSource.disconnect()
         media._staticSource.connect(media._balance)
-        const callEnabledEQScoped = scopeBind(toggleEnabledEQ)
+        const callEnabledEQScoped = scopeBind(toggleEnabledEQ, { scope: getClientScope()! })
         callEnabledEQScoped()
     })
 
     const resetEqBandFx = createEffect<[MediaElement, string], void>(([media, name]) => {
         const bandName = Number(name) as keyof _BANDS
         media._bands[bandName].gain.value = 0
-        const callResetBandScoped = scopeBind(setBand)
+        const callResetBandScoped = scopeBind(setBand, { scope: getClientScope()! })
         callResetBandScoped({ [bandName]: 50 } as Record<Band, number>)
     })
 
@@ -60,7 +61,7 @@ export const createEQFactory = ($Media: Store<Nullable<MediaElement>>) => {
             const bandName = Number(name) as keyof _BANDS
             const db = (snapBandValue / 100) * 24 - 12
             media!._bands[bandName].gain.value = db
-            const callSetBandScoped = scopeBind(setBand)
+            const callSetBandScoped = scopeBind(setBand, { scope: getClientScope()! })
             callSetBandScoped({ [bandName]: snapBandValue } as Record<Band, number>)
         }
     )
@@ -72,7 +73,7 @@ export const createEQFactory = ($Media: Store<Nullable<MediaElement>>) => {
             const db = (value / 100) * 24 - 12
             media._preamp.gain.value = Math.pow(10, db / 20)
 
-            const callChangePreampScoped = scopeBind(setPreamp)
+            const callChangePreampScoped = scopeBind(setPreamp, { scope: getClientScope()! })
             callChangePreampScoped(value)
         }
     )
@@ -95,7 +96,7 @@ export const createEQFactory = ($Media: Store<Nullable<MediaElement>>) => {
         Object.entries(media._bands).forEach(([key, band]) => {
             band.gain.value = db
         })
-        const callChangeAllBandsScoped = scopeBind(changeAllBands)
+        const callChangeAllBandsScoped = scopeBind(changeAllBands, { scope: getClientScope()! })
         callChangeAllBandsScoped(event)
     })
 
@@ -204,6 +205,7 @@ export const createEQFactory = ($Media: Store<Nullable<MediaElement>>) => {
             Object.entries(state).forEach(([key, band]) => {
                 result = { ...result, [key]: newValue }
             })
+
             return result
         })
 
@@ -214,8 +216,6 @@ export const createEQFactory = ($Media: Store<Nullable<MediaElement>>) => {
     const $preamp = createStore<number>(50)
         .on(setPreamp, (_, value) => value)
         .reset(resetPreamp)
-
-    debug(setBand, $bands)
 
     return {
         $bands,
