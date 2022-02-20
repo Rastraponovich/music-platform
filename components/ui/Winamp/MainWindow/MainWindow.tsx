@@ -2,7 +2,7 @@ import clsx from "clsx"
 import { useStore } from "effector-react"
 import { useRef } from "react"
 
-import { winampStates } from "@/features/media/winamp"
+import { winamp, winampStates } from "@/features/media/winamp"
 
 import { useDraggable } from "@/hooks/useDraggable"
 import { useInitPlayer } from "@/hooks/useInitPlayer"
@@ -27,6 +27,9 @@ const MainWindow = () => {
     useInitPlayer()
 
     const visiblePlayer = useStore(winampStates.$visiblePlayer)
+
+    const shade = useStore(winampStates.$shadePlayer)
+
     const useChangeCurentTimeHook = useChangeCurentTime()
     const ref = useRef(null)
 
@@ -36,10 +39,11 @@ const MainWindow = () => {
         <aside
             id="main-window"
             className={clsx(
-                "fixed z-50  flex h-[116px] max-h-[116px] cursor-winamp flex-col bg-transparent pb-[9px] shadow-md",
+                "fixed z-50  flex h-[116px]  cursor-winamp flex-col bg-transparent pb-[9px] shadow-md",
                 // hidden && " overflow-hidden", //minimize state
                 "w-[275px]",
-                !visiblePlayer && "hidden"
+                !visiblePlayer && "hidden",
+                shade && "max-h-3.5 overflow-hidden pb-0"
             )}
             ref={ref}
         >

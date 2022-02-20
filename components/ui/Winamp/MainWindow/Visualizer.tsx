@@ -4,12 +4,15 @@ import { useState, useMemo, useCallback, useEffect } from "react"
 import { usePaintBar, usePaintBarFrame } from "@/hooks/useBarVisualizer"
 import { usePaintOscilloscopeFrame } from "@/hooks/useOscilloscopeVisualizer"
 
-import { $baseSkinColors, $Media, winamp } from "@/features/media/winamp"
+import { $baseSkinColors, $Media, winamp, winampStates } from "@/features/media/winamp"
 import { $dummyVizData, $visualizerStyle, toggleVisualizerStyle } from "@/features/media/visualizer"
 
 import { VISUALIZERS } from "@/features/music/constants"
+import clsx from "clsx"
 
-interface VisualizerProps {}
+interface VisualizerProps {
+    className?: string
+}
 
 const PIXEL_DENSITY = 2
 
@@ -43,7 +46,7 @@ function preRenderBg(
     return bgCanvas
 }
 
-const Visualizer = () => {
+const Visualizer = ({ className }: VisualizerProps) => {
     const mediaStatus = useStore(winamp.$mediaStatus)
     const style = useStore($visualizerStyle)
     const dummyVizData = useStore($dummyVizData)
@@ -54,7 +57,7 @@ const Visualizer = () => {
     const analyser = media._analyser
     const toggleVisualizer = useEvent(toggleVisualizerStyle)
 
-    const windowShade = false
+    const windowShade = useStore(winampStates.$shadePlayer)
 
     const renderWidth = windowShade ? 38 : 76
     const renderHeight = windowShade ? 5 : 16
@@ -152,7 +155,10 @@ const Visualizer = () => {
 
     return (
         <canvas
-            className="h-4 w-[76px]"
+            className={clsx(
+                " h-4 w-[76px]",
+                windowShade ? "top-[5px] left-[79px]" : "top-[43px] left-[24px]"
+            )}
             id="visualizer"
             ref={setCanvas}
             style={{ width: renderWidth, height: renderHeight }}

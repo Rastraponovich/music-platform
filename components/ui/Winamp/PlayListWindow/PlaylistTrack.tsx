@@ -12,9 +12,9 @@ interface PlaylistTrackProps {
 }
 
 const PlaylistTrack = ({ track, index }: PlaylistTrackProps) => {
-    const currentIndex = useStore(playlist.$currentPlayedTrackIndexPlaylist)
-    const highlightTrackInPlaylist = useStore(playlist.$selectedTrackInPlayList)
-    const handleHighLightTrack = useEvent(playlist.highlightTrackInPlaylist)
+    const currentIndex = useStore(playlist.$currentPlayedTrackIndex)
+    const selectedTrackInPlaylist = useStore(playlist.$selectedTrackInPlayList)
+    const handleSelectTrackInPlaylist = useEvent(playlist.selectTrackInPlaylist)
     const handleSelectNewTrack = useEvent(playlist.doubleClick)
 
     const firstMinute = useMemo(() => Math.floor(track.metaData.format.duration / 60), [track])
@@ -23,13 +23,13 @@ const PlaylistTrack = ({ track, index }: PlaylistTrackProps) => {
 
     return (
         <div
-            onClick={() => handleHighLightTrack(index)}
+            onClick={() => handleSelectTrackInPlaylist(index)}
             onDoubleClick={() => handleSelectNewTrack(index)}
             // onKeyPress={(e) => useEscapeFn(e)}
             // onKeyDown={(e) => useEscapeFn(e)}
             className={clsx(
                 "flex select-none justify-between px-1 text-[9px]",
-                highlightTrackInPlaylist === index && "bg-[#0000C6]",
+                selectedTrackInPlaylist === index && "bg-[#0000C6]",
                 currentIndex === index ? "text-white" : "text-[#00FF00] "
             )}
         >

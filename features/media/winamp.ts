@@ -1,25 +1,13 @@
-import { getClientScope, useScope } from "@/hooks/useScope"
+import { getClientScope } from "@/hooks/useScope"
 import { Nullable } from "@/types"
 import { baseSkinColors } from "@/types/ui.types"
-import {
-    sample,
-    createEffect,
-    createEvent,
-    createStore,
-    guard,
-    scopeBind,
-    split,
-    forward,
-} from "effector"
-import { debug, delay } from "patronum"
-import { ChangeEvent, MouseEvent } from "react"
+import { sample, createEffect, createEvent, createStore, guard, scopeBind, forward } from "effector"
+
 import { $songs } from "../music"
 import { BANDS, MEDIA_STATUS, WINAMP_STATE, WINAMP_WINDOW_STATE } from "../music/constants"
-import { createEQFactory } from "../music/winamp-eq"
 import {
     Band,
     Track,
-    TIME_MODE,
     TWinampState,
     TWinampWindow,
     MediaElement,
@@ -28,9 +16,13 @@ import {
     TMediaStatus,
 } from "../music/types"
 import StereoBalanceNode from "./StereoBalanceNode"
-import { createWinampProgressFactory } from "../music/winamp-progress"
-import { createWinampVolumeFactory } from "../music/winamp-volume"
-import { createWinampBalanceFactory } from "../music/winamp-balance"
+import {
+    createWinampPlaylistFactory,
+    createWinampVolumeFactory,
+    createWinampProgressFactory,
+    createWinampBalanceFactory,
+    createWinampEQFactory,
+} from "../music/winamp-volume"
 
 declare global {
     interface Window {
@@ -40,13 +32,29 @@ declare global {
         }
     }
 }
+
+const startPlayFromBegginingFx = createEffect<MediaElement, void>((media) => {
+    media._audio.currentTime = 0
+})
+
+const startPlayingFx = createEffect<MediaElement, void>((media) => {
+    media._audio.play()
+})
+
+const pausePlayingFx = createEffect<MediaElement, void>(({ _audio }) => _audio.pause())
+
+const stopPlayingFx = createEffect<MediaElement, void>(({ _audio }) => {
+    _audio.pause()
+    _audio.currentTime = 0
+})
+
 const Emitter = {
     onAbort: (e: Event) => {},
     onCanPlay: (e: Event) => {},
     onCanPlayThrough: (e: Event) => {},
     onDurationChange: (event: Event) => {
         const audioElement = event.currentTarget as HTMLAudioElement
-        const callSetDuration = scopeBind(winampProgress.setDuration, { scope: getClientScope()! })
+        const callSetDuration = scopeBind(setDuration, { scope: getClientScope()! })
         callSetDuration(audioElement.duration)
     },
     onEmptied: (e: Event) => {},
@@ -62,19 +70,19 @@ const Emitter = {
         const callSetIsPlaying = scopeBind(setMediaStatus, {
             scope: getClientScope()!,
         })
-        callSetIsPlaying("PAUSED")
+        callSetIsPlaying(MEDIA_STATUS.PAUSED)
     },
     onPlay: (event: Event) => {
         const callSetIsPlaying = scopeBind(setMediaStatus, {
             scope: getClientScope()!,
         })
-        callSetIsPlaying("PLAYING")
+        callSetIsPlaying(MEDIA_STATUS.PLAYING)
     },
     onPlaying: (event: Event) => {
         const callSetIsPlaying = scopeBind(setMediaStatus, {
             scope: getClientScope()!,
         })
-        callSetIsPlaying("PLAYING")
+        callSetIsPlaying(MEDIA_STATUS.PLAYING)
     },
     onProgress: (e: Event) => {},
     onRateChange: (e: Event) => {},
@@ -85,7 +93,7 @@ const Emitter = {
     onTimeUpdate: (event: Event) => {
         const audio = event.currentTarget as HTMLAudioElement
 
-        const callSetCurrentTime = scopeBind(winampProgress.setCurrentTime, {
+        const callSetCurrentTime = scopeBind(setCurrentTime, {
             scope: getClientScope()!,
         })
 
@@ -93,7 +101,7 @@ const Emitter = {
     },
     onVolumeChange: (event: Event) => {
         const audioElement = event.currentTarget as HTMLAudioElement
-        const callSetVolume = scopeBind(winampVolume.setVolume, { scope: getClientScope()! })
+        const callSetVolume = scopeBind(setVolume, { scope: getClientScope()! })
         callSetVolume(audioElement.volume * 100)
     },
     onWaiting: (e: Event) => {},
@@ -225,8 +233,6 @@ const createWinampFx = createEffect<any, any, any>(() => {
     }
 })
 
-const equalizer = createEQFactory($Media)
-
 guard({
     clock: destroyWinamp,
     source: $Media,
@@ -282,6 +288,10 @@ const $winampState = createStore<TWinampState>(WINAMP_STATE.DESTROYED).on(
 
 const $visiblePlayer = createStore<boolean>(false)
 
+const toggleShadePlayer = createEvent()
+
+const $shadePlayer = createStore<boolean>(false).on(toggleShadePlayer, (state, _) => !state)
+
 //function has load track in Media._audio
 const loadUrl = createEvent<string>()
 sample({
@@ -320,15 +330,11 @@ guard({
 const toggleShuffle = createEvent()
 const $shuffle = createStore<boolean>(false).on(toggleShuffle, (state, _) => !state)
 
-const addTrackToPlaylist = createEvent<Track>()
 const removeTrackFromPlaylist = createEvent<number>()
 
 const selectTrackFromList = createEvent<Track>()
 
 $winampState.on(selectTrackFromList, () => WINAMP_STATE.TRACKLOADED)
-
-const toggleVisiblePlaylist = createEvent()
-const $visiblePlaylist = createStore<boolean>(false).on(toggleVisiblePlaylist, (state, _) => !state)
 
 const checkInitWinamp = guard({
     clock: selectTrackFromList,
@@ -340,28 +346,6 @@ sample({
     clock: checkInitWinamp,
     fn: () => WINAMP_STATE.TRACKLOADED,
     target: $winampState,
-})
-
-const checkLoadedFirstTrack = guard({
-    clock: $winampState,
-    filter: (state) => state === WINAMP_STATE.TRACKLOADED,
-})
-
-sample({
-    clock: checkLoadedFirstTrack,
-    fn: () => true,
-    target: [equalizer.$visibleEQ, $visiblePlaylist, $visiblePlayer],
-})
-
-const checkDestroyWinamp = guard({
-    clock: $winampState,
-    filter: (state) => state === WINAMP_STATE.DESTROYED,
-})
-
-sample({
-    clock: checkDestroyWinamp,
-    fn: () => false,
-    target: [$visiblePlaylist, equalizer.$visibleEQ, $visiblePlayer],
 })
 
 const $currentTrack = createStore<Nullable<Track>>(null).on(
@@ -382,38 +366,82 @@ sample({
     target: loadUrl,
 })
 
-const winampProgress = createWinampProgressFactory($Media, $currentTrack)
-const winampVolume = createWinampVolumeFactory($Media)
+const {
+    toggleTimeMode,
+    setDuration,
+    setCurrentTime,
+    seekingCurrentTime,
+    onmouseup,
+    onmousedown,
+    keyChangeCurrentTimeFx,
+    keyChangeCurrentTime,
+    changeCurrentTimeFx,
+    changeCurrentTime,
+    $timer,
+    $timeMode,
+    $seekingProgress,
+    $currentTrackTimeRemaining,
+    $currentTrackDuration,
+    $currentTime,
+    $allowSeeking,
+} = createWinampProgressFactory($Media, $currentTrack)
 
-const $playList = createStore<Track[]>([])
+const { setVolume, resetVolume, changeVolume, $volume } = createWinampVolumeFactory($Media)
+const {
+    toggleVisibleEQ,
+    toggleAutoEQ,
+    enableClickedEQ,
+    toggleMinimizeEQ,
+    resetEqBand,
+    disableClickedEQ,
+    changePreampValue,
+    changeEQBand,
+    changeAllBandsValues,
+    $visibleEQ,
+    $preamp,
+    $minimizedEQ,
+    $enabledEQ,
+    $bands,
+    $autoEQ,
+} = createWinampEQFactory($Media)
+
+const {
+    $playlist,
+    addTrackToPlaylist,
+    $playlistLength,
+    $selectedTrackInPlaylist,
+    selectTrackInPlaylist,
+    doubleClickedTrackInPlaylist,
+    $currentPlayedTrackIndex,
+    setCurrentPlayedTrackIndex,
+    $durationTracksInPlaylist,
+    $visiblePlaylist,
+    toggleVisiblePlaylist,
+} = createWinampPlaylistFactory()
+
+const { setBalance, resetBalance, changeBalance, $currentBalance } =
+    createWinampBalanceFactory($Media)
+
+const initbalace = (value: number) => {
+    const callSetBalance = scopeBind(setBalance, { scope: getClientScope()! })
+    callSetBalance(value * 100)
+}
+
+$playlist
     .on(selectTrackFromList, (_, track) => [track])
-    .on(addTrackToPlaylist, (tracks, track) => [...tracks, track])
     .on(removeTrackFromPlaylist, (tracks, id) => tracks.filter((track, index) => index !== id))
 
-const $playListLength = $playList.map((state) => state.length)
+$selectedTrackInPlaylist.reset(removeTrackFromPlaylist)
 
-const highlightTrackInPlaylist = createEvent<number>()
+$currentPlayedTrackIndex.on(selectTrackFromList, () => 0)
 
-const $selectedTrackInPlayList = createStore<Nullable<number>>(null)
-    .on(highlightTrackInPlaylist, (_, id) => id)
-    .reset(removeTrackFromPlaylist)
-
-const onDoubleClickedTrackInPlaylist = createEvent<number>()
-
-const setCcurrentPlayedTrackIndexPlaylist = createEvent<number>()
-
-const $currentPlayedTrackIndexPlaylist = createStore<Nullable<number>>(null)
-    .on(selectTrackFromList, () => 0)
-    .on(onDoubleClickedTrackInPlaylist, (_, id) => id)
-    .on(setCcurrentPlayedTrackIndexPlaylist, (_, id) => id)
-
-const $removedTrackId = createStore<Nullable<number>>(null)
-    .on(removeTrackFromPlaylist, (_, id) => id)
-    .reset([selectTrackFromList, $currentTrack])
+// const $removedTrackId = createStore<Nullable<number>>(null)
+//     .on(removeTrackFromPlaylist, (_, id) => id)
+//     .reset([selectTrackFromList, $currentTrack])
 
 const decrementCurrentPlayedIndex = guard({
     clock: removeTrackFromPlaylist,
-    source: $currentPlayedTrackIndexPlaylist,
+    source: $currentPlayedTrackIndex,
     filter: (currentIndex, removedIndex) => {
         if (currentIndex === removedIndex) return false
         if (currentIndex !== null) {
@@ -425,20 +453,16 @@ const decrementCurrentPlayedIndex = guard({
 
 sample({
     clock: decrementCurrentPlayedIndex,
-    source: $currentPlayedTrackIndexPlaylist,
+    source: $currentPlayedTrackIndex,
     fn: (currentIndex, _) => currentIndex! - 1,
-    target: $currentPlayedTrackIndexPlaylist,
+    target: setCurrentPlayedTrackIndex,
 })
 
 sample({
-    clock: $currentPlayedTrackIndexPlaylist,
-    source: $playList,
+    clock: $currentPlayedTrackIndex,
+    source: $playlist,
     fn: (playlist, id) => playlist[id!],
     target: $currentTrack,
-})
-
-const startPlayFromBegginingFx = createEffect<MediaElement, void>((media) => {
-    media._audio.currentTime = 0
 })
 
 //when track ended check next track in playlist exists
@@ -447,7 +471,7 @@ const playNextTrack = createEvent()
 
 const checkPlayNextTrack = guard({
     clock: playNextTrack,
-    source: $playListLength,
+    source: $playlistLength,
     filter: (playlistLength, _) => playlistLength > 0,
 })
 
@@ -460,7 +484,7 @@ const checkPlayNextTrackNoShuffle = guard({
 //when playlist is not empty check currentTrackIndex in playlist if not last put next, otherwise put first
 const playNextTrackNoShuffle = sample({
     clock: checkPlayNextTrackNoShuffle,
-    source: [$currentPlayedTrackIndexPlaylist, $playListLength],
+    source: [$currentPlayedTrackIndex, $playlistLength],
 
     fn: ([currentIndex, playListLength], _) => {
         const lastTrack = currentIndex === playListLength! - 1
@@ -473,7 +497,7 @@ const playNextTrackNoShuffle = sample({
 sample({
     clock: playNextTrackNoShuffle,
     fn: (newTrackIndex) => newTrackIndex,
-    target: $currentPlayedTrackIndexPlaylist,
+    target: $currentPlayedTrackIndex,
 })
 
 // when Shuffle is ON
@@ -485,7 +509,7 @@ const checkPlayNextTrackShuffled = guard({
 
 sample({
     clock: checkPlayNextTrackShuffled,
-    source: [$playListLength, $currentPlayedTrackIndexPlaylist],
+    source: [$playlistLength, $currentPlayedTrackIndex],
     fn: ([playListLength, currentTrack], _) => {
         const max = playListLength!
 
@@ -503,24 +527,15 @@ sample({
 
         return result
     },
-    target: $currentPlayedTrackIndexPlaylist,
+    target: $currentPlayedTrackIndex,
 })
 
 //setting new Track in CurrentTrack
 sample({
-    clock: $currentPlayedTrackIndexPlaylist,
-    source: $playList,
+    clock: $currentPlayedTrackIndex,
+    source: $playlist,
     fn: (playlist, newTrackIndex) => ({ ...playlist[newTrackIndex!] }),
     target: $currentTrack,
-})
-
-const $durationTracksInPlaylist = createStore<number>(0).on($playList, (_, tracks) => {
-    let initDuration = 0
-    const currentDuration = tracks.reduce(
-        (acc, current) => acc + current.metaData.format.duration,
-        initDuration
-    )
-    return currentDuration
 })
 
 //Controls
@@ -550,7 +565,7 @@ guard({
     clock: resumePlaying,
     source: $Media,
     filter: (Media): Media is MediaElement => Media?._audio instanceof HTMLAudioElement,
-    target: createEffect<MediaElement, void>(({ _audio }) => _audio.play()),
+    target: startPlayingFx,
 })
 const onPauseClicked = createEvent()
 
@@ -558,7 +573,7 @@ guard({
     clock: onPauseClicked,
     source: $Media,
     filter: (Media): Media is MediaElement => Media?._audio instanceof HTMLAudioElement,
-    target: createEffect<MediaElement, void>(({ _audio }) => _audio.pause()),
+    target: pausePlayingFx,
 })
 
 const onStopButtonClicked = createEvent<TMediaStatus>()
@@ -567,11 +582,6 @@ sample({
     clock: onStopButtonClicked,
     fn: () => MEDIA_STATUS.STOPPED,
     target: $mediaStatus,
-})
-
-const stopPlayingFx = createEffect<MediaElement, void>(({ _audio }) => {
-    _audio.pause()
-    _audio.currentTime = 0
 })
 
 guard({
@@ -588,16 +598,16 @@ guard({
 // })
 
 sample({
-    clock: onDoubleClickedTrackInPlaylist,
+    clock: doubleClickedTrackInPlaylist,
     fn: () => MEDIA_STATUS.STOPPED,
     target: $mediaStatus,
 })
 
 sample({
-    clock: onDoubleClickedTrackInPlaylist,
+    clock: doubleClickedTrackInPlaylist,
     source: $Media,
     filter: (Media, _): Media is MediaElement => Media?._audio instanceof HTMLAudioElement,
-    target: onPlayClicked,
+    target: startPlayingFx,
 })
 
 const nextTrackClicked = createEvent()
@@ -610,7 +620,7 @@ forward({
 const prevTrackClicked = createEvent()
 const checkPrevTrackClicked = guard({
     clock: prevTrackClicked,
-    source: $playListLength,
+    source: $playlistLength,
     filter: (playListLength, _) => playListLength > 0,
 })
 
@@ -622,14 +632,14 @@ const playPrevTrackNoShuffle = guard({
 
 sample({
     clock: playPrevTrackNoShuffle,
-    source: [$playList, $currentPlayedTrackIndexPlaylist],
+    source: [$playlist, $currentPlayedTrackIndex],
     fn: ([playList, currentTrackId], _) => {
         // @ts-ignore: types error
         if (currentTrackId === 0) return playList.length - 1
         // @ts-ignore: types error
         return currentTrackId - 1
     },
-    target: $currentPlayedTrackIndexPlaylist,
+    target: setCurrentPlayedTrackIndex,
 })
 
 const checkPlayPrevTrackShuffled = guard({
@@ -640,7 +650,7 @@ const checkPlayPrevTrackShuffled = guard({
 
 sample({
     clock: checkPlayPrevTrackShuffled,
-    source: [$playListLength, $currentPlayedTrackIndexPlaylist],
+    source: [$playlistLength, $currentPlayedTrackIndex],
     fn: ([playListLength, currentTrack], _) => {
         const max = playListLength!
 
@@ -658,17 +668,10 @@ sample({
 
         return result
     },
-    target: $currentPlayedTrackIndexPlaylist,
+    target: setCurrentPlayedTrackIndex,
 })
 
 //balance Control
-
-const winampBalance = createWinampBalanceFactory($Media)
-
-const initbalace = (value: number) => {
-    const callSetBalance = scopeBind(winampBalance.setBalance, { scope: getClientScope()! })
-    callSetBalance(value * 100)
-}
 
 /** ------------work with window winamp---------- */
 
@@ -688,16 +691,27 @@ sample({
 
 sample({
     clock: $winampState,
-    filter: (state) => state === WINAMP_STATE.CLOSED,
+    filter: (state) =>
+        state === WINAMP_STATE.CLOSED ||
+        state === WINAMP_STATE.MINIMIZED ||
+        state === WINAMP_STATE.DESTROYED,
     fn: () => false,
-    target: [equalizer.$visibleEQ, $visiblePlayer, $visiblePlaylist],
+    target: [$visibleEQ, $visiblePlayer, $visiblePlaylist],
 })
 
 sample({
     clock: $winampState,
-    filter: (state) => state === WINAMP_STATE.OPENED,
+    filter: (state) => state === WINAMP_STATE.OPENED || state === WINAMP_STATE.TRACKLOADED,
     fn: () => true,
-    target: [equalizer.$visibleEQ, $visiblePlayer, $visiblePlaylist],
+    target: [$visibleEQ, $visiblePlayer, $visiblePlaylist],
+})
+
+const minimizedWinamp = createEvent()
+
+sample({
+    clock: minimizedWinamp,
+    fn: () => WINAMP_STATE.MINIMIZED,
+    target: $winampState,
 })
 
 //winamp window active state
@@ -731,13 +745,13 @@ sample({
     clock: playAllTracksFromList,
     source: $songs,
     fn: (songs, _) => songs,
-    target: $playList,
+    target: $playlist,
 })
 
 sample({
     clock: playAllTracksFromList,
     fn: () => 0,
-    target: $currentPlayedTrackIndexPlaylist,
+    target: $currentPlayedTrackIndex,
 })
 
 sample({
@@ -753,9 +767,9 @@ guard({
 })
 
 export const balance = {
-    $currentBalance: winampBalance.$currentBalance,
-    changeBalance: winampBalance.changeBalance,
-    resetBalance: winampBalance.resetBalance,
+    $currentBalance,
+    changeBalance,
+    resetBalance,
 }
 
 export const winampControls = {
@@ -769,12 +783,12 @@ export const winampControls = {
 }
 
 export const playlist = {
-    doubleClick: onDoubleClickedTrackInPlaylist,
-    $playListLength,
-    $playList,
-    $selectedTrackInPlayList,
-    highlightTrackInPlaylist,
-    $currentPlayedTrackIndexPlaylist,
+    doubleClick: doubleClickedTrackInPlaylist,
+    $playlistLength,
+    $playlist,
+    $selectedTrackInPlayList: $selectedTrackInPlaylist,
+    selectTrackInPlaylist,
+    $currentPlayedTrackIndex,
     addTrackToPlaylist,
     $visiblePlaylist,
     toggleVisiblePlaylist,
@@ -782,26 +796,26 @@ export const playlist = {
 }
 
 export const progress = {
-    $currentTime: winampProgress.$currentTime,
-    seekingCurrentTime: winampProgress.seekingCurrentTime,
-    $seekingProgress: winampProgress.$seekingProgress,
-    $currentTrackTimeRemaining: winampProgress.$currentTrackTimeRemaining,
-    keyChangeCurrentTime: winampProgress.keyChangeCurrentTime,
-    $allowSeeking: winampProgress.$allowSeeking,
-    onmousedown: winampProgress.onmousedown,
-    onmouseup: winampProgress.onmouseup,
-    $timer: winampProgress.$timer,
+    $currentTime,
+    seekingCurrentTime,
+    $seekingProgress,
+    $currentTrackTimeRemaining,
+    keyChangeCurrentTime,
+    $allowSeeking,
+    onmousedown,
+    onmouseup,
+    $timer,
 }
 
 export const volume = {
-    $volume: winampVolume.$volume,
-    resetVolume: winampVolume.resetVolume,
-    changeVolume: winampVolume.changeVolume,
+    $volume,
+    resetVolume,
+    changeVolume,
 }
 
 export const duration = {
     $durationTracksInPlaylist,
-    $currentTrackDuration: winampProgress.$currentTrackDuration,
+    $currentTrackDuration,
 }
 
 export const winamp = {
@@ -809,12 +823,15 @@ export const winamp = {
     destroy: destroyWinamp,
     close: closeWinamp,
     show: showWinamp,
+    minimize: minimizedWinamp,
+
     $mediaStatus,
     $currentTrack,
     selectTrackFromList,
     playAllTracksFromList,
-    $timeMode: winampProgress.$timeMode,
-    toggleTimeMode: winampProgress.toggleTimeMode,
+    $timeMode,
+    toggleTimeMode,
+    toggleShadePlayer,
     $loop,
     $shuffle,
 }
@@ -827,24 +844,25 @@ export const winampStates = {
     $activeWindow,
     changeWindowState,
     $visiblePlayer,
+    $shadePlayer,
 }
 
 export const eq = {
-    changeAllBandsValues: equalizer.changeAllBandsValues,
-    changePreampValue: equalizer.changePreampValue,
-    changeEQBand: equalizer.changeEQBand,
-    disableClickedEQ: equalizer.disableClickedEQ,
-    enableClickedEQ: equalizer.enableClickedEQ,
-    resetEqBand: equalizer.resetEqBand,
-    $auto: equalizer.$autoEQ,
-    $enabled: equalizer.$enabledEQ,
-    $preamp: equalizer.$preamp,
-    $bands: equalizer.$bands,
-    $visibleEQ: equalizer.$visibleEQ,
-    toggleVisibleEQ: equalizer.toggleVisibleEQ,
-    toggleAutoEQ: equalizer.toggleAutoEQ,
-    $minimized: equalizer.$minimizedEQ,
-    toggleMinimized: equalizer.toggleMinimizeEQ,
+    changeAllBandsValues,
+    changePreampValue,
+    changeEQBand,
+    disableClickedEQ,
+    enableClickedEQ,
+    resetEqBand,
+    $auto: $autoEQ,
+    $enabled: $enabledEQ,
+    $preamp,
+    $bands,
+    $visibleEQ,
+    toggleVisibleEQ,
+    toggleAutoEQ,
+    $minimized: $minimizedEQ,
+    toggleMinimized: toggleMinimizeEQ,
 }
 
 export const $baseSkinColors = createStore<string[]>(baseSkinColors)

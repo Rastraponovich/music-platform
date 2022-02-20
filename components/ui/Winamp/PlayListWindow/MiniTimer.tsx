@@ -5,9 +5,11 @@ import { progress, winamp } from "@/features/media/winamp"
 import { TIME_MODE } from "@/features/music/types"
 import CharacterString from "../CharacterStrings/CharacterString"
 
-interface MiniTimerProps {}
+interface MiniTimerProps {
+    className?: string
+}
 
-const MiniTimer = () => {
+const MiniTimer = ({ className }: MiniTimerProps) => {
     const playerState = useStore(winamp.$mediaStatus)
     const timeMode = useStore(winamp.$timeMode)
 
@@ -22,7 +24,9 @@ const MiniTimer = () => {
                 playerState === "PAUSED" && "animate-w-blink",
                 playerState === "STOPPED" && "hidden",
 
-                "align-text-center absolute top-[22.5px]  left-[66px] flex h-2.5 "
+                "align-text-center   flex h-2.5 ",
+                className,
+                !className && "absolute top-[22.5px]  left-[66px]"
             )}
             onClick={handleSwitchTimeMode}
         >

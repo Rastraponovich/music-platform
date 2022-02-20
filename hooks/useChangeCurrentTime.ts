@@ -25,9 +25,9 @@ const useDelPressKeyButton = () => {
     const activeWindow = useStore(winampStates.$activeWindow)
     const handleDeleteTrackFormPlaylist = useEvent(playlist.removeTrackFromPlaylist)
     const selectedTrackInPlayList = useStore(playlist.$selectedTrackInPlayList)
-    const handleSelectTrackInPlaylist = useEvent(playlist.highlightTrackInPlaylist)
+    const handleSelectTrackInPlaylist = useEvent(playlist.selectTrackInPlaylist)
     const playTrack = useEvent(playlist.doubleClick)
-    const playlistLength = useStore(playlist.$playListLength)
+    const playlistLength = useStore(playlist.$playlistLength)
 
     useEffect(() => {
         const handler = (event: globalThis.KeyboardEvent) => {

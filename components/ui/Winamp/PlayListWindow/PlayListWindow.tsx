@@ -21,11 +21,11 @@ const PlayListWindow = () => {
 
     const handleActiveWindow = useEvent(winampStates.changeWindowState)
     const visible = useStore(playlist.$visiblePlaylist)
-    const currentIndex = useStore(playlist.$currentPlayedTrackIndexPlaylist)
+    const currentIndex = useStore(playlist.$currentPlayedTrackIndex)
     const highlightTrackInPlaylist = useStore(playlist.$selectedTrackInPlayList)
 
     const playing = useStore(winamp.$mediaStatus)
-    const playList = useStore(playlist.$playList)
+    const playList = useStore(playlist.$playlist)
 
     const [onDragStart, onDragging, onDragEnd] = useDraggable(WINDOW_NAME, ref)
 
@@ -59,7 +59,7 @@ const PlayListWindow = () => {
                         "flex  min-h-[150px] grow cursor-winamp flex-col  bg-black py-1 shadow-lg"
                     }
                 >
-                    {useList(playlist.$playList, {
+                    {useList(playlist.$playlist, {
                         keys: [playList.length, currentIndex, playing, highlightTrackInPlaylist],
                         fn: (track, index) => <PlaylistTrack track={track} index={index} />,
                     })}

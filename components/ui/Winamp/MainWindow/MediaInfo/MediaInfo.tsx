@@ -13,7 +13,7 @@ interface MediaInfoProps {}
 
 const MediaInfo = () => {
     const currentTrack = useStore(winamp.$currentTrack)
-    const currentId = useStore(playlist.$currentPlayedTrackIndexPlaylist)
+    const currentId = useStore(playlist.$currentPlayedTrackIndex)
     const playerState = useStore(winamp.$mediaStatus)
     const winampState = useStore(winampStates.$winampState)
 

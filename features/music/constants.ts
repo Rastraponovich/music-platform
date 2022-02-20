@@ -23,6 +23,12 @@ export const MEDIA_STATUS: Record<TMediaStatus, TMediaStatus> = {
     STOPPED: "STOPPED",
 }
 
+export const WINAMP_PLAYER_STATE: Record<TMediaStatus, TMediaStatus> = {
+    PAUSED: "PAUSED",
+    PLAYING: "PLAYING",
+    STOPPED: "STOPPED",
+}
+
 export const WINAMP_STATE: Record<TWinampState, TWinampState> = {
     CREATED: "CREATED",
     INIT: "INIT",
@@ -30,6 +36,7 @@ export const WINAMP_STATE: Record<TWinampState, TWinampState> = {
     DESTROYED: "DESTROYED",
     CLOSED: "CLOSED",
     OPENED: "OPENED",
+    MINIMIZED: "MINIMIZED",
 }
 
 export const WINAMP_WINDOW_STATE: Record<TWinampWindow, TWinampWindow> = {
