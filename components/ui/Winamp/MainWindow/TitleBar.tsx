@@ -4,9 +4,8 @@ import { useEvent, useStore } from "effector-react"
 
 import { winamp, winampStates } from "@/features/media/winamp"
 import WinampButton from "../WinampButton"
-import TitlebarActions from "./TitlebarActions"
 import MiniTimer from "../PlayListWindow/MiniTimer"
-import Visualizer from "./Visualizer"
+import MiniActions from "./MiniActions"
 
 interface TitleBarProps {
     onMouseDown: (e: MouseEvent<HTMLElement>) => void
@@ -19,7 +18,6 @@ const WINDOW_NAME = "PLAYER"
 
 const TitleBar = ({ onMouseDown, onMouseMove, onMouseUp, onMouseLeave }: TitleBarProps) => {
     const windowState = useStore(winampStates.$activeWindow)
-    const handleActiveWindow = useEvent(winampStates.changeWindowState)
     const handleMinimize = useEvent(winamp.minimize)
 
     const handleShade = useEvent(winamp.toggleShadePlayer)
@@ -28,7 +26,6 @@ const TitleBar = ({ onMouseDown, onMouseMove, onMouseUp, onMouseLeave }: TitleBa
     const handleClose = useEvent(winamp.close)
 
     const handleOnMouseDown = (e: MouseEvent<HTMLElement>) => {
-        handleActiveWindow(WINDOW_NAME)
         onMouseDown(e)
     }
 
@@ -54,7 +51,7 @@ const TitleBar = ({ onMouseDown, onMouseMove, onMouseUp, onMouseLeave }: TitleBa
 
             {shade && <MiniTimer className="relative mr-[7px] items-center" />}
 
-            {shade && <TitlebarActions />}
+            {shade && <MiniActions />}
             <WinampButton
                 id="minimize"
                 title="Minimize"

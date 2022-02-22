@@ -2,14 +2,17 @@ import { useState, useEffect } from "react"
 
 import { useEvent, useStore } from "effector-react/scope"
 
-import { volume } from "@/features/media/winamp"
+import { marqueInfo, volume } from "@/features/media/winamp"
 
 interface VolumeBarProps {}
 
 const VolumeBar = () => {
     const currentVolume = useStore(volume.$volume)
     const onChangeVolume = useEvent(volume.changeVolume)
-    const handleResetVolume = useEvent(volume.resetVolume)
+
+    const handleMouseDown = useEvent(marqueInfo.enabledMarqueInfo)
+    const handleMouseUp = useEvent(marqueInfo.disabledMarqueInfo)
+
     const [currentVolumeStep, setCurrentVolumeStep] = useState(Math.floor(currentVolume / 3.57))
 
     useEffect(() => {
@@ -27,7 +30,8 @@ const VolumeBar = () => {
                 value={currentVolume}
                 onChange={onChangeVolume}
                 className="slider-thumb  appearance-none"
-                onDoubleClick={handleResetVolume}
+                onMouseDown={handleMouseDown}
+                onMouseUp={handleMouseUp}
             />
         </div>
     )

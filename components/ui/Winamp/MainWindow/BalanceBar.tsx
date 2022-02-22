@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react"
 import { useEvent, useStore } from "effector-react/scope"
 
-import { balance } from "@/features/media/winamp"
+import { balance, marqueInfo } from "@/features/media/winamp"
 
 interface BalanceBarProps {}
 
 const BalanceBar = () => {
     const currentBalance = useStore(balance.$currentBalance)
     const handleChangeBalance = useEvent(balance.changeBalance)
-    const resetBalance = useEvent(balance.resetBalance)
+
+    const handleMouseDown = useEvent(marqueInfo.enabledMarqueInfo)
+    const handleMouseUp = useEvent(marqueInfo.disabledMarqueInfo)
 
     const [currentStep, setCurrentStep] = useState(0)
 
@@ -31,7 +33,8 @@ const BalanceBar = () => {
             style={{ backgroundPosition: `0px ${currentStep * 15}px` }}
             className="slider-thumb  appearance-none"
             onChange={handleChangeBalance}
-            onDoubleClick={resetBalance}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
         />
     )
 }

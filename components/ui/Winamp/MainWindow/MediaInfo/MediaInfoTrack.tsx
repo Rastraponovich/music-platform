@@ -3,6 +3,8 @@ import React, { memo, useEffect, useState, MouseEvent, useMemo, useRef } from "r
 import { Nullable } from "@/types"
 import { Track } from "@/features/music/types"
 import CharacterStrings from "../../CharacterStrings/CharacterStrings"
+import { marqueInfo } from "@/features/media/winamp"
+import { useStore } from "effector-react"
 
 const SEPARATOR = "  ***  "
 const MARQUEE_MAX_LENGTH = 31
@@ -20,6 +22,9 @@ const MediaInfoTrack = ({ currentTrack, currentId }: MediaInfoTrackProps) => {
 
     const [pos, setpos] = useState(0)
     const [diff, setDiff] = useState(0)
+
+    const enabledMarque = useStore(marqueInfo.$enabledMaruqeInfo)
+    const marqueInfoText = useStore(marqueInfo.$winampMarqueInfo)
 
     const [track, setTrack] = useState(SEPARATOR)
     const [allowDragging, setAllowDragging] = useState<boolean>(false)
@@ -81,15 +86,21 @@ const MediaInfoTrack = ({ currentTrack, currentId }: MediaInfoTrackProps) => {
             onMouseUp={handleDragEnd}
             onMouseLeave={handleDragEnd}
         >
-            <div
-                className="whitespace-nowrap text-[8px]  text-[#00FF00] will-change-transform"
-                ref={ref}
-                style={{
-                    transform: `translateX(${pos}px)`,
-                }}
-            >
-                <CharacterStrings>{track}</CharacterStrings>
-            </div>
+            {enabledMarque ? (
+                <div className="whitespace-nowrap text-[8px]  text-[#00FF00] will-change-transform">
+                    <CharacterStrings>{marqueInfoText}</CharacterStrings>
+                </div>
+            ) : (
+                <div
+                    className="whitespace-nowrap text-[8px]  text-[#00FF00] will-change-transform"
+                    ref={ref}
+                    style={{
+                        transform: `translateX(${pos}px)`,
+                    }}
+                >
+                    <CharacterStrings>{track}</CharacterStrings>
+                </div>
+            )}
         </div>
     )
 }

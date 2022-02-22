@@ -23,10 +23,8 @@ const MiniTimer = ({ className }: MiniTimerProps) => {
             className={clsx(
                 playerState === "PAUSED" && "animate-w-blink",
                 playerState === "STOPPED" && "hidden",
-
-                "align-text-center   flex h-2.5 ",
-                className,
-                !className && "absolute top-[22.5px]  left-[66px]"
+                "align-text-center flex h-2.5 ",
+                className
             )}
             onClick={handleSwitchTimeMode}
         >

@@ -2,7 +2,7 @@ import clsx from "clsx"
 import { useEvent, useStore } from "effector-react"
 import { memo, InputHTMLAttributes, useState, MouseEvent } from "react"
 
-import { duration, progress } from "@/features/media/winamp"
+import { duration, marqueInfo, progress } from "@/features/media/winamp"
 
 interface ProgressbarProps {
     className?: InputHTMLAttributes<HTMLInputElement>["className"]
@@ -15,6 +15,9 @@ const Progressbar = ({ className, id }: ProgressbarProps) => {
     const currentTrackDuration = useStore(duration.$currentTrackDuration)
     const currentTime = useStore(progress.$currentTime)
 
+    const handleMouseDown = useEvent(marqueInfo.enabledMarqueInfo)
+    const handleMouseUp = useEvent(marqueInfo.disabledMarqueInfo)
+
     const [active, setActive] = useState(false)
 
     const [handleSeeking, mouseDown, mouseUp] = useEvent([
@@ -26,11 +29,13 @@ const Progressbar = ({ className, id }: ProgressbarProps) => {
     const onMouseDown = (e: MouseEvent<HTMLInputElement>) => {
         mouseDown(e)
         setActive(true)
+        handleMouseDown()
     }
 
     const onMouseUp = (e: MouseEvent<HTMLInputElement>) => {
         mouseUp(e)
         setActive(false)
+        handleMouseUp()
     }
 
     return (

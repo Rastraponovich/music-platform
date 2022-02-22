@@ -6,6 +6,7 @@ interface EQSliderProps {
     value: number
     onChange: (e: ChangeEvent<HTMLInputElement>) => void
     reset?: (id: string) => void
+    title?: string
 }
 
 const spriteOffsets = (number: number): { x: number; y: number } => {
@@ -19,7 +20,7 @@ const spriteNumber = (value: number): number => {
     return Math.round(percent * 27)
 }
 
-const EQSlider = ({ name, value, onChange, reset }: EQSliderProps) => {
+const EQSlider = ({ name, value, onChange, reset, title }: EQSliderProps) => {
     const [active, setActive] = useState(false)
 
     const backgroundPosition = useMemo(() => {
@@ -32,23 +33,22 @@ const EQSlider = ({ name, value, onChange, reset }: EQSliderProps) => {
     const handleDblClick = () => reset && reset(name)
     return (
         <label
-            className="inline-block, band-bg ml-[1px] flex h-[62px] w-3.5 p-0"
-            style={{
-                backgroundPosition,
-            }}
+            className="ml-[1px] flex  h-[62px] w-3.5 bg-band-bg p-0"
+            style={{ backgroundPosition }}
         >
             <input
                 id="band-slider"
                 type="range"
                 name={name}
                 className={clsx(
-                    "band  slider-thumb  -rotate-90 appearance-none",
+                    "slider-thumb  -rotate-90 cursor-winamp-position-y appearance-none",
+                    "m-0 h-3.5 w-[62px] origin-[31px_31px] bg-transparent",
                     active && "active"
                 )}
                 min="0"
                 max="100"
                 value={value}
-                title={`${name}: ${String(value)}`}
+                title={title}
                 onMouseDown={() => setActive(true)}
                 onMouseUp={() => setActive(false)}
                 onChange={onChange}
@@ -58,4 +58,4 @@ const EQSlider = ({ name, value, onChange, reset }: EQSliderProps) => {
     )
 }
 
-export default EQSlider
+export default memo(EQSlider)

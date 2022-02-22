@@ -3,6 +3,7 @@ import { useEvent, useStore } from "effector-react"
 import { eq } from "@/features/media/winamp"
 
 import EQSlider from "./EQSlider"
+import { useCallback } from "react"
 
 interface EQSlidersProps {}
 
@@ -15,13 +16,18 @@ const EQSliders = () => {
     const handleChangeAllBandsValues = useEvent(eq.changeAllBandsValues)
 
     const handleChange = useEvent(eq.changeEQBand)
+
+    const memoHandleChange = useCallback((e) => handleChange(e), [])
+
     return (
-        <div className="flex space-x-1 pl-[21px] pt-1">
-            <EQSlider name="preamp" value={preamp} onChange={handleChangePreamp} />
-            <div
-                className="mx-[11px] flex w-3.5 flex-col justify-between"
-                style={{ margin: "0 13px" }}
-            >
+        <div className="flex space-x-1 px-[21px] pt-1">
+            <EQSlider
+                name="preamp"
+                value={preamp}
+                onChange={handleChangePreamp}
+                title="Предварительное усилинеие"
+            />
+            <div className=" flex w-3.5 flex-col justify-between" style={{ margin: "0 12px" }}>
                 <button
                     className="h-2 w-4 cursor-winamp"
                     onClick={() => handleChangeAllBandsValues("max")}
@@ -41,8 +47,9 @@ const EQSliders = () => {
                     name={key}
                     value={value}
                     key={key}
-                    onChange={handleChange}
+                    onChange={memoHandleChange}
                     reset={handleResetEQ}
+                    title={`${key} Гц`}
                 />
             ))}
         </div>

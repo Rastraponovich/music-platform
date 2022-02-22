@@ -2,9 +2,11 @@ import { winamp, winampControls, winampStates } from "@/features/media/winamp"
 import { useEvent, useStore } from "effector-react"
 import WinampButton from "../WinampButton"
 
-interface TitlebarActionsProps {}
+interface MiniActionsProps {
+    bottom?: boolean
+}
 
-const TitlebarActions = () => {
+const MiniActions = ({ bottom = false }: MiniActionsProps) => {
     const handleMinimize = () => {}
     const playing = useStore(winamp.$mediaStatus)
 
@@ -64,9 +66,9 @@ const TitlebarActions = () => {
                 onClick={handleMinimize}
             />
 
-            <div id="position" className="mr-0.5 h-[7px] w-[17px]"></div>
+            {!bottom && <div id="position" className="mr-0.5 h-[7px] w-[17px]"></div>}
         </div>
     )
 }
 
-export default TitlebarActions
+export default MiniActions

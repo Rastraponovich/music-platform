@@ -4,6 +4,7 @@ import { useEvent, useStore } from "effector-react"
 
 import { progress, winamp } from "@/features/media/winamp"
 import { TIME_MODE } from "@/features/music/types"
+import ClutterBar from "./ClutterBar"
 
 const Visualizer = dynamic(() => import("./Visualizer"), { ssr: false })
 
@@ -21,17 +22,7 @@ const StatusBar = () => {
 
     return (
         <div className="webamp-status flex h-[42px] w-[93px]">
-            <div id="clutter-bar" className="h-[43px] w-2">
-                <div>
-                    <div className="handle h-full w-full">
-                        <div id="button-o"></div>
-                    </div>
-                </div>
-                <div id="button-a"></div>
-                <div id="button-i"></div>
-                <div title="Toggle Doublesize Mode" id="button-d" className=""></div>
-                <div id="button-v"></div>
-            </div>
+            <ClutterBar />
             <div
                 id="play-pause"
                 className={clsx(

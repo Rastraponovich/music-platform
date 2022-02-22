@@ -28,7 +28,7 @@ const PlaylistTrack = ({ track, index }: PlaylistTrackProps) => {
             // onKeyPress={(e) => useEscapeFn(e)}
             // onKeyDown={(e) => useEscapeFn(e)}
             className={clsx(
-                "flex select-none justify-between px-1 text-[9px]",
+                "flex h-[13px] max-h-[13px] min-h-[13px] select-none justify-between  px-1 text-[9px]",
                 selectedTrackInPlaylist === index && "bg-[#0000C6]",
                 currentIndex === index ? "text-white" : "text-[#00FF00] "
             )}

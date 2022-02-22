@@ -22,7 +22,6 @@ const MediaInfo = () => {
         [currentTrack, winampState]
     )
 
-    console.log(winampState)
     return (
         <div className="media-info flex text-[#00FF00]">
             {/* бегущая строка */}

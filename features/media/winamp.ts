@@ -16,14 +16,14 @@ import {
     TMediaStatus,
 } from "../music/types"
 import StereoBalanceNode from "./StereoBalanceNode"
-import {
-    createWinampPlaylistFactory,
-    createWinampVolumeFactory,
-    createWinampProgressFactory,
-    createWinampBalanceFactory,
-    createWinampEQFactory,
-} from "../music/winamp-volume"
+import { createWinampVolumeFactory } from "../music/winamp-volume"
+import { createWinampPlaylistFactory } from "../music/winamp-playlist"
+import { createWinampEQFactory } from "../music/winamp-eq"
+import { createWinampProgressFactory } from "../music/winamp-progress"
 
+import { createWinampBalanceFactory } from "../music/winamp-balance"
+import { debug } from "patronum"
+import { convertTimeToString } from "@/utils/utils"
 declare global {
     interface Window {
         webkitAudioContext: {
@@ -321,7 +321,8 @@ const $loop = createStore<boolean>(false).on(toggleLoop, (state, _) => !state)
 guard({
     clock: $loop,
     source: [$Media, $loop],
-    filter: (params): params is [MediaElement, boolean] => params[0] instanceof HTMLAudioElement,
+    filter: (params): params is [MediaElement, boolean] =>
+        params[0]?._audio instanceof HTMLAudioElement,
     target: createEffect<[MediaElement, boolean], void>(([media, loop]) => {
         media._audio.loop = loop
     }),
@@ -330,7 +331,15 @@ guard({
 const toggleShuffle = createEvent()
 const $shuffle = createStore<boolean>(false).on(toggleShuffle, (state, _) => !state)
 
-const removeTrackFromPlaylist = createEvent<number>()
+sample({
+    clock: $shuffle,
+    source: $Media,
+    filter: (media, shuffled) => shuffled,
+    fn: (media, shuffled) => media as MediaElement,
+    target: createEffect<MediaElement, void>((media) => {
+        media._audio.loop = false
+    }),
+})
 
 const selectTrackFromList = createEvent<Track>()
 
@@ -373,10 +382,7 @@ const {
     seekingCurrentTime,
     onmouseup,
     onmousedown,
-    keyChangeCurrentTimeFx,
     keyChangeCurrentTime,
-    changeCurrentTimeFx,
-    changeCurrentTime,
     $timer,
     $timeMode,
     $seekingProgress,
@@ -386,7 +392,7 @@ const {
     $allowSeeking,
 } = createWinampProgressFactory($Media, $currentTrack)
 
-const { setVolume, resetVolume, changeVolume, $volume } = createWinampVolumeFactory($Media)
+const { setVolume, changeVolume, $volume } = createWinampVolumeFactory($Media)
 const {
     toggleVisibleEQ,
     toggleAutoEQ,
@@ -419,13 +425,14 @@ const {
     toggleVisiblePlaylist,
 } = createWinampPlaylistFactory()
 
-const { setBalance, resetBalance, changeBalance, $currentBalance } =
-    createWinampBalanceFactory($Media)
+const { setBalance, changeBalance, $currentBalance } = createWinampBalanceFactory($Media)
 
 const initbalace = (value: number) => {
     const callSetBalance = scopeBind(setBalance, { scope: getClientScope()! })
     callSetBalance(value * 100)
 }
+
+const removeTrackFromPlaylist = createEvent<number>()
 
 $playlist
     .on(selectTrackFromList, (_, track) => [track])
@@ -434,10 +441,6 @@ $playlist
 $selectedTrackInPlaylist.reset(removeTrackFromPlaylist)
 
 $currentPlayedTrackIndex.on(selectTrackFromList, () => 0)
-
-// const $removedTrackId = createStore<Nullable<number>>(null)
-//     .on(removeTrackFromPlaylist, (_, id) => id)
-//     .reset([selectTrackFromList, $currentTrack])
 
 const decrementCurrentPlayedIndex = guard({
     clock: removeTrackFromPlaylist,
@@ -455,15 +458,23 @@ sample({
     clock: decrementCurrentPlayedIndex,
     source: $currentPlayedTrackIndex,
     fn: (currentIndex, _) => currentIndex! - 1,
-    target: setCurrentPlayedTrackIndex,
+    target: $currentPlayedTrackIndex,
 })
 
 sample({
     clock: $currentPlayedTrackIndex,
     source: $playlist,
+    filter: (playlist, id) => id !== null,
     fn: (playlist, id) => playlist[id!],
     target: $currentTrack,
 })
+//если нажали на трек два раза TODO
+// sample({
+//     clock:doubleClickedTrackInPlaylist,
+//     source: $playlist,
+//     fn: (playlist, id) => playlist[id!],
+//     target: $currentTrack,
+// })
 
 //when track ended check next track in playlist exists
 const playNextTrack = createEvent()
@@ -507,12 +518,32 @@ const checkPlayNextTrackShuffled = guard({
     filter: (shuffle, _) => shuffle,
 })
 
-sample({
+const isOneTrackInPlayList = guard({
     clock: checkPlayNextTrackShuffled,
+    source: $playlistLength,
+    filter: (playListLength, _) => playListLength === 1,
+})
+const isBiggerOneTrackInPlayList = guard({
+    clock: checkPlayNextTrackShuffled,
+    source: $playlistLength,
+    filter: (playListLength, _) => playListLength > 1,
+})
+
+sample({
+    clock: isOneTrackInPlayList,
+    source: $Media,
+    fn: (media, _) => media!._audio as HTMLAudioElement,
+    target: createEffect<HTMLAudioElement, void>((_audio) => {
+        _audio.currentTime = 0
+        _audio.play()
+    }),
+})
+
+sample({
+    clock: isBiggerOneTrackInPlayList,
     source: [$playlistLength, $currentPlayedTrackIndex],
     fn: ([playListLength, currentTrack], _) => {
         const max = playListLength!
-
         const generateRandom = (max: number, exp: number) => {
             let number
             while (true) {
@@ -766,10 +797,66 @@ guard({
     target: onPlayClicked,
 })
 
+const changeClutterBar = createEvent<string>()
+const $clutterBar = createStore<Record<string, boolean>>({
+    o: false,
+    a: false,
+    i: false,
+    d: false,
+    v: false,
+}).on(changeClutterBar, (state, name) => {
+    const currrentName = state[name]
+    return { ...state, [name]: !currrentName }
+})
+
+const toggleEnabledMarqueInfo = createEvent()
+const enabledMarqueInfo = createEvent()
+const disabledMarqueInfo = createEvent()
+
+const $enabledMaruqeInfo = createStore<boolean>(false)
+    .on(toggleEnabledMarqueInfo, (state, _) => !state)
+    .on(enabledMarqueInfo, () => true)
+    .on(disabledMarqueInfo, () => false)
+
+const setMarqueInfo = createEvent<string | number>()
+
+const $winampMarqueInfo = createStore<Nullable<string>>(null)
+    .on(setMarqueInfo, (_, payload) => String(payload))
+    .reset(disabledMarqueInfo)
+    .on($currentBalance, (_, balance) => {
+        if (balance < -5) return `Balance: ${balance * -1}% left`
+        if (balance > 5) return `Balance: ${balance}% right`
+        return "Balance: center"
+    })
+    .on($volume, (_, volume) => `Volume: ${Math.floor(volume)}%`)
+
+//show in TrackListInfo seeking progress
+sample({
+    clock: $seekingProgress,
+    source: $currentTrackDuration,
+    fn: (duration, seekingValue) => {
+        const percent = Math.floor((seekingValue / duration) * 100)
+
+        const currentTime = convertTimeToString(seekingValue)
+        const currentDuration = convertTimeToString(duration)
+
+        return `Seek To: ${currentTime}/${currentDuration} (${percent}%)`
+    },
+
+    target: setMarqueInfo,
+})
+
+export const marqueInfo = {
+    $winampMarqueInfo,
+    $enabledMaruqeInfo,
+    enabledMarqueInfo,
+    disabledMarqueInfo,
+    toggleEnabledMarqueInfo,
+}
+
 export const balance = {
     $currentBalance,
     changeBalance,
-    resetBalance,
 }
 
 export const winampControls = {
@@ -809,7 +896,6 @@ export const progress = {
 
 export const volume = {
     $volume,
-    resetVolume,
     changeVolume,
 }
 
@@ -838,9 +924,7 @@ export const winamp = {
 
 export const winampStates = {
     $winampState,
-    playlistWindowState: "",
-    eqWindowState: "",
-    playerWindowState: "",
+
     $activeWindow,
     changeWindowState,
     $visiblePlayer,
@@ -867,4 +951,4 @@ export const eq = {
 
 export const $baseSkinColors = createStore<string[]>(baseSkinColors)
 
-export { loadUrl, selectTrackFromList, $Media }
+export { loadUrl, selectTrackFromList, $Media, $clutterBar, changeClutterBar }
