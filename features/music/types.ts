@@ -153,3 +153,14 @@ export type MediaElement = {
     _source: MediaElementAudioSourceNode
     _bands: _BANDS
 }
+
+export type PRESET = Record<Band, number>
+
+export type PRESETS_TYPE =
+    | "ROCK"
+    | "DEFAULT"
+    | "TECHNO"
+    | "CLASSIC"
+    | "CLUB"
+    | "FULLBASS"
+    | "FULLBASSTREBBLE"

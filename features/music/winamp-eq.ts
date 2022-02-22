@@ -3,7 +3,8 @@ import { Nullable } from "@/types"
 import { _snapBandValue } from "@/utils/utils"
 import { Store, createEffect, scopeBind, createEvent, sample, createStore } from "effector"
 import { ChangeEvent } from "react"
-import { MediaElement, _BANDS, Band } from "./types"
+import { PRESETS, PRESETS_ARRAY } from "./constants"
+import { MediaElement, _BANDS, Band, PRESETS_TYPE } from "./types"
 
 enum ChangeAllBandsEvent {
     min = "min",
@@ -16,7 +17,34 @@ const CHANGE_ALL_BANDS_EVENT: Record<string, number> = {
     reset: 50,
 }
 
+const calculateGainValueBandEQ = (value: number) => {
+    const db = (value / 100) * 24 - 12
+    const gainValue = Math.pow(10, db / 20)
+
+    return gainValue
+}
+
+// const calculatePercentFromBandEQ = (gain:number = 4.8) => {
+//     gain = (value / 100) * 24 - 12
+//     const gainValue = Math.pow(10, db / 20)
+
+//     return gainValue
+// }
+
 export const createWinampEQFactory = ($Media: Store<Nullable<MediaElement>>) => {
+    const loadPresetFx = createEffect<[MediaElement, PRESETS_TYPE], void>(([media, preset]) => {
+        const bandValues = PRESETS[preset]
+        const callSetBandScoped = scopeBind(setBand, { scope: getClientScope()! })
+
+        Object.entries(bandValues).forEach(([key, value]) => {
+            const bandName = Number(key) as keyof _BANDS
+            const db = (value / 100) * 24 - 12
+            media!._bands[bandName].gain.value = db
+
+            callSetBandScoped({ [bandName]: value } as Record<Band, number>)
+        })
+    })
+
     const enableEQFx = createEffect<MediaElement, void>((media) => {
         media._staticSource.disconnect()
         media._staticSource.connect(media._preamp)
@@ -48,6 +76,9 @@ export const createWinampEQFactory = ($Media: Store<Nullable<MediaElement>>) => 
             const bandName = Number(name) as keyof _BANDS
             const db = (snapBandValue / 100) * 24 - 12
             media!._bands[bandName].gain.value = db
+
+            console.log(db, value)
+
             const callSetBandScoped = scopeBind(setBand, { scope: getClientScope()! })
             callSetBandScoped({ [bandName]: snapBandValue } as Record<Band, number>)
         }
@@ -159,18 +190,7 @@ export const createWinampEQFactory = ($Media: Store<Nullable<MediaElement>>) => 
 
     const changeAllBands = createEvent<string>()
 
-    const $bands = createStore<Record<Band, number>>({
-        "60": 50,
-        "170": 50,
-        "310": 50,
-        "600": 50,
-        "1000": 50,
-        "3000": 50,
-        "6000": 50,
-        "12000": 50,
-        "14000": 50,
-        "16000": 50,
-    })
+    const $bands = createStore<Record<Band, number>>(PRESETS.DEFAULT)
         .on(setBand, (bands, band) => ({ ...bands, ...band }))
         .reset(resetAllBands)
         .on(changeAllBands, (state, event) => {
@@ -204,14 +224,26 @@ export const createWinampEQFactory = ($Media: Store<Nullable<MediaElement>>) => 
         .on(setPreamp, (_, value) => value)
         .reset(resetPreamp)
 
+    const loadPreset = createEvent<PRESETS_TYPE>()
+
+    sample({
+        clock: loadPreset,
+        source: $Media,
+        fn: (media, event) => [media, event] as [MediaElement, PRESETS_TYPE],
+        target: loadPresetFx,
+    })
+
+    const $presets = createStore<PRESETS_TYPE[]>(PRESETS_ARRAY)
+
     return {
         $bands,
         $autoEQ,
         $preamp,
+        $presets,
         $enabledEQ,
         $visibleEQ,
         $minimizedEQ,
-
+        loadPreset,
         resetEqBand,
         toggleAutoEQ,
         changeEQBand,

@@ -409,6 +409,8 @@ const {
     $enabledEQ,
     $bands,
     $autoEQ,
+    loadPreset,
+    $presets,
 } = createWinampEQFactory($Media)
 
 const {
@@ -945,6 +947,9 @@ export const eq = {
     $visibleEQ,
     toggleVisibleEQ,
     toggleAutoEQ,
+    $presets,
+    loadPreset,
+
     $minimized: $minimizedEQ,
     toggleMinimized: toggleMinimizeEQ,
 }

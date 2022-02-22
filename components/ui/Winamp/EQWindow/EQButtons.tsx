@@ -1,11 +1,13 @@
 import { eq } from "@/features/media/winamp"
-import { useEvent, useStore } from "effector-react"
+import { useEvent, useList, useStore } from "effector-react"
 import { useCallback, useState } from "react"
 import WinampButton from "../WinampButton"
 import EQPresetCtxMenuItem from "./EQPresetCtxMenuItem"
 import EQGraph from "./EQGraph"
 
 import { useOnClickAway } from "@/hooks/useOnClickAway"
+import { PRESETS_TYPE } from "@/features/music/types"
+import clsx from "clsx"
 
 interface EQButtonsProps {}
 
@@ -58,21 +60,19 @@ const EQButtons = () => {
             <EQGraph />
             <div className="relative flex items-start">
                 <WinampButton id="presets" className="h-3 w-11" onClick={handleTogglePresetMenu} />
-                {selected && (
-                    <div
-                        className="absolute left-12 flex flex-col border border-[#a7a394] bg-white p-px text-xs shadow-md"
-                        onClick={handleTogglePresetMenu}
-                        ref={setRef}
-                    >
-                        {["default", "rock", "techno"].map((val) => (
-                            <EQPresetCtxMenuItem
-                                key={val}
-                                text={val}
-                                onClick={() => console.log(val)}
-                            />
-                        ))}
-                    </div>
-                )}
+
+                <div
+                    className={clsx(
+                        "absolute left-12 flex flex-col border border-[#a7a394] bg-white p-[2px] text-xs shadow-md",
+                        !selected && "hidden"
+                    )}
+                    onClick={handleTogglePresetMenu}
+                    ref={setRef}
+                >
+                    {useList(eq.$presets, (preset) => (
+                        <EQPresetCtxMenuItem text={preset} />
+                    ))}
+                </div>
             </div>
         </div>
     )
