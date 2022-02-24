@@ -29,7 +29,7 @@ const SearchInput = () => {
                     type="text"
                     placeholder="поиск трека"
                     onChange={(e) => setSearchValue(e.target.value)}
-                    className="w-full rounded text-sm text-gray-800 placeholder:text-gray-400 placeholder:first-letter:uppercase focus:outline-none"
+                    className="w-full rounded py-2 text-sm text-gray-800 placeholder:text-gray-400 placeholder:first-letter:uppercase focus:outline-none"
                     value={searchValue}
                     onClick={() => setIsOpen(true)}
                 />
