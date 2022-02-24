@@ -12,19 +12,11 @@
 }
 body {
     margin: 0 auto;
-    width: 100%;
-    max-width: 100%;
-    @apply bg-[#e5e5e5] font-sans;
+    @apply w-full max-w-full bg-[#e5e5e5] font-sans;
 }
 #__next {
-    min-height: 100vh;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+    @apply flex h-full min-h-screen flex-col;
 }
 main {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    background: transparent;
+    @apply flex w-full flex-col bg-transparent;
 }

@@ -1,5 +1,4 @@
-import { FC } from "react"
-import { GetServerSideProps } from "next"
+import { GetServerSideProps, NextPage } from "next"
 import { allSettled, fork, serialize } from "effector"
 import { useEvent, useList, useStore } from "effector-react"
 
@@ -19,9 +18,9 @@ import { winamp } from "@/features/media/winamp"
 import PlayIcon from "@/components/ui/icons/PlayIcon/PlayIcon"
 import WinampIcon from "@/components/ui/icons/WinampIcon/WinampIcon"
 
-interface MusicPageProps {}
+import SearchInput from "@/components/ui/SearchInput/SearchInput"
 
-const MusicPage: FC<MusicPageProps> = () => {
+const MusicPage: NextPage = () => {
     const currentSong = useStore($currentSong)
     const hanldePlayAll = useEvent(winamp.playAllTracksFromList)
 
@@ -41,14 +40,18 @@ const MusicPage: FC<MusicPageProps> = () => {
 
     return (
         <main className="grow px-20 py-10">
-            <label className="mb-4 flex flex-col space-y-2">
-                <span>Поиск по названию</span>
-                <input
-                    type="text"
-                    placeholder="search track"
-                    onChange={(e) => handleSearch(e.target.value)}
-                />
-            </label>
+            <SearchInput />
+
+            <details className="mb-4 flex flex-col space-y-2 rounded bg-transparent p-2 open:bg-white open:shadow-sm">
+                <summary>Стили</summary>
+                <div className=" flex space-x-2 ">
+                    <button className="btn-outline btn no-animation btn-xs">Rock</button>
+                    <button className="btn-outline btn  no-animation btn-xs">Metal</button>
+                    <button className="btn-outline btn no-animation btn-xs">Pop</button>
+                    <button className="btn-outline btn no-animation btn-xs">Dance</button>
+                    <button className="btn-outline btn no-animation btn-xs">DnB</button>
+                </div>
+            </details>
             <div className="flex justify-start space-x-2">
                 <button onClick={handleShowWinamp} className="btn no-animation btn-square btn-xs">
                     <WinampIcon size="extraSmall" />

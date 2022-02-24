@@ -4,12 +4,25 @@ import { ChangeEvent } from "react"
 import { MediaElement, _BANDS } from "./types"
 
 const createWinampVolumeFactory = ($Media: Store<Nullable<MediaElement>>) => {
+    const setVolumeFx = createEffect<[MediaElement, string], void>(([media, type]) => {
+        media._audio.volume =
+            type === "up" ? media._audio.volume + 0.01 : media._audio.volume - 0.01
+    })
+
     //change volume from UI
     const changeVolume = createEvent<ChangeEvent<HTMLInputElement>>()
 
     const setVolume = createEvent<number>()
     const $volume = createStore<number>(50).on(setVolume, (_, volume) => volume)
 
+    const setVolumeFromKeys = createEvent<string>()
+
+    sample({
+        clock: setVolumeFromKeys,
+        source: $Media,
+        fn: (media, value) => [media, value] as [MediaElement, string],
+        target: setVolumeFx,
+    })
     guard({
         source: sample({
             clock: changeVolume,
@@ -27,8 +40,9 @@ const createWinampVolumeFactory = ($Media: Store<Nullable<MediaElement>>) => {
 
     return {
         $volume,
-        setVolume,
+        setVolumeFromKeys,
         changeVolume,
+        setVolume,
     }
 }
 

@@ -64,7 +64,11 @@ const Emitter = {
     },
     onError: (e: Event) => {},
     onLoadedData: (e: Event) => {},
-    onLoadedMetadata: (e: Event) => {},
+    onLoadedMetadata: (event: Event) => {
+        const audioElement = event.currentTarget as HTMLAudioElement
+        const callSetVolume = scopeBind(setVolume, { scope: getClientScope()! })
+        callSetVolume(audioElement.volume * 100)
+    },
     onLoadStart: (event: Event) => {},
     onPause: (event: Event) => {
         const callSetIsPlaying = scopeBind(setMediaStatus, {
@@ -392,7 +396,7 @@ const {
     $allowSeeking,
 } = createWinampProgressFactory($Media, $currentTrack)
 
-const { setVolume, changeVolume, $volume } = createWinampVolumeFactory($Media)
+const { setVolume, changeVolume, $volume, setVolumeFromKeys } = createWinampVolumeFactory($Media)
 const {
     toggleVisibleEQ,
     toggleAutoEQ,
@@ -411,6 +415,11 @@ const {
     $autoEQ,
     loadPreset,
     $presets,
+    $currentPreset,
+    $selectedPreset,
+    $visiblePresetWindow,
+    selectPreset,
+    toggleVisiblePresetWindow,
 } = createWinampEQFactory($Media)
 
 const {
@@ -899,6 +908,7 @@ export const progress = {
 export const volume = {
     $volume,
     changeVolume,
+    setVolumeFromKeys,
 }
 
 export const duration = {
@@ -949,7 +959,11 @@ export const eq = {
     toggleAutoEQ,
     $presets,
     loadPreset,
-
+    $currentPreset,
+    $selectedPreset,
+    $visiblePresetWindow,
+    selectPreset,
+    toggleVisiblePresetWindow,
     $minimized: $minimizedEQ,
     toggleMinimized: toggleMinimizeEQ,
 }

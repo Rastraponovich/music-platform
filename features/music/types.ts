@@ -119,7 +119,7 @@ export type TWinampState =
 
 export type TMediaStatus = "PLAYING" | "STOPPED" | "PAUSED"
 
-export type TWinampWindow = "PLAYER" | "EQUALIZER" | "PLAYLIST" | "NONE"
+export type TWinampWindow = "PLAYER" | "EQUALIZER" | "PLAYLIST" | "NONE" | "PRESETS"
 
 export type UseDraggblePosition = {
     clientX: string | number
@@ -154,7 +154,10 @@ export type MediaElement = {
     _bands: _BANDS
 }
 
-export type PRESET = Record<Band, number>
+export type PRESET = {
+    name: PRESETS_TYPE
+    value: Record<Band, number>
+}
 
 export type PRESETS_TYPE =
     | "ROCK"
@@ -162,5 +165,5 @@ export type PRESETS_TYPE =
     | "TECHNO"
     | "CLASSIC"
     | "CLUB"
-    | "FULLBASS"
-    | "FULLBASSTREBBLE"
+    | "FULL BASS"
+    | "FULL BASS AND TREBBLE"

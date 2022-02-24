@@ -4,7 +4,7 @@ import { _snapBandValue } from "@/utils/utils"
 import { Store, createEffect, scopeBind, createEvent, sample, createStore } from "effector"
 import { ChangeEvent } from "react"
 import { PRESETS, PRESETS_ARRAY } from "./constants"
-import { MediaElement, _BANDS, Band, PRESETS_TYPE } from "./types"
+import { MediaElement, _BANDS, Band, PRESETS_TYPE, PRESET } from "./types"
 
 enum ChangeAllBandsEvent {
     min = "min",
@@ -32,11 +32,10 @@ const calculateGainValueBandEQ = (value: number) => {
 // }
 
 export const createWinampEQFactory = ($Media: Store<Nullable<MediaElement>>) => {
-    const loadPresetFx = createEffect<[MediaElement, PRESETS_TYPE], void>(([media, preset]) => {
-        const bandValues = PRESETS[preset]
+    const loadPresetFx = createEffect<[MediaElement, PRESET], void>(([media, preset]) => {
         const callSetBandScoped = scopeBind(setBand, { scope: getClientScope()! })
 
-        Object.entries(bandValues).forEach(([key, value]) => {
+        Object.entries(preset.value).forEach(([key, value]) => {
             const bandName = Number(key) as keyof _BANDS
             const db = (value / 100) * 24 - 12
             media!._bands[bandName].gain.value = db
@@ -190,7 +189,7 @@ export const createWinampEQFactory = ($Media: Store<Nullable<MediaElement>>) => 
 
     const changeAllBands = createEvent<string>()
 
-    const $bands = createStore<Record<Band, number>>(PRESETS.DEFAULT)
+    const $bands = createStore<Record<Band, number>>(PRESETS.DEFAULT.value)
         .on(setBand, (bands, band) => ({ ...bands, ...band }))
         .reset(resetAllBands)
         .on(changeAllBands, (state, event) => {
@@ -224,16 +223,36 @@ export const createWinampEQFactory = ($Media: Store<Nullable<MediaElement>>) => 
         .on(setPreamp, (_, value) => value)
         .reset(resetPreamp)
 
-    const loadPreset = createEvent<PRESETS_TYPE>()
+    const loadPreset = createEvent()
+
+    const $currentPreset = createStore<PRESET>(PRESETS.DEFAULT)
 
     sample({
-        clock: loadPreset,
+        clock: $currentPreset,
         source: $Media,
-        fn: (media, event) => [media, event] as [MediaElement, PRESETS_TYPE],
+        fn: (media, preset) => [media, preset] as [MediaElement, PRESET],
         target: loadPresetFx,
     })
 
-    const $presets = createStore<PRESETS_TYPE[]>(PRESETS_ARRAY)
+    const $presets = createStore<PRESET[]>(PRESETS_ARRAY)
+
+    const toggleVisiblePresetWindow = createEvent()
+    const $visiblePresetWindow = createStore<boolean>(false)
+        .on(toggleVisiblePresetWindow, (state, _) => !state)
+        .reset($currentPreset)
+
+    const selectPreset = createEvent<PRESET>()
+    const $selectedPreset = createStore<Nullable<PRESET>>(null)
+        .on(selectPreset, (_, preset) => preset)
+        .reset(loadPreset)
+
+    sample({
+        clock: loadPreset,
+        source: $selectedPreset,
+        fn: (preset, _) => preset!,
+        filter: (preset, _) => preset !== null,
+        target: $currentPreset,
+    })
 
     return {
         $bands,
@@ -243,6 +262,7 @@ export const createWinampEQFactory = ($Media: Store<Nullable<MediaElement>>) => 
         $enabledEQ,
         $visibleEQ,
         $minimizedEQ,
+        $currentPreset,
         loadPreset,
         resetEqBand,
         toggleAutoEQ,
@@ -253,5 +273,9 @@ export const createWinampEQFactory = ($Media: Store<Nullable<MediaElement>>) => 
         toggleMinimizeEQ,
         changePreampValue,
         changeAllBandsValues,
+        selectPreset,
+        $selectedPreset,
+        toggleVisiblePresetWindow,
+        $visiblePresetWindow,
     }
 }

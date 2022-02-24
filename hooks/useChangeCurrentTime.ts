@@ -1,4 +1,4 @@
-import { playlist, progress, winampStates } from "@/features/media/winamp"
+import { playlist, progress, volume, winampStates } from "@/features/media/winamp"
 import { WINAMP_WINDOW_STATE } from "@/features/music/constants"
 import { useEvent, useStore } from "effector-react"
 import { useEffect } from "react"
@@ -29,30 +29,44 @@ const useDelPressKeyButton = () => {
     const playTrack = useEvent(playlist.doubleClick)
     const playlistLength = useStore(playlist.$playlistLength)
 
+    const handleSetVolume = useEvent(volume.setVolumeFromKeys)
+
     useEffect(() => {
         const handler = (event: globalThis.KeyboardEvent) => {
-            console.log(event)
-
             if (event.key === "Delete") {
                 if (activeWindow === WINAMP_WINDOW_STATE.PLAYLIST) {
                     return handleDeleteTrackFormPlaylist(selectedTrackInPlayList!)
                 }
             }
             if (event.key === "ArrowUp") {
-                if (selectedTrackInPlayList !== null) {
+                if (activeWindow === WINAMP_WINDOW_STATE.PLAYER) {
                     event.preventDefault()
+                    handleSetVolume("up")
+                }
 
-                    if (selectedTrackInPlayList > 0)
-                        return handleSelectTrackInPlaylist(selectedTrackInPlayList - 1)
-                    return handleSelectTrackInPlaylist(playlistLength - 1)
+                if (activeWindow === WINAMP_WINDOW_STATE.PLAYLIST) {
+                    if (selectedTrackInPlayList !== null) {
+                        event.preventDefault()
+
+                        if (selectedTrackInPlayList > 0)
+                            return handleSelectTrackInPlaylist(selectedTrackInPlayList - 1)
+                        return handleSelectTrackInPlaylist(playlistLength - 1)
+                    }
                 }
             }
             if (event.key === "ArrowDown") {
-                if (selectedTrackInPlayList !== null) {
+                if (activeWindow === WINAMP_WINDOW_STATE.PLAYER) {
                     event.preventDefault()
-                    if (selectedTrackInPlayList === playlistLength - 1)
-                        return handleSelectTrackInPlaylist(0)
-                    return handleSelectTrackInPlaylist(selectedTrackInPlayList + 1)
+                    handleSetVolume("down")
+                }
+
+                if (activeWindow === WINAMP_WINDOW_STATE.PLAYLIST) {
+                    if (selectedTrackInPlayList !== null) {
+                        event.preventDefault()
+                        if (selectedTrackInPlayList === playlistLength - 1)
+                            return handleSelectTrackInPlaylist(0)
+                        return handleSelectTrackInPlaylist(selectedTrackInPlayList + 1)
+                    }
                 }
             }
 

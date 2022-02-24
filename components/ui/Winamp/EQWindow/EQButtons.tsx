@@ -1,39 +1,21 @@
 import { eq } from "@/features/media/winamp"
-import { useEvent, useList, useStore } from "effector-react"
+import { useEvent, useStore } from "effector-react"
 import { useCallback, useState } from "react"
 import WinampButton from "../WinampButton"
-import EQPresetCtxMenuItem from "./EQPresetCtxMenuItem"
 import EQGraph from "./EQGraph"
 
-import { useOnClickAway } from "@/hooks/useOnClickAway"
-import { PRESETS_TYPE } from "@/features/music/types"
-import clsx from "clsx"
-
-interface EQButtonsProps {}
+import PresetMenu from "./PresetMenu/PresetMenu"
 
 const EQButtons = () => {
     const autoEQ = useStore(eq.$auto)
     const enabledEQ = useStore(eq.$enabled)
+
     const handleEnableEQ = useEvent(eq.enableClickedEQ)
     const handleDisableEQ = useEvent(eq.disableClickedEQ)
     const toggleAutoEQ = useEvent(eq.toggleAutoEQ)
 
-    const [selected, setSelected] = useState(false)
-
-    const [ref, setRef] = useState<Element | null>(null)
-
-    const callback = useCallback(() => {
-        // If we've clicked on a Context Menu spawed inside this menu, it will
-        // register as an external click. However, hiding the menu will remove
-        // the Context Menu from the DOM. Therefore, we wait until the next
-        // event loop to actually hide ourselves.
-        setTimeout(() => {
-            // Close the menu
-            setSelected(false)
-        }, 0)
-    }, [])
-
-    useOnClickAway(ref, selected ? callback : null)
+    const visiblePresetWindow = useStore(eq.$visiblePresetWindow)
+    const toggleVisiblePresetMenu = useEvent(eq.toggleVisiblePresetWindow)
 
     const handleToggleONEQ = useCallback(() => {
         if (enabledEQ) {
@@ -44,8 +26,8 @@ const EQButtons = () => {
     }, [enabledEQ])
 
     const handleTogglePresetMenu = useCallback(
-        () => setSelected((selected_) => !selected_),
-        [selected]
+        () => toggleVisiblePresetMenu(),
+        [visiblePresetWindow]
     )
 
     return (
@@ -60,19 +42,7 @@ const EQButtons = () => {
             <EQGraph />
             <div className="relative flex items-start">
                 <WinampButton id="presets" className="h-3 w-11" onClick={handleTogglePresetMenu} />
-
-                <div
-                    className={clsx(
-                        "absolute left-12 flex flex-col border border-[#a7a394] bg-white p-[2px] text-xs shadow-md",
-                        !selected && "hidden"
-                    )}
-                    onClick={handleTogglePresetMenu}
-                    ref={setRef}
-                >
-                    {useList(eq.$presets, (preset) => (
-                        <EQPresetCtxMenuItem text={preset} />
-                    ))}
-                </div>
+                <PresetMenu />
             </div>
         </div>
     )
