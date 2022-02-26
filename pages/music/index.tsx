@@ -33,12 +33,14 @@ const MusicPage: NextPage = () => {
             <div className="flex justify-start space-x-2">
                 <button
                     onClick={handleShowWinamp}
+                    title="открыть winamp"
                     className="btn no-animation btn-square btn-xs hover:shadow-lg"
                 >
                     <WinampIcon size="extraSmall" />
                 </button>
                 <button
                     onClick={hanldePlayAll}
+                    title="воспроизвести все треки"
                     className="btn no-animation btn-xs gap-2  hover:shadow-lg"
                 >
                     <PlayIcon size="extraSmall" />

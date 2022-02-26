@@ -16,7 +16,11 @@ const PlaylistFormModal = () => {
 
     return (
         <>
-            <Button className="btn-xs gap-2 hover:shadow-lg" onClick={handleToggleOpened}>
+            <Button
+                className="btn-xs gap-2 hover:shadow-lg"
+                onClick={handleToggleOpened}
+                title="создать плейлист"
+            >
                 <DocumentAddIcon className="h-3 w-3 rounded-full bg-white p-[2px] text-gray-900" />
                 создать плейлист
             </Button>

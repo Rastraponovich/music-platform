@@ -1,22 +1,25 @@
-import { Dialog, Transition } from "@headlessui/react"
+import { Dialog, Tab, Transition } from "@headlessui/react"
+import { XIcon } from "@heroicons/react/outline"
+import clsx from "clsx"
 
-import React, { useState, Fragment, useCallback, ChangeEvent } from "react"
+import React, { useState, Fragment, useCallback, ChangeEvent, useRef } from "react"
 import Button from "../Button/Button"
-import Input from "../Input/Input"
-import UIDialogActions from "../UIDialog/UIDialogActions"
 import UIDialogTitle from "../UIDialog/UIDialogTitle"
-import LoginForm from "./LoginForm"
+import LoginFormTabs from "./LoginFormTabs"
 
 const LoginFormModal = () => {
     const [isOpened, setIsOpened] = useState<boolean>(false)
-
+    let completeButtonRef = useRef(null)
     const handleToggleOpened = useCallback(() => {
         setIsOpened((prev) => !prev)
     }, [isOpened])
 
     return (
         <>
-            <Button className="btn-xs rounded hover:shadow-lg" onClick={handleToggleOpened}>
+            <Button
+                className="btn-xs rounded hover:animate-pulse hover:shadow-lg"
+                onClick={handleToggleOpened}
+            >
                 Авторизация
             </Button>
 
@@ -48,8 +51,44 @@ const LoginFormModal = () => {
                         leaveTo="transform scale-75 opacity-0"
                     >
                         <div className=" relative mx-auto flex max-w-xl flex-col rounded bg-white shadow-lg">
-                            <UIDialogTitle>Вход</UIDialogTitle>
-                            <LoginForm />
+                            <UIDialogTitle>
+                                <div className="flex items-center justify-between">
+                                    <span>авторизация</span>
+                                    <button
+                                        ref={completeButtonRef}
+                                        className="group w-8 p-1 text-gray-400 marker:h-8 hover:animate-cross-spin hover:rounded-full hover:bg-gray-500"
+                                        onClick={handleToggleOpened}
+                                    >
+                                        <XIcon className=" duration-150  group-hover:text-white" />
+                                    </button>
+                                </div>
+                            </UIDialogTitle>
+
+                            <Tab.Group>
+                                <Tab.List className="flex items-center justify-between ">
+                                    <Tab
+                                        className={({ selected }) =>
+                                            clsx(
+                                                "w-full bg-white py-2 uppercase",
+                                                selected && "bg-blue-500 text-white"
+                                            )
+                                        }
+                                    >
+                                        авторизация
+                                    </Tab>
+                                    <Tab
+                                        className={({ selected }) =>
+                                            clsx(
+                                                "w-full bg-white py-2 uppercase",
+                                                selected && "bg-blue-500 text-white"
+                                            )
+                                        }
+                                    >
+                                        регистрация
+                                    </Tab>
+                                </Tab.List>
+                                <LoginFormTabs />
+                            </Tab.Group>
                         </div>
                     </Transition.Child>
                 </Dialog>

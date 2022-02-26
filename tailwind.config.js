@@ -6,11 +6,20 @@ module.exports = {
         extend: {
             animation: {
                 "w-blink": "blink 2s step-start 1s infinite",
+                "cross-spin": "crossSpin 350ms ease-in-out ",
             },
             keyframes: {
                 blink: {
                     "0%, 100%": { opacity: "1" },
                     "50%": { opacity: "0" },
+                },
+                crossSpin: {
+                    "0%": { transform: "rotate(0deg)" },
+                    "25%": { transform: "rotate(45deg)" },
+                    "50%": { transform: "rotate(90deg)" },
+                    "65%": { transform: "rotate(135deg)" },
+                    "75%": { transform: "rotate(180deg)" },
+                    "100%": { transform: "rotate(360deg)" },
                 },
             },
             backgroundImage: {
