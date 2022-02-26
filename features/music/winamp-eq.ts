@@ -2,6 +2,7 @@ import { getClientScope } from "@/hooks/useScope"
 import { Nullable } from "@/types"
 import { _snapBandValue } from "@/utils/utils"
 import { Store, createEffect, scopeBind, createEvent, sample, createStore } from "effector"
+import { debug } from "patronum"
 import { ChangeEvent } from "react"
 import { PRESETS, PRESETS_ARRAY } from "./constants"
 import { MediaElement, _BANDS, Band, PRESETS_TYPE, PRESET } from "./types"
@@ -244,7 +245,7 @@ export const createWinampEQFactory = ($Media: Store<Nullable<MediaElement>>) => 
     const selectPreset = createEvent<PRESET>()
     const $selectedPreset = createStore<Nullable<PRESET>>(null)
         .on(selectPreset, (_, preset) => preset)
-        .reset(loadPreset)
+        .reset($currentPreset)
 
     sample({
         clock: loadPreset,
@@ -253,6 +254,8 @@ export const createWinampEQFactory = ($Media: Store<Nullable<MediaElement>>) => 
         filter: (preset, _) => preset !== null,
         target: $currentPreset,
     })
+
+    debug(loadPreset, $selectedPreset, selectPreset)
 
     return {
         $bands,

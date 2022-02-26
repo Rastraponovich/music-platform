@@ -4,6 +4,12 @@ import Link from "next/link"
 import { memo, ReactNode } from "react"
 import Header from "../Header/Header"
 
+import dynamic from "next/dynamic"
+
+const WinampLayoutButton = dynamic(import("../WinampLayoutButton/WinampLayoutButton"), {
+    ssr: false,
+})
+
 interface LayoutProps {
     children: ReactNode
 }
@@ -20,6 +26,8 @@ const Layout = ({ children }: LayoutProps) => {
 
             <Header />
             {children}
+
+            <WinampLayoutButton />
 
             <footer className="grid grid-cols-12 items-center bg-gray-400 px-8 py-4 text-xl">
                 <Link href="/" shallow>

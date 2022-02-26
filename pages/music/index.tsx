@@ -12,7 +12,8 @@ import WinampIcon from "@/components/ui/icons/WinampIcon/WinampIcon"
 import SearchInput from "@/components/ui/SearchInput/SearchInput"
 
 import MusicFilter from "@/components/MusicFilter/MusicFilter"
-import UploadForm from "@/components/UploadForm/UploadForm"
+import PlaylistFormModal from "@/components/ui/PlaylistForm/PlaylistFormModal"
+import UploadFormModal from "@/components/UploadForm/UploadFormModal"
 
 const MusicPage: NextPage = () => {
     const hanldePlayAll = useEvent(winamp.playAllTracksFromList)
@@ -30,14 +31,23 @@ const MusicPage: NextPage = () => {
             <MusicFilter />
 
             <div className="flex justify-start space-x-2">
-                <button onClick={handleShowWinamp} className="btn no-animation btn-square btn-xs">
+                <button
+                    onClick={handleShowWinamp}
+                    className="btn no-animation btn-square btn-xs hover:shadow-lg"
+                >
                     <WinampIcon size="extraSmall" />
                 </button>
-                <button onClick={hanldePlayAll} className="btn no-animation btn-xs gap-2 ">
+                <button
+                    onClick={hanldePlayAll}
+                    className="btn no-animation btn-xs gap-2  hover:shadow-lg"
+                >
                     <PlayIcon size="extraSmall" />
                     play all tracks
                 </button>
-                <UploadForm />
+                <PlaylistFormModal />
+
+                <div className="grow"></div>
+                <UploadFormModal />
             </div>
 
             <section className="flex flex-col py-4">

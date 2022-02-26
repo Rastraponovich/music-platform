@@ -1,7 +1,7 @@
 import { $songs } from "@/features/music"
 import { SearchIcon } from "@heroicons/react/outline"
 import React, { memo, FC, useState, useEffect } from "react"
-import UIDialog from "../UIDialog/UIDialog"
+import SearchDialog from "./SearchDialog"
 
 const SearchInput = () => {
     const [isOpen, setIsOpen] = useState(false)
@@ -15,7 +15,7 @@ const SearchInput = () => {
     return (
         <label className="mb-4 flex flex-col space-y-2">
             <span>Поиск по названию</span>
-            <UIDialog
+            <SearchDialog
                 open={isOpen}
                 onClose={() => setIsOpen(false)}
                 value={searchValue}
