@@ -37,3 +37,19 @@ export const convertTimeToString = (duration: number): string => {
 
     return string
 }
+export const convertTimeToObj = (duration: number) => {
+    const seconds = duration % 60
+    const minutes = Math.floor(duration / 60)
+
+    const firstSecond = Math.floor(seconds / 10)
+    const lastSecond = Math.floor(seconds % 10)
+    const firstMinute = Math.floor(minutes / 10)
+    const lastMinute = Math.floor(minutes % 10)
+
+    return {
+        firstMinute,
+        lastMinute,
+        firstSecond,
+        lastSecond,
+    }
+}

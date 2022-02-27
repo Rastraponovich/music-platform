@@ -1,23 +1,21 @@
 import Image from "next/image"
 import { useStore } from "effector-react"
-import { memo, FC, useState } from "react"
+import { memo, FC, useState, useMemo } from "react"
 
 import { useEvent } from "effector-react/scope"
 
 import { Song } from "@/features/music/types"
 
 import TrackTimer from "./TrackTimer"
-import PlayIcon from "../ui/icons/PlayIcon/PlayIcon"
-import PlusIcon from "../ui/icons/PlusIcon/PlusIcon"
-import PauseIcon from "../ui/icons/PauseIcon/PauseIcon"
 import Progressbar from "../ui/Progressbar/Progressbar"
-import Annotation from "../ui/icons/Annotation/Annotation"
-import { playlist, winamp, winampControls, winampStates } from "@/features/media/winamp"
+import { playlist, winamp, winampControls } from "@/features/media/winamp"
 import { MEDIA_STATUS } from "@/features/media/constants"
-import { WINAMP_STATE } from "@/features/music/constants"
-import Comment from "./Comment"
+
 import clsx from "clsx"
 import Comments from "./Comments"
+import { convertTimeToObj } from "@/utils/utils"
+import { AnnotationIcon, PlusSmIcon } from "@heroicons/react/outline"
+import { PauseIcon, PlayIcon } from "@heroicons/react/solid"
 
 interface TrackListItemProps {
     track: Song
@@ -28,9 +26,10 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
     // console.log("render track", track.name)
     const mediaStatus = useStore(winamp.$mediaStatus)
 
-    const firstMinute = Math.floor(track?.metaData?.format?.duration / 60)
-    const lastMinute = Math.floor(track?.metaData.format?.duration % 60)
-    const seconds = Math.floor(track?.metaData?.format?.duration % 60)
+    const { firstMinute, lastSecond, lastMinute, firstSecond } = useMemo(
+        () => convertTimeToObj(track?.metaData?.format.duration),
+        [track]
+    )
 
     const [handleSelectTrack, handlePlay, handlePause, handleAddToPlayList] = useEvent([
         winamp.selectTrackFromList,
@@ -47,6 +46,8 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
 
     const [comments, showComments] = useState(false)
 
+    const toggleComments = () => showComments((prev) => !prev)
+
     const needToShow = isCurrentTrack && mediaStatus !== MEDIA_STATUS.STOPPED
 
     return (
@@ -57,15 +58,25 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
                     comments && "drop-shadow-xl"
                 )}
             >
-                <button onClick={play} className="col-span-1 justify-self-center">
+                <button
+                    onClick={play}
+                    className={clsx(
+                        "col-span-1 justify-self-center text-gray-500 duration-150 hover:text-black",
+                        isCurrentTrack &&
+                            mediaStatus === "PLAYING" &&
+                            "animate-pulse  text-black hover:animate-none"
+                    )}
+                    title="play/pause"
+                >
                     {isCurrentTrack ? (
                         mediaStatus === "PLAYING" ? (
-                            <PauseIcon size="small" />
+                            // <PauseIcon size="small" />
+                            <PauseIcon className="h-8 w-8" />
                         ) : (
-                            <PlayIcon size="small" />
+                            <PlayIcon className="h-8 w-8" />
                         )
                     ) : (
-                        <PlayIcon size="small" />
+                        <PlayIcon className="h-8 w-8" />
                     )}
                 </button>
                 <div className="col-span-7 flex space-x-2">
@@ -91,20 +102,29 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
                     {needToShow && <TrackTimer />}
 
                     <span>
-                        {firstMinute}:{lastMinute < 10 ? `0${lastMinute}` : seconds}
+                        {firstMinute}
+                        {lastMinute}:{firstSecond}
+                        {lastSecond}
                     </span>
                 </div>
 
-                <div className="col-span-2 col-end-13 flex space-x-2 justify-self-start">
-                    <button onClick={() => handleAddToPlayList(track)}>
-                        <PlusIcon size="normal" />
+                <div className="col-span-2 col-end-13 flex space-x-2 justify-self-start ">
+                    <button
+                        onClick={() => handleAddToPlayList(track)}
+                        title="добавить в плейлист winamp"
+                    >
+                        <PlusSmIcon className="h-6 w-6 text-gray-500 duration-200 hover:animate-cross-spin hover:text-gray-900" />
                     </button>
 
-                    <button onClick={() => showComments(!comments)} className="indicator  ">
-                        <div className="indicator-item badge badge-sm z-10">
+                    <button
+                        className="group indicator"
+                        onClick={toggleComments}
+                        title="показать\скрыть комментарии"
+                    >
+                        <span className="indicator-item badge badge-sm cursor-pointer border-gray-500 bg-gray-500 group-hover:border-gray-900 group-hover:bg-gray-900">
                             {track.comments.length}
-                        </div>
-                        <Annotation size="normal" />
+                        </span>
+                        <AnnotationIcon className="h-6 w-6 text-gray-500 duration-200 group-hover:text-gray-900" />
                     </button>
                 </div>
             </div>

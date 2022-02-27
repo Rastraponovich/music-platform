@@ -6,7 +6,6 @@ import { $countSongs, $songs, getSongs } from "@/features/music"
 
 import TrackListItem from "@/components/TrackListItem/TrackListItem"
 import { winamp } from "@/features/media/winamp"
-import PlayIcon from "@/components/ui/icons/PlayIcon/PlayIcon"
 import WinampIcon from "@/components/ui/icons/WinampIcon/WinampIcon"
 
 import SearchInput from "@/components/ui/SearchInput/SearchInput"
@@ -14,6 +13,7 @@ import SearchInput from "@/components/ui/SearchInput/SearchInput"
 import MusicFilter from "@/components/MusicFilter/MusicFilter"
 import PlaylistFormModal from "@/components/ui/PlaylistForm/PlaylistFormModal"
 import UploadFormModal from "@/components/UploadForm/UploadFormModal"
+import { PlayIcon } from "@heroicons/react/solid"
 
 const MusicPage: NextPage = () => {
     const hanldePlayAll = useEvent(winamp.playAllTracksFromList)
@@ -43,7 +43,7 @@ const MusicPage: NextPage = () => {
                     title="воспроизвести все треки"
                     className="btn no-animation btn-xs gap-2  hover:shadow-lg"
                 >
-                    <PlayIcon size="extraSmall" />
+                    <PlayIcon className="h-4 w-4" />
                     play all tracks
                 </button>
                 <PlaylistFormModal />

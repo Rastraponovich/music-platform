@@ -1,10 +1,13 @@
 import Auth from "@/components/Auth/Auth"
 import useStickyHeader from "@/hooks/useStickyHeader"
+import { MenuIcon } from "@heroicons/react/solid"
 import clsx from "clsx"
 import Image from "next/image"
 import Link from "next/link"
 import React, { memo, FC } from "react"
+import Button from "../Button/Button"
 import LoginFormModal from "../LoginForm/LoginFormModal"
+import Navbar from "../Navbar/Navbar"
 
 const Header = () => {
     // const { ref, isSticky } = useStickyHeader()
@@ -23,18 +26,11 @@ const Header = () => {
                     <h2>Шinamp</h2>
                 </a>
             </Link>
-            <nav className=" col-span-5 flex items-center  space-x-4 text-center text-base">
-                <Link href="/music" shallow>
-                    <a>музыка</a>
-                </Link>
-                <Link href="/playlists" shallow>
-                    <a>подборки</a>
-                </Link>
-                <Link href="/authors" shallow>
-                    <a>исполнители</a>
-                </Link>
-            </nav>
+            <Navbar />
             <Auth />
+            <Button className="btn-ghost btn-circle col-end-13  hover:text-white md:hidden">
+                <MenuIcon className="h-8 w-8" />
+            </Button>
         </header>
     )
 }
