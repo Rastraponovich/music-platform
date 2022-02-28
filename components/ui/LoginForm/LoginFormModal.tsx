@@ -65,23 +65,17 @@ const LoginFormModal = () => {
                             </UIDialogTitle>
 
                             <Tab.Group>
-                                <Tab.List className="flex items-center justify-between ">
+                                <Tab.List className="tabs flex-nowrap">
                                     <Tab
                                         className={({ selected }) =>
-                                            clsx(
-                                                "w-full bg-white py-2 uppercase",
-                                                selected && "bg-blue-500 text-white"
-                                            )
+                                            clsx("tab tab-lifted w-full", selected && "tab-active")
                                         }
                                     >
                                         авторизация
                                     </Tab>
                                     <Tab
                                         className={({ selected }) =>
-                                            clsx(
-                                                "w-full bg-white py-2 uppercase",
-                                                selected && "bg-blue-500 text-white"
-                                            )
+                                            clsx("tab tab-lifted w-full", selected && "tab-active")
                                         }
                                     >
                                         регистрация

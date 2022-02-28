@@ -18,7 +18,7 @@ const AlbumComponent = ({ album }: AlbumProps) => {
                 //     backdropFilter: "{blur: 50}",
                 // }}
             >
-                <span className="bage-lg indicator-item badge border-green-500 bg-green-500 align-middle duration-200 group-hover:border-green-600 group-hover:bg-green-600">
+                <span className="bage-lg indicator-item badge z-10 border-green-500 bg-green-500 align-middle duration-200 group-hover:border-green-600 group-hover:bg-green-600">
                     новый
                 </span>
 
@@ -31,7 +31,7 @@ const AlbumComponent = ({ album }: AlbumProps) => {
                 <h3 className="text-xl font-semibold first-letter:uppercase">{album.title}</h3>
 
                 {/* album.id -- ссылка */}
-                <Link href="/">
+                <Link href={`/playlists/${album.id}`} shallow>
                     <a className="btn btn-secondary no-animation btn-sm self-start">перейти</a>
                 </Link>
             </div>

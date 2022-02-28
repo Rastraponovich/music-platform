@@ -13,10 +13,15 @@ import SearchInput from "@/components/ui/SearchInput/SearchInput"
 import MusicFilter from "@/components/MusicFilter/MusicFilter"
 import PlaylistFormModal from "@/components/ui/PlaylistForm/PlaylistFormModal"
 import UploadFormModal from "@/components/UploadForm/UploadFormModal"
-import { PlayIcon } from "@heroicons/react/solid"
+import { MusicNoteIcon, PlayIcon } from "@heroicons/react/solid"
+import { useState } from "react"
+import { Nullable } from "@/types"
+import clsx from "clsx"
 
 const MusicPage: NextPage = () => {
     const hanldePlayAll = useEvent(winamp.playAllTracksFromList)
+
+    const [activePage, setActivePage] = useState<Nullable<number>>(null)
 
     const currentTrack = useStore(winamp.$currentTrack)
 
@@ -53,6 +58,10 @@ const MusicPage: NextPage = () => {
             </div>
 
             <section className="flex flex-col py-4">
+                <div className="mb-2 flex items-center self-end text-right text-sm">
+                    <MusicNoteIcon className="mr-2 h-4 w-4 rounded-full bg-black p-1 text-white" />
+                    <span className="mb-1">всего треков: {countSongs}</span>
+                </div>
                 <div className="flex  flex-col divide-y-2 divide-gray-200">
                     {useList($songs, {
                         keys: [currentTrack, countSongs],
@@ -64,8 +73,34 @@ const MusicPage: NextPage = () => {
                         ),
                     })}
                 </div>
-                <span className="x">Треков: {countSongs}</span>
             </section>
+
+            <div className="btn-group items-center justify-center">
+                <button
+                    className={clsx("btn btn-sm", activePage === 1 && "btn-active")}
+                    onClick={() => setActivePage(1)}
+                >
+                    1
+                </button>
+                <button
+                    className={clsx("btn btn-sm", activePage === 2 && "btn-active")}
+                    onClick={() => setActivePage(2)}
+                >
+                    2
+                </button>
+                <button
+                    className={clsx("btn btn-sm", activePage === 3 && "btn-active")}
+                    onClick={() => setActivePage(3)}
+                >
+                    3
+                </button>
+                <button
+                    className={clsx("btn btn-sm", activePage === 4 && "btn-active")}
+                    onClick={() => setActivePage(4)}
+                >
+                    4
+                </button>
+            </div>
         </main>
     )
 }

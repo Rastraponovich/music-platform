@@ -14,7 +14,6 @@ const SearchInput = () => {
     }, [searchValue])
     return (
         <label className="mb-4 flex flex-col space-y-2">
-            <span>Поиск по названию</span>
             <SearchDialog
                 open={isOpen}
                 onClose={() => setIsOpen(false)}

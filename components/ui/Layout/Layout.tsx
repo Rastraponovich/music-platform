@@ -5,6 +5,7 @@ import { memo, ReactNode } from "react"
 import Header from "../Header/Header"
 
 import dynamic from "next/dynamic"
+import Sidebar from "@/components/Sidebar/Sidebar"
 
 const WinampLayoutButton = dynamic(import("../WinampLayoutButton/WinampLayoutButton"), {
     ssr: false,
@@ -25,6 +26,7 @@ const Layout = ({ children }: LayoutProps) => {
             </Head>
 
             <Header />
+            <Sidebar />
             {children}
 
             <WinampLayoutButton />
