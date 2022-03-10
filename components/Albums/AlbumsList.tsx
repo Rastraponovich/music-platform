@@ -1,10 +1,10 @@
 import { albums } from "@/utils/__mock__"
-import React, { memo, FC, useMemo } from "react"
+import { useMemo } from "react"
 import Album from "./Album/Album"
 
 interface AlbumsListProps {}
 
-const AlbumsList: FC<AlbumsListProps> = () => {
+const AlbumsList = () => {
     const memoAlbums = useMemo(() => albums, [albums])
 
     return (
@@ -16,4 +16,4 @@ const AlbumsList: FC<AlbumsListProps> = () => {
     )
 }
 
-export default memo(AlbumsList)
+export default AlbumsList

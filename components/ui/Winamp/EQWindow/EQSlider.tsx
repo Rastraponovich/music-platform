@@ -1,5 +1,7 @@
+import { marqueInfo } from "@/features/media/winamp"
 import clsx from "clsx"
-import React, { memo, FC, useState, useMemo, ChangeEvent } from "react"
+import { useEvent } from "effector-react"
+import React, { memo, FC, useState, useMemo, ChangeEvent, MouseEvent } from "react"
 
 interface EQSliderProps {
     name: string
@@ -22,6 +24,18 @@ const spriteNumber = (value: number): number => {
 
 const EQSlider = ({ name, value, onChange, reset, title }: EQSliderProps) => {
     const [active, setActive] = useState(false)
+
+    const mouseDown = useEvent(marqueInfo.enabledMarqueInfo)
+    const mouseUp = useEvent(marqueInfo.disabledMarqueInfo)
+
+    const handleMouseUp = (e: MouseEvent<HTMLInputElement>) => {
+        setActive(false)
+        mouseUp()
+    }
+    const handleMouseDown = (e: MouseEvent<HTMLInputElement>) => {
+        setActive(true)
+        mouseDown()
+    }
 
     const backgroundPosition = useMemo(() => {
         const { x, y } = spriteOffsets(spriteNumber(value))
@@ -49,8 +63,8 @@ const EQSlider = ({ name, value, onChange, reset, title }: EQSliderProps) => {
                 max="100"
                 value={value}
                 title={title}
-                onMouseDown={() => setActive(true)}
-                onMouseUp={() => setActive(false)}
+                onMouseDown={handleMouseDown}
+                onMouseUp={handleMouseUp}
                 onChange={onChange}
                 onDoubleClick={handleDblClick}
             />

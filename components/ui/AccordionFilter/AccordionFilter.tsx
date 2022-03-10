@@ -4,11 +4,12 @@ import clsx from "clsx"
 import React, { memo, FC, ReactNode } from "react"
 
 interface AccordionFilterProps {
-    title: string
+    title: string | ReactNode
     children: ReactNode
+    divider?: boolean
 }
 
-const AccordionFilter: FC<AccordionFilterProps> = ({ title, children }) => {
+const AccordionFilter: FC<AccordionFilterProps> = ({ title, children, divider = false }) => {
     return (
         <Disclosure>
             {({ open }) => (
@@ -35,7 +36,12 @@ const AccordionFilter: FC<AccordionFilterProps> = ({ title, children }) => {
                         leaveFrom="transform scale-200 opacity-100"
                         leaveTo="transform scale-75 opacity-0"
                     >
-                        <Disclosure.Panel className="mb-2   rounded bg-white px-4 pt-4 pb-2 text-sm text-gray-900">
+                        <Disclosure.Panel
+                            className={clsx(
+                                "mb-2   rounded bg-white px-4 pt-4 pb-2 text-sm text-gray-900",
+                                divider && "divide-y divide-gray-200"
+                            )}
+                        >
                             {children}
                         </Disclosure.Panel>
                     </Transition>

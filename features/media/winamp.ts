@@ -23,7 +23,7 @@ import { createWinampProgressFactory } from "../music/winamp-progress"
 
 import { createWinampBalanceFactory } from "../music/winamp-balance"
 import { debug } from "patronum"
-import { convertTimeToString } from "@/utils/utils"
+import { convertTimeToString, _snapBandValue } from "@/utils/utils"
 declare global {
     interface Window {
         webkitAudioContext: {
@@ -831,9 +831,9 @@ const $enabledMaruqeInfo = createStore<boolean>(false)
 
 const setMarqueInfo = createEvent<string | number>()
 
-const $winampMarqueInfo = createStore<Nullable<string>>(null)
+const $winampMarqueInfo = createStore<Nullable<string>>("")
     .on(setMarqueInfo, (_, payload) => String(payload))
-    .reset(disabledMarqueInfo)
+    .reset([disabledMarqueInfo, $enabledMaruqeInfo])
     .on($currentBalance, (_, balance) => {
         if (balance < -5) return `Balance: ${balance * -1}% left`
         if (balance > 5) return `Balance: ${balance}% right`
@@ -854,6 +854,26 @@ sample({
         return `Seek To: ${currentTime}/${currentDuration} (${percent}%)`
     },
 
+    target: setMarqueInfo,
+})
+
+sample({
+    clock: changeEQBand,
+    fn: (val) => {
+        const snapBandValue = _snapBandValue(Number(val.target.value))
+        const db = (snapBandValue / 100) * 24 - 12
+        return `EQ: ${val.target.name}HZ ${db.toFixed(1)} DB`
+    },
+    target: setMarqueInfo,
+})
+
+sample({
+    clock: changePreampValue,
+    fn: (val) => {
+        const snapBandValue = _snapBandValue(Number(val.target.value))
+        const db = (snapBandValue / 100) * 24 - 12
+        return `EQ: PREAMP ${db.toFixed(1)} DB`
+    },
     target: setMarqueInfo,
 })
 

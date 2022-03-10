@@ -66,8 +66,8 @@ const Sidebar = () => {
                                     </div>
                                 </Transition.Child>
                                 <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
-                                    <div className="flex items-center justify-between px-4 sm:px-6">
-                                        <Dialog.Title className="text-lg font-medium text-gray-900">
+                                    <div className="flex flex-col items-center justify-between space-y-2 px-4 sm:flex-row sm:space-y-0 sm:px-6">
+                                        <Dialog.Title className=" text-lg font-medium text-gray-900 ">
                                             <Link href="/" shallow>
                                                 <a className="flex items-center text-xl">
                                                     <Image

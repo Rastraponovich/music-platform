@@ -7,14 +7,14 @@ interface RatingProps {
 
 const Rating = ({ value }: RatingProps) => {
     return (
-        <div className="rating">
+        <div className="rating rating-sm items-center">
             {["1", "2", "3", "4", "5"].map((ratingStar) => (
                 <input
                     key={ratingStar}
                     type="radio"
                     name="rating-2"
                     checked={value.toString() === ratingStar}
-                    className={clsx("mask mask-star-2 bg-orange-400")}
+                    className={clsx("mask mask-star-2  bg-orange-400")}
                 />
             ))}
         </div>

@@ -22,7 +22,7 @@ const TarifCard = ({ tarif, checked, setChecked }: TarifCardProps) => {
             )}
         >
             {tarif.recomended && (
-                <span className="indicator-item badge animate-pulse border-green-500 bg-green-500 group-hover:border-green-600 group-hover:bg-green-600 group-hover:shadow-xl">
+                <span className="indicator-center indicator-item badge animate-pulse border-green-500 bg-green-500 group-hover:border-green-600 group-hover:bg-green-600 group-hover:shadow-xl md:indicator-end md:indicator-top">
                     рекомендуется
                 </span>
             )}

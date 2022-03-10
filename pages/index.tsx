@@ -16,12 +16,12 @@ const Home: NextPage = () => {
                     уникальный плейлист уже доступен
                 </p>
             </section>
-            <section className="flex flex-col bg-white px-20 py-10">
+            <section className="flex flex-col bg-white px-5 py-10 sm:px-10 md:px-20">
                 <h2 className="mb-4 text-3xl font-bold">Новинки</h2>
                 <AlbumsList />
             </section>
 
-            <section className="grid grid-cols-3 items-center bg-blue-600 px-20 text-white sm:grid-cols-2 md:grid-cols-3">
+            <section className="grid grid-cols-3 items-center bg-blue-600 px-5 text-white sm:grid-cols-2 sm:px-10 md:grid-cols-3 md:px-20">
                 <div className=" -mt-4 -mb-6">
                     <Image
                         src="/images/subscribe.jpg"

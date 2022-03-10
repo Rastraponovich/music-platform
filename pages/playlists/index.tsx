@@ -17,7 +17,7 @@ const PlaylistPage: FC<PlaylistPageProps> = () => {
     const memoPlaylist = useMemo(() => albums, [albums])
 
     return (
-        <main className="grow space-y-4 px-20 pb-5 pt-1">
+        <main className="grow space-y-4 px-5 pb-5 pt-1 sm:px-10 md:px-20">
             <h2 className="text-2xl font-semibold">Плейлисты</h2>
             <div className="flex">
                 <PlaylistFormModal />

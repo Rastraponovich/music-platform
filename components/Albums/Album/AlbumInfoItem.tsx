@@ -1,15 +1,15 @@
-import React, { memo, FC } from "react"
+import React, { memo, FC, ReactNode } from "react"
 
 interface AlbumInfoItemProps {
-    name: string
-    value: string | number | boolean
+    name: string | ReactNode
+    value: string | number | boolean | ReactNode
 }
 
 const AlbumInfoItem = ({ name, value }: AlbumInfoItemProps) => {
     return (
-        <div className="flex justify-between">
-            <span className="after:content-[':']">{name}</span>
-            <span>{value}</span>
+        <div className="flex items-center justify-between">
+            <span>{name}</span>
+            <span className="flex items-center">{value}</span>
         </div>
     )
 }

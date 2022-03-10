@@ -12,7 +12,7 @@ const TrackTimer = () => {
     const { firstSecond, lastSecond, firstMinute, lastMinute } = timer
 
     return (
-        <span className="after:mx-1 after:content-['/']">
+        <span className="after:mx-1 md:after:content-['/']">
             {timeMode === TIME_MODE.REMAINING && "-"}
             {firstMinute}
             {lastMinute}:{firstSecond}

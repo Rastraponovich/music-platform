@@ -23,7 +23,7 @@ const Header = () => {
             )}
         >
             <Link href="/" shallow>
-                <a className="col-span-3 flex items-center text-xl">
+                <a className="col-span-6 flex items-center text-xl sm:col-span-3">
                     <Image src="/img/winamp-logo.svg" height={50} width={50} alt="Лого" />
                     <h2>Шinamp</h2>
                 </a>

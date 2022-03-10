@@ -77,8 +77,6 @@ export const createWinampEQFactory = ($Media: Store<Nullable<MediaElement>>) => 
             const db = (snapBandValue / 100) * 24 - 12
             media!._bands[bandName].gain.value = db
 
-            console.log(db, value)
-
             const callSetBandScoped = scopeBind(setBand, { scope: getClientScope()! })
             callSetBandScoped({ [bandName]: snapBandValue } as Record<Band, number>)
         }

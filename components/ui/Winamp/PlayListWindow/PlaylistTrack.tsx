@@ -34,7 +34,7 @@ const PlaylistTrack = ({ track, index }: PlaylistTrackProps) => {
             )}
         >
             <span className="truncate">
-                {index + 1}. {track.name}
+                {index + 1}. {track.artist} - {track.name}
             </span>
             <span>
                 {firstMinute}:{lastMinute < 10 ? `0${lastMinute}` : seconds}

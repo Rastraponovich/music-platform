@@ -36,8 +36,10 @@ const MusicFilter: FC<MusicFilterProps> = () => {
                         <button
                             key={item}
                             className={clsx(
-                                "btn  btn-primary no-animation btn-xs",
-                                styleFilter.find((filter) => filter === item) && "btn-outline"
+                                " btn btn-primary no-animation btn-xs",
+                                styleFilter.find((filter) => filter === item)
+                                    ? "btn-primary"
+                                    : "btn-outline"
                             )}
                             onClick={() => handleSelectFilter(item)}
                         >
@@ -55,7 +57,9 @@ const MusicFilter: FC<MusicFilterProps> = () => {
                                 key={item}
                                 className={clsx(
                                     "btn  btn-primary no-animation btn-xs",
-                                    subFilter.find((filter) => filter === item) && "btn-outline"
+                                    subFilter.find((filter) => filter === item)
+                                        ? "btn-primary"
+                                        : "btn-outline"
                                 )}
                                 onClick={() => handleSelectSubFilter(item)}
                             >

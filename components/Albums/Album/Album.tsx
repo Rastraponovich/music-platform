@@ -18,7 +18,7 @@ const AlbumComponent = ({ album }: AlbumProps) => {
                 //     backdropFilter: "{blur: 50}",
                 // }}
             >
-                <span className="bage-lg indicator-item badge z-10 border-green-500 bg-green-500 align-middle duration-200 group-hover:border-green-600 group-hover:bg-green-600">
+                <span className="bage-lg indicator-center indicator-item badge z-10 border-green-500 bg-green-500 align-middle duration-200 group-hover:border-green-600 group-hover:bg-green-600 sm:indicator-end sm:indicator-top">
                     новый
                 </span>
 
