@@ -5,28 +5,28 @@ import { createEffect } from "effector"
 import { Song } from "./types"
 
 const getMetadataAPI = async (name: string) => {
-    return await externalAPI.get(`/songs/metadata/${name}`, { withCredentials: false })
+    return await externalAPI.get(`api/songs/metadata/${name}`, { withCredentials: false })
 }
 
 const getAllSongsAPI = async (params?: any) => {
-    return await externalAPI.get("/songs", { params: { take: 10 } })
+    return await externalAPI.get("api/songs", { params: { take: 10 } })
 }
 
 const searchTrackAPI = async (params: any) => {
-    return axios.get("http://localhost:4000/songs?name=" + params)
+    return axios.get("http://localhost:3000/api/songs?name=" + params)
 }
 
 const searchTrackFx = createEffect<string, AxiosResponse<any>, Error>(searchTrackAPI)
 
-const getOneSongAPI = async (id: number) => await externalAPI.get(`/songs/${id}`)
-const deleteOneSongAPI = async (id: number) => await externalAPI.delete(`/songs/${id}`)
+const getOneSongAPI = async (id: number) => await externalAPI.get(`api/songs/${id}`)
+const deleteOneSongAPI = async (id: number) => await externalAPI.delete(`api/songs/${id}`)
 
 const saveSongAPI = async (song: Song & { image: File; music: File }) => {
     const formdata = new FormData()
 
     Object.entries(song).forEach(([key, value], index) => formdata.append(key, value))
 
-    const response = await externalAPI.post("/songs", formdata)
+    const response = await externalAPI.post("api/songs", formdata)
 
     return response
 }
