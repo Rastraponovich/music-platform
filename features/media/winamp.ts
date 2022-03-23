@@ -238,11 +238,12 @@ const createWinampFx = createEffect<Track, any, any>((track) => {
     }
 })
 
-guard({
+sample({
     clock: destroyWinamp,
     source: $Media,
     filter: (mediaSource, _): mediaSource is MediaElement =>
         mediaSource!._audio instanceof HTMLAudioElement,
+
     target: createEffect<MediaElement, any>((media) => {
         const { _audio: audio } = media
 
@@ -312,11 +313,6 @@ const $mediaStatus = createStore<TMediaStatus>(MEDIA_STATUS.STOPPED).on(
     (_, status) => status
 )
 
-const onStopped = sample({
-    clock: $mediaStatus,
-    filter: (status) => status === MEDIA_STATUS.STOPPED,
-})
-
 const toggleLoop = createEvent()
 const $loop = createStore<boolean>(false).on(toggleLoop, (state, _) => !state)
 
@@ -346,43 +342,28 @@ sample({
 
 const selectTrackFromList = createEvent<Track>()
 
+sample({
+    clock: selectTrackFromList,
+    target: loadUrl,
+})
+
 $winampState.on(selectTrackFromList, () => WINAMP_STATE.TRACKLOADED)
 
-const checkInitWinamp = guard({
+sample({
     clock: selectTrackFromList,
     source: $winampState,
     filter: (state, _) => state === WINAMP_STATE.INIT,
-})
-
-sample({
-    clock: checkInitWinamp,
     fn: () => WINAMP_STATE.TRACKLOADED,
     target: $winampState,
 })
 
-const $currentTrack = createStore<Nullable<Track>>(null).on(
-    selectTrackFromList,
-    (_, track) => track
-)
+const $currentTrack = createStore<Nullable<Track>>(null).on(loadUrlFx.doneData, (_, track) => track)
 
 sample({
     clock: initWinamp,
     source: $currentTrack,
     fn: (track, _) => track!,
     target: createWinampFx,
-})
-
-const playTrackAfterSelectFromList = guard({
-    clock: $currentTrack,
-    source: $currentTrack,
-    filter: (currentTrack) => currentTrack !== null,
-})
-
-sample({
-    clock: playTrackAfterSelectFromList,
-    source: $currentTrack,
-    fn: (track, _) => track!,
-    target: loadUrl,
 })
 
 const {
@@ -459,7 +440,7 @@ $selectedTrackInPlaylist.reset(removeTrackFromPlaylist)
 
 $currentPlayedTrackIndex.on(selectTrackFromList, () => 0)
 
-const decrementCurrentPlayedIndex = guard({
+sample({
     clock: removeTrackFromPlaylist,
     source: $currentPlayedTrackIndex,
     filter: (currentIndex, removedIndex) => {
@@ -469,11 +450,6 @@ const decrementCurrentPlayedIndex = guard({
         }
         return false
     },
-})
-
-sample({
-    clock: decrementCurrentPlayedIndex,
-    source: $currentPlayedTrackIndex,
     fn: (currentIndex, _) => currentIndex! - 1,
     target: $currentPlayedTrackIndex,
 })
@@ -485,13 +461,6 @@ sample({
     fn: (playlist, id) => playlist[id!],
     target: $currentTrack,
 })
-//если нажали на трек два раза TODO
-// sample({
-//     clock:doubleClickedTrackInPlaylist,
-//     source: $playlist,
-//     fn: (playlist, id) => playlist[id!],
-//     target: $currentTrack,
-// })
 
 //when track ended check next track in playlist exists
 const playNextTrack = createEvent()
@@ -582,61 +551,54 @@ sample({
 sample({
     clock: $currentPlayedTrackIndex,
     source: $playlist,
-    fn: (playlist, newTrackIndex) => ({ ...playlist[newTrackIndex!] }),
-    target: $currentTrack,
+    fn: (playlist, newTrackIndex) => playlist[newTrackIndex!],
+    target: loadUrl,
 })
 
 //Controls
 
 const onPlayClicked = createEvent()
-
-const playFromBeginning = guard({
+//when press playbutton when status playing
+sample({
     clock: onPlayClicked,
-    source: $mediaStatus,
-    filter: (status) => status === MEDIA_STATUS.PLAYING,
-})
-
-guard({
-    clock: playFromBeginning,
-    source: $Media,
-    filter: (Media): Media is MediaElement => Media?._audio instanceof HTMLAudioElement,
+    source: [$Media, $mediaStatus],
+    filter: ([media, status], _) => status === MEDIA_STATUS.PLAYING,
+    fn: ([media, status], _) => media as MediaElement,
     target: startPlayFromBegginingFx,
 })
 
-const resumePlaying = guard({
+//when press playbutton and status not playing
+sample({
     clock: onPlayClicked,
-    source: $mediaStatus,
-    filter: (mediaStatus) => mediaStatus !== MEDIA_STATUS.PLAYING,
-})
-
-guard({
-    clock: resumePlaying,
-    source: $Media,
-    filter: (Media): Media is MediaElement => Media?._audio instanceof HTMLAudioElement,
+    source: [$Media, $mediaStatus],
+    filter: ([media, status], _) => status !== MEDIA_STATUS.PLAYING,
+    fn: ([media, status], _) => media as MediaElement,
     target: startPlayingFx,
 })
+
 const onPauseClicked = createEvent()
 
-guard({
+sample({
     clock: onPauseClicked,
     source: $Media,
     filter: (Media): Media is MediaElement => Media?._audio instanceof HTMLAudioElement,
+    fn: (Media) => Media as MediaElement,
     target: pausePlayingFx,
 })
 
-const onStopButtonClicked = createEvent<TMediaStatus>()
+const onStopButtonClicked = createEvent()
 
 sample({
     clock: onStopButtonClicked,
-    fn: () => MEDIA_STATUS.STOPPED,
-    target: $mediaStatus,
+    source: $Media,
+    fn: (media, _) => media as MediaElement,
+    target: stopPlayingFx,
 })
 
-guard({
-    clock: onStopped,
-    source: $Media,
-    filter: (Media, _): Media is MediaElement => Media?._audio instanceof HTMLAudioElement,
-    target: stopPlayingFx,
+sample({
+    clock: stopPlayingFx.done,
+    fn: () => MEDIA_STATUS.STOPPED,
+    target: $mediaStatus,
 })
 
 // const delayedStopButtonClicked = delay({
@@ -654,7 +616,7 @@ sample({
 sample({
     clock: doubleClickedTrackInPlaylist,
     source: $Media,
-    filter: (Media, _): Media is MediaElement => Media?._audio instanceof HTMLAudioElement,
+    fn: (media, event) => media as MediaElement,
     target: startPlayingFx,
 })
 
@@ -727,7 +689,6 @@ sample({
 
 sample({
     clock: closeWinamp,
-    fn: () => MEDIA_STATUS.STOPPED,
     target: onStopButtonClicked,
 })
 
@@ -807,7 +768,7 @@ sample({
     target: showWinamp,
 })
 
-guard({
+sample({
     clock: playAllTracksFromList,
     source: $mediaStatus,
     filter: (state, _) => state !== MEDIA_STATUS.PLAYING,
