@@ -294,14 +294,16 @@ const toggleShadePlayer = createEvent()
 const $shadePlayer = createStore<boolean>(false).on(toggleShadePlayer, (state, _) => !state)
 
 //function has load track in Media._audio
-const loadUrl = createEvent<string>()
+const loadUrl = createEvent<Track>()
+const loadUrlFx = createEffect<[MediaElement, Track], Track, Error>(([media, track]) => {
+    media._audio.src = `${process.env.NEXT_PUBLIC_BACKEND}/music/${track!.path}`
+    return track
+})
 sample({
     clock: loadUrl,
     source: $Media,
-    fn: (media, url) => ({ media, url }),
-    target: createEffect(({ media, url }: { media: Nullable<MediaElement>; url: string }) => {
-        media!._audio.src = url
-    }),
+    fn: (media, track) => [media, track] as [MediaElement, Track],
+    target: loadUrlFx,
 })
 
 const setMediaStatus = createEvent<TMediaStatus>()
@@ -379,7 +381,7 @@ const playTrackAfterSelectFromList = guard({
 sample({
     clock: playTrackAfterSelectFromList,
     source: $currentTrack,
-    fn: (track, _) => `${process.env.NEXT_PUBLIC_BACKEND}/music/${track!.path}`,
+    fn: (track, _) => track!,
     target: loadUrl,
 })
 
