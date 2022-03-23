@@ -111,8 +111,9 @@ const Emitter = {
     onWaiting: (e: Event) => {},
 }
 
-const createAudioElement = (context: AudioContext, destination: GainNode) => {
+const createAudioElement = (context: AudioContext, destination: GainNode, track: Track) => {
     const audio = new Audio()
+    audio.src = `${process.env.NEXT_PUBLIC_BACKEND}/music/${track!.path}`
     audio.autoplay = true
     audio.controls = false
 
@@ -176,7 +177,7 @@ const closeWinamp = createEvent()
 
 const $Media = createStore<Nullable<MediaElement>>(null)
 
-const createWinampFx = createEffect<any, any, any>(() => {
+const createWinampFx = createEffect<Track, any, any>((track) => {
     const _context = new (window.AudioContext || window.webkitAudioContext)()
     const _staticSource = _context.createGain()
     const _balance = StereoBalanceNode(_context) as GainNode & StereoBalanceNodeType
@@ -190,7 +191,7 @@ const createWinampFx = createEffect<any, any, any>(() => {
     _analyser.smoothingTimeConstant = 0.0
     const _gainNode = _context.createGain()
 
-    const { _audio, _source } = createAudioElement(_context, _staticSource)
+    const { _audio, _source } = createAudioElement(_context, _staticSource, track)
 
     _staticSource.connect(_preamp)
 
@@ -274,10 +275,6 @@ guard({
 })
 
 //initial $Media source
-sample({
-    clock: initWinamp,
-    target: createWinampFx,
-})
 
 sample({
     clock: createWinampFx.doneData,
@@ -365,6 +362,13 @@ const $currentTrack = createStore<Nullable<Track>>(null).on(
     selectTrackFromList,
     (_, track) => track
 )
+
+sample({
+    clock: initWinamp,
+    source: $currentTrack,
+    fn: (track, _) => track!,
+    target: createWinampFx,
+})
 
 const playTrackAfterSelectFromList = guard({
     clock: $currentTrack,
