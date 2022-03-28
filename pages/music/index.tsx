@@ -17,8 +17,19 @@ import { MusicNoteIcon, PlayIcon } from "@heroicons/react/solid"
 import { useState } from "react"
 import { Nullable } from "@/types"
 import clsx from "clsx"
+import { Song } from "@/features/music/types"
 
 const MusicPage: NextPage = () => {
+    const [fav, setFavs] = useState<Song["id"][]>([])
+    const handleAddToFavorites = (id: Song["id"]) => {
+        const candidate = fav.some((item) => item === id)
+
+        if (candidate) {
+            setFavs(fav.filter((item) => item !== id))
+        } else {
+            setFavs([...fav, id])
+        }
+    }
     const hanldePlayAll = useEvent(winamp.playAllTracksFromList)
 
     const [activePage, setActivePage] = useState<Nullable<number>>(null)
@@ -39,7 +50,7 @@ const MusicPage: NextPage = () => {
                 <button
                     onClick={handleShowWinamp}
                     title="открыть winamp"
-                    className="btn no-animation btn-square btn-xs hover:shadow-lg"
+                    className="btn btn-square no-animation btn-xs hover:shadow-lg"
                 >
                     <WinampIcon size="extraSmall" />
                 </button>
@@ -64,9 +75,11 @@ const MusicPage: NextPage = () => {
                 </div>
                 <div className="flex  flex-col divide-y-2 divide-gray-200">
                     {useList($songs, {
-                        keys: [currentTrack, countSongs],
+                        keys: [currentTrack, countSongs, fav],
                         fn: (song) => (
                             <TrackListItem
+                                addToFavorites={handleAddToFavorites}
+                                favorite={fav.some((item) => item === song.id)}
                                 track={song}
                                 isCurrentTrack={currentTrack?.id === song.id}
                             />

@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import React, { memo, FC, ButtonHTMLAttributes, ReactNode } from "react"
+import { memo, ButtonHTMLAttributes, ReactNode } from "react"
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     children: ReactNode

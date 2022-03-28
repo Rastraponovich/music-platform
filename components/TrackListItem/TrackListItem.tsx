@@ -14,16 +14,24 @@ import { MEDIA_STATUS } from "@/features/media/constants"
 import clsx from "clsx"
 import Comments from "./Comments"
 import { convertTimeToObj } from "@/utils/utils"
-import { AnnotationIcon, PlusSmIcon } from "@heroicons/react/outline"
-import { PauseIcon, PlayIcon } from "@heroicons/react/solid"
+import { AnnotationIcon, HeartIcon, PlusSmIcon, TrashIcon } from "@heroicons/react/outline"
+import { PauseIcon, PlayIcon, HeartIcon as Fav } from "@heroicons/react/solid"
 
 interface TrackListItemProps {
     track: Song
     isCurrentTrack: boolean
+    addToFavorites(id: Song["id"]): void
+    favorite?: boolean
 }
 
-const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
+const TrackListItem: FC<TrackListItemProps> = ({
+    track,
+    isCurrentTrack,
+    addToFavorites,
+    favorite,
+}) => {
     // console.log("render track", track.name)
+
     const mediaStatus = useStore(winamp.$mediaStatus)
 
     const { firstMinute, lastSecond, lastMinute, firstSecond } = useMemo(
@@ -48,13 +56,17 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
 
     const toggleComments = () => showComments((prev) => !prev)
 
+    const handleAddToFavorites = () => {
+        addToFavorites(track!.id)
+    }
+
     const needToShow = isCurrentTrack && mediaStatus !== MEDIA_STATUS.STOPPED
 
     return (
         <div className="relative  flex flex-col overflow-hidden shadow-sm">
             <div
                 className={clsx(
-                    "z-20 grid grid-cols-12 items-center rounded bg-white py-2",
+                    "z-20 grid grid-cols-12 items-center rounded bg-white p-2",
                     comments && "drop-shadow-xl"
                 )}
             >
@@ -108,7 +120,7 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
                     </span>
                 </div>
 
-                <div className="col-span-2 col-end-13 flex space-x-2 justify-self-start ">
+                <div className="col-span-2 col-end-13 flex items-center justify-end space-x-2 justify-self-start">
                     <button
                         onClick={() => handleAddToPlayList(track)}
                         title="добавить в плейлист winamp"
@@ -125,6 +137,17 @@ const TrackListItem: FC<TrackListItemProps> = ({ track, isCurrentTrack }) => {
                             {track.comments.length}
                         </span>
                         <AnnotationIcon className="h-6 w-6 text-gray-500 duration-200 group-hover:text-gray-900" />
+                    </button>
+
+                    <button onClick={toggleComments} title="показать\скрыть комментарии">
+                        <TrashIcon className="h-5 w-6 text-gray-500 duration-200 group-hover:text-gray-900" />
+                    </button>
+                    <button onClick={handleAddToFavorites} title="добавить в избранное">
+                        {!favorite ? (
+                            <HeartIcon className=" h-5 w-6 text-gray-500 duration-200 group-hover:text-gray-900" />
+                        ) : (
+                            <Fav className=" h-5 w-6 text-gray-500 duration-200 group-hover:text-gray-900" />
+                        )}
                     </button>
                 </div>
             </div>

@@ -1,12 +1,15 @@
 import ProfileForm from "@/components/ProfileForm/ProfileForm"
 import TrackListItemSmall from "@/components/TrackListItem/TrackListItemSmall"
 import AccordionFilter from "@/components/ui/AccordionFilter/AccordionFilter"
+import Button from "@/components/ui/Button/Button"
+import { Stats } from "@/components/Stats/Stats"
 import { winamp } from "@/features/media/winamp"
 import { $songs, getSongs } from "@/features/music"
 import { BookOpenIcon, AnnotationIcon, MusicNoteIcon, NewspaperIcon } from "@heroicons/react/solid"
 import { allSettled, fork, serialize } from "effector"
 import { useList, useStore } from "effector-react"
 import { GetServerSideProps, NextPage } from "next"
+import { useCallback, useState } from "react"
 
 interface LKPageProps {}
 
@@ -20,7 +23,14 @@ const LKPage: NextPage<LKPageProps> = () => {
 
             <ProfileForm />
 
-            <section className="flex flex-col">
+            <Stats />
+
+            <section className="flex space-x-2 rounded bg-white p-2 text-sm">
+                <Button className="text-xs">избранное</Button>
+                <Button className="text-xs">загруженные треки</Button>
+            </section>
+
+            <section className="grid grid-cols-1  xl:grid xl:grid-cols-3 xl:items-start xl:gap-2">
                 <AccordionFilter
                     title={
                         <div className="flex space-x-2">
@@ -32,6 +42,7 @@ const LKPage: NextPage<LKPageProps> = () => {
                     <div>пусто</div>
                 </AccordionFilter>
                 <AccordionFilter
+                    className="col-span-1 xl:col-span-2"
                     divider
                     title={
                         <div className="flex space-x-2">

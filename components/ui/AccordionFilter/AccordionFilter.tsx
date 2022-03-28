@@ -1,19 +1,26 @@
 import { Disclosure, Transition } from "@headlessui/react"
 import { ChevronUpIcon } from "@heroicons/react/outline"
 import clsx from "clsx"
-import React, { memo, FC, ReactNode } from "react"
+import { memo, ReactNode } from "react"
 
 interface AccordionFilterProps {
     title: string | ReactNode
     children: ReactNode
     divider?: boolean
+    className?: string
 }
 
-const AccordionFilter: FC<AccordionFilterProps> = ({ title, children, divider = false }) => {
+const AccordionFilter = ({ title, children, divider = false, className }: AccordionFilterProps) => {
     return (
         <Disclosure>
             {({ open }) => (
-                <div className={clsx("mb-4 divide-y rounded bg-white", open && "shadow-xl")}>
+                <div
+                    className={clsx(
+                        "mb-4 divide-y rounded bg-white",
+                        open && "shadow-xl",
+                        className
+                    )}
+                >
                     <Disclosure.Button
                         className={clsx(
                             "transition-[box-shadow] duration-500 ease-in-out hover:shadow-lg",
