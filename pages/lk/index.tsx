@@ -10,6 +10,14 @@ import { allSettled, fork, serialize } from "effector"
 import { useList, useStore } from "effector-react"
 import { GetServerSideProps, NextPage } from "next"
 import { useCallback, useState } from "react"
+import { TrackSkeletonSmall } from "@/components/ui/Skeletons/TrackSkeleton/TrackSkeletonSmall"
+import { AccordionSkeleton } from "@/components/ui/Skeletons/AccordionSkeleton/AccordionSkeleton"
+import {
+    AccordionFiltersSkeleton,
+    LKFiltersSkeleton,
+    ProfileFormSkeleton,
+    StatsSkeleton,
+} from "@/components/ui/Skeletons"
 
 interface LKPageProps {}
 
@@ -21,16 +29,19 @@ const LKPage: NextPage<LKPageProps> = () => {
                 личный кабинет
             </h2>
 
-            <ProfileForm />
+            {/* <ProfileForm /> */}
+            <ProfileFormSkeleton />
 
-            <Stats />
-
-            <section className="flex space-x-2 rounded bg-white p-2 text-sm">
+            {/* <Stats /> */}
+            <StatsSkeleton />
+            <LKFiltersSkeleton />
+            {/* <section className="flex space-x-2 rounded bg-white p-2 text-sm">
                 <Button className="text-xs">избранное</Button>
                 <Button className="text-xs">загруженные треки</Button>
-            </section>
+            </section> */}
+            <AccordionFiltersSkeleton />
 
-            <section className="grid grid-cols-1  xl:grid xl:grid-cols-3 xl:items-start xl:gap-2">
+            {/* <section className="grid grid-cols-1  xl:grid xl:grid-cols-3 xl:items-start xl:gap-2">
                 <AccordionFilter
                     title={
                         <div className="flex space-x-2">
@@ -81,7 +92,7 @@ const LKPage: NextPage<LKPageProps> = () => {
                 >
                     <div>пусто</div>
                 </AccordionFilter>
-            </section>
+            </section> */}
         </main>
     )
 }

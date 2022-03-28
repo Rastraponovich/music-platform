@@ -12,6 +12,7 @@ export const Stats = () => {
                 className="bg-gradient-to-br  from-blue-600 to-blue-300 text-white  duration-150 hover:from-blue-300 hover:to-blue-600"
                 icon={<ClockIcon className="h-10 w-10" />}
             />
+
             <StatCard
                 title="загруженно треков"
                 value="10"
@@ -33,6 +34,7 @@ export const Stats = () => {
                 className="row-span-2 bg-gradient-to-br  from-yellow-300 to-amber-600 text-white  duration-150 hover:from-amber-600 hover:to-yellow-300"
                 icon={<ClockIcon className="h-10 w-10" />}
             />
+
             <StatCard
                 title="загруженно треков"
                 value="10"
@@ -40,6 +42,7 @@ export const Stats = () => {
                 className="bg-gradient-to-tr from-fuchsia-600 to-pink-300 text-white hover:from-pink-300 hover:to-fuchsia-600"
                 icon={<CloudUploadIcon className="h-10 w-10" />}
             />
+
             <StatCard
                 title="комментариев"
                 value="150"

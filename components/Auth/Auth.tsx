@@ -3,6 +3,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { memo, useState } from "react"
 import LoginFormModal from "../ui/LoginForm/LoginFormModal"
+import { AvatarSkeleton } from "../ui/Skeletons"
 
 interface AuthProps {
     className?: string
@@ -23,6 +24,7 @@ const Auth = ({ className }: AuthProps) => {
                 className={clsx("avatar", isAuth && "online before:animate-pulse")}
                 onClick={() => setIsAuth((prev) => !prev)}
             >
+                {/* <AvatarSkeleton /> */}
                 <div className="w-12 rounded-full bg-neutral-focus text-neutral-content">
                     <Image src="/avatars/avatar.jpg" height={100} width={100} objectFit="contain" />
                 </div>
