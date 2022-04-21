@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import React, { memo, FC, ChangeEvent, InputHTMLAttributes } from "react"
+import { memo, InputHTMLAttributes } from "react"
 
 interface InputFileProps extends InputHTMLAttributes<HTMLInputElement> {
     title: string
@@ -13,7 +13,7 @@ const InputFile = ({ title, dataFile, ...props }: InputFileProps) => {
             <input
                 {...props}
                 className={clsx(
-                    "file:btn file:no-animation file:btn-xs file:mr-4 file:cursor-pointer hover:file:btn-primary",
+                    "file:btn file:btn-xs file:no-animation file:mr-4 file:cursor-pointer hover:file:btn-primary",
                     "block w-full cursor-pointer text-sm text-gray-500"
                 )}
             />
