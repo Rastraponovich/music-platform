@@ -1,7 +1,7 @@
 import { Album } from "@/types"
 import Image from "next/image"
 import Link from "next/link"
-import React, { memo, FC } from "react"
+import { memo } from "react"
 
 interface AlbumProps {
     album: Album
@@ -18,11 +18,16 @@ const AlbumComponent = ({ album }: AlbumProps) => {
                 //     backdropFilter: "{blur: 50}",
                 // }}
             >
-                <span className="bage-lg indicator-center indicator-item badge z-10 border-green-500 bg-green-500 align-middle duration-200 group-hover:border-green-600 group-hover:bg-green-600 sm:indicator-end sm:indicator-top">
+                <span className="bage-lg indicator-center badge indicator-item z-10 border-green-500 bg-green-500 align-middle duration-200 group-hover:border-green-600 group-hover:bg-green-600 sm:indicator-end sm:indicator-top">
                     новый
                 </span>
 
-                <Image src={`/images/${album.backgroundImage}`} layout="fill" objectFit="contain" />
+                <Image
+                    src={`/images/${album.backgroundImage}`}
+                    layout="fill"
+                    objectFit="contain"
+                    alt="album-cover"
+                />
             </div>
 
             <div className="flex flex-col space-y-2 p-3">
@@ -32,7 +37,7 @@ const AlbumComponent = ({ album }: AlbumProps) => {
 
                 {/* album.id -- ссылка */}
                 <Link href={`/playlists/${album.id}`} shallow>
-                    <a className="btn btn-secondary no-animation btn-sm self-start">перейти</a>
+                    <a className="btn btn-secondary btn-sm no-animation self-start">перейти</a>
                 </Link>
             </div>
         </article>

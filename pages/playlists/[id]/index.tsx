@@ -59,6 +59,7 @@ const PlaylistPage: NextPage<PlaylistPageProps> = ({ playlist }) => {
                     <div className="col-span-2 col-end-13 flex flex-col items-center space-y-2">
                         <Image
                             src={`/images/${playlist.backgroundImage}`}
+                            alt={"album-cover"}
                             height={160}
                             width={160}
                         />

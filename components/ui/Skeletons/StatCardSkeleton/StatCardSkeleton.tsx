@@ -6,7 +6,7 @@ interface StatCardSkeletonProps {
     iconClassName?: string
 }
 
-export const StatCardSkeleton = memo(({ className, iconClassName }: StatCardSkeletonProps) => {
+const StatCardSkeleton = memo(({ className, iconClassName }: StatCardSkeletonProps) => {
     return (
         <div className={clsx("stat animate-pulse bg-gray-200", className)}>
             <div
@@ -18,3 +18,7 @@ export const StatCardSkeleton = memo(({ className, iconClassName }: StatCardSkel
         </div>
     )
 })
+
+StatCardSkeleton.displayName = "StatCardSkeleton"
+
+export { StatCardSkeleton }

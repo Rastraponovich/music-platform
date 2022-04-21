@@ -1,21 +1,12 @@
 import Album from "@/components/Albums/Album/Album"
-import AlbumsList from "@/components/Albums/AlbumsList"
-import Layout from "@/components/ui/Layout/Layout"
 import PlaylistFormModal from "@/components/ui/PlaylistForm/PlaylistFormModal"
-import { $playlists, getPlaylists } from "@/features/playlist"
+import { $playlists } from "@/features/playlist"
 import { albums } from "@/utils/__mock__"
-import { allSettled, fork, serialize } from "effector"
-import { useList, useStore } from "effector-react"
-import { GetServerSideProps } from "next"
-import React, { memo, FC, useMemo } from "react"
+import { fork, serialize } from "effector"
+import { useList } from "effector-react"
+import { GetServerSideProps, NextPage } from "next"
 
-interface PlaylistPageProps {}
-
-const PlaylistPage: FC<PlaylistPageProps> = () => {
-    const playlists = useStore($playlists)
-
-    const memoPlaylist = useMemo(() => albums, [albums])
-
+const PlaylistPage: NextPage = () => {
     return (
         <main className="grow space-y-4 px-5 pb-5 pt-1 sm:px-10 md:px-20">
             <h2 className="text-2xl font-semibold">Плейлисты</h2>
@@ -23,7 +14,7 @@ const PlaylistPage: FC<PlaylistPageProps> = () => {
                 <PlaylistFormModal />
             </div>
             <section className="grid grid-cols-3 content-start gap-4 py-5">
-                {memoPlaylist.map((item) => (
+                {albums.map((item) => (
                     <Album album={item} key={item.id} />
                 ))}
             </section>

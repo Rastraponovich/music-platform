@@ -8,8 +8,6 @@ import Input from "../ui/Input/Input"
 import TarifCard from "./TarifCard"
 
 const Tarifs = () => {
-    const memoTarifs = useMemo(() => tarifCards, [tarifCards])
-
     const [checked, setChecked] = useState<Nullable<number>>(null)
 
     const [successPayment, setSuccessPayment] = useState(false)
@@ -34,7 +32,7 @@ const Tarifs = () => {
         <section className="flex flex-col  bg-white px-5 py-10 sm:px-10 md:px-20">
             <h2 className="mb-4 text-3xl font-bold first-letter:uppercase">тарифы</h2>
             <div className="sm:gird-cols-1 grid gap-4 md:grid-cols-3">
-                {memoTarifs.map((tarif) => (
+                {tarifCards.map((tarif) => (
                     <TarifCard
                         key={tarif.id}
                         tarif={tarif}
@@ -111,6 +109,7 @@ const Tarifs = () => {
                                                 src="/avatars/avatar.jpg"
                                                 height={160}
                                                 width="160"
+                                                alt="image"
                                             />
                                         </div>
                                         <h3 className="text-2xl font-bold first-letter:uppercase">

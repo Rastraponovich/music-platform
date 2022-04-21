@@ -27,6 +27,7 @@ const Home: NextPage = () => {
                         src="/images/subscribe.jpg"
                         height={160}
                         width={160}
+                        alt="subscribe"
                         className=" rounded-full"
                     />
                 </div>

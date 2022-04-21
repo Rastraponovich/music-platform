@@ -9,7 +9,7 @@ const ProfileForm = () => {
     return (
         <section className="grid grid-cols-1 gap-y-4 sm:grid-cols-3 sm:gap-x-4 sm:gap-y-0 ">
             <div className="avatar indicator w-full flex-col items-center justify-center self-start rounded bg-white p-4 shadow-md duration-200 hover:shadow-xl">
-                <span className="indicator-item badge border-amber-400 bg-amber-400 drop-shadow-md">
+                <span className="badge indicator-item border-amber-400 bg-amber-400 drop-shadow-md">
                     супер пидор
                 </span>
 
@@ -18,7 +18,12 @@ const ProfileForm = () => {
                         <CameraIcon className=" h-12 w-12 text-gray-300 md:h-24 md:w-24 " />
                     </button>
 
-                    <Image src={`/avatars/avatar.jpg`} height={200} width={200} />
+                    <Image
+                        src={`/avatars/avatar.jpg`}
+                        height={200}
+                        width={200}
+                        alt="avatar-image"
+                    />
                 </div>
             </div>
             {!showSettings && (

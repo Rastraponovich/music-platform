@@ -44,7 +44,7 @@ const PlaylistForm = () => {
             )
         )
         return () => setDisplaySongs([])
-    }, [searchValue])
+    }, [searchValue, songs])
 
     const handleSearch = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
