@@ -1,7 +1,7 @@
 import { winamp, winampControls } from "@/features/media/winamp"
 import { useEvent, useStore } from "effector-react"
 import { memo } from "react"
-import WinampButton from "../WinampButton"
+import WinampButton from "../../WinampButton"
 
 interface MiniActionsProps {
     bottom?: boolean
