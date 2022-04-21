@@ -5,7 +5,7 @@ import { useEvent, useStore } from "effector-react"
 import { winamp, winampStates } from "@/features/media/winamp"
 import WinampButton from "../WinampButton"
 import MiniTimer from "../PlayListWindow/MiniTimer"
-import MiniActions from "./MiniActions"
+import MiniActions from "./mini-actions"
 
 interface TitleBarProps {
     onMouseDown: (e: MouseEvent<HTMLElement>) => void

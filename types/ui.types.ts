@@ -97,3 +97,5 @@ export const FONT_LOOKUP: { [letter: string]: [number, number] } = {
     "{": [1, 22],
     "}": [1, 23],
 }
+
+export type TIconSize = "extraSmall" | "small" | "normal" | "large" | "extraLarge"

@@ -10,7 +10,7 @@ import { duration, playlist, winamp, winampStates } from "@/features/media/winam
 import MiniTimer from "./MiniTimer"
 import PlaylistHeader from "./PlaylistHeader"
 import PlaylistTrack from "./PlaylistTrack"
-import MiniActions from "../MainWindow/MiniActions"
+import MiniActions from "../MainWindow/mini-actions"
 import WinampButton from "../WinampButton"
 import PlaylistMenu from "./PlaylistMenus/PlaylistMenu"
 import MiscMenu from "./PlaylistMenus/MiscMenu"
