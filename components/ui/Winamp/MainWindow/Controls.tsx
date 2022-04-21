@@ -6,8 +6,6 @@ import { winamp, winampControls } from "@/features/media/winamp"
 
 import WinampButton from "../WinampButton"
 
-interface PlayerControlPanelProps {}
-
 const Controls = () => {
     const playing = useStore(winamp.$mediaStatus)
     const loop = useStore(winamp.$loop)
@@ -39,7 +37,7 @@ const Controls = () => {
                 title="Pause"
                 onClick={() => (playing === "PLAYING" ? handlePause() : handlePlay())}
             />
-            <WinampButton id="stop" title="Stop" onClick={() => handleStopClick("STOPPED")} />
+            <WinampButton id="stop" title="Stop" onClick={handleStopClick} />
             <WinampButton id="next" title="Next Track" onClick={handleNextTrackClick} />
             <WinampButton id="eject" title="Open File(s)" className="mx-1.5" />
 

@@ -20,7 +20,7 @@ import { PauseIcon, PlayIcon, HeartIcon as Fav } from "@heroicons/react/solid"
 interface TrackListItemProps {
     track: Song
     isCurrentTrack: boolean
-    addToFavorites(id: Song["id"]): void
+    addToFavorites?(id: Song["id"]): void
     favorite?: boolean
 }
 
@@ -57,7 +57,7 @@ const TrackListItem: FC<TrackListItemProps> = ({
     const toggleComments = () => showComments((prev) => !prev)
 
     const handleAddToFavorites = () => {
-        addToFavorites(track!.id)
+        addToFavorites!(track!.id)
     }
 
     const needToShow = isCurrentTrack && mediaStatus !== MEDIA_STATUS.STOPPED
@@ -133,7 +133,7 @@ const TrackListItem: FC<TrackListItemProps> = ({
                         onClick={toggleComments}
                         title="показать\скрыть комментарии"
                     >
-                        <span className="indicator-item badge badge-sm cursor-pointer border-gray-500 bg-gray-500 group-hover:border-gray-900 group-hover:bg-gray-900">
+                        <span className="badge indicator-item badge-sm cursor-pointer border-gray-500 bg-gray-500 group-hover:border-gray-900 group-hover:bg-gray-900">
                             {track.comments.length}
                         </span>
                         <AnnotationIcon className="h-6 w-6 text-gray-500 duration-200 group-hover:text-gray-900" />
