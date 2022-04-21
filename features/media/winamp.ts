@@ -24,6 +24,7 @@ import { createWinampProgressFactory } from "../music/winamp-progress"
 import { createWinampBalanceFactory } from "../music/winamp-balance"
 import { debug } from "patronum"
 import { convertTimeToString, _snapBandValue } from "@/utils/utils"
+import { useStore } from "effector-react"
 declare global {
     interface Window {
         webkitAudioContext: {
@@ -923,7 +924,6 @@ export const winamp = {
 
 export const winampStates = {
     $winampState,
-
     $activeWindow,
     changeWindowState,
     $visiblePlayer,
@@ -958,3 +958,98 @@ export const eq = {
 export const $baseSkinColors = createStore<string[]>(baseSkinColors)
 
 export { loadUrl, selectTrackFromList, $Media, $clutterBar, changeClutterBar }
+
+const useMinimizedEq = () => useStore($minimizedEQ)
+const useVisiblePresetWindow = () => useStore($visiblePresetWindow)
+const useSelectedPreset = () => useStore($selectedPreset)
+const useCurrentPreset = () => useStore($currentPreset)
+const usePresets = () => useStore($presets)
+const useVisibleEQ = () => useStore($visibleEQ)
+const useAutoEQ = () => useStore($autoEQ)
+const useEnabledEQ = () => useStore($enabledEQ)
+const usePreamp = () => useStore($preamp)
+const useBands = () => useStore($bands)
+
+const eqSelectors = {
+    useMinimizedEq,
+    useVisiblePresetWindow,
+    useSelectedPreset,
+    useCurrentPreset,
+    usePresets,
+    useVisibleEQ,
+    useAutoEQ,
+    useEnabledEQ,
+    usePreamp,
+    useBands,
+}
+const eqEvents = {
+    changeAllBandsValues,
+    changePreampValue,
+    changeEQBand,
+    disableClickedEQ,
+    enableClickedEQ,
+    resetEqBand,
+    toggleVisibleEQ,
+    toggleAutoEQ,
+    loadPreset,
+    selectPreset,
+    toggleVisiblePresetWindow,
+    toggleMinimized: toggleMinimizeEQ,
+}
+export const EQModel = {
+    events: eqEvents,
+    selectors: eqSelectors,
+}
+
+const winampEvents = {
+    init: initWinamp,
+    destroy: destroyWinamp,
+    close: closeWinamp,
+    show: showWinamp,
+    minimize: minimizedWinamp,
+    selectTrackFromList,
+    playAllTracksFromList,
+    toggleTimeMode,
+    toggleShadePlayer,
+    play: onPlayClicked,
+    pause: onPauseClicked,
+    stop: onStopButtonClicked,
+    prevTrack: prevTrackClicked,
+    nextTrack: nextTrackClicked,
+    toggleShuffle,
+    toggleLoop,
+}
+
+const useMediaStatus = () => useStore($mediaStatus)
+const useCurrentTrack = () => useStore($currentTrack)
+const useTimeMode = () => useStore($timeMode)
+const useShuffle = () => useStore($shuffle)
+const useLoop = () => useStore($loop)
+
+const winampSelectors = {
+    useMediaStatus,
+    useCurrentTrack,
+    useTimeMode,
+    useShuffle,
+    useLoop,
+}
+
+export const winampModel = {
+    events: winampEvents,
+    selectors: winampSelectors,
+}
+
+const volumeEvents = {
+    changeVolume,
+    setVolumeFromKeys,
+}
+
+const useVolume = () => useStore($volume)
+
+const volumeSelectors = {
+    useVolume,
+}
+export const volumeModel = {
+    events: volumeEvents,
+    selectors: volumeSelectors,
+}

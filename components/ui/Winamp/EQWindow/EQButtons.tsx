@@ -1,7 +1,7 @@
 import { eq } from "@/features/media/winamp"
 import { useEvent, useStore } from "effector-react"
 import { useCallback, useState } from "react"
-import WinampButton from "../WinampButton"
+import WinampButton from "../ui/winamp-button"
 import EQGraph from "./EQGraph"
 
 import PresetMenu from "./PresetMenu/PresetMenu"

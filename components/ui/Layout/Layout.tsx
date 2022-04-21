@@ -7,7 +7,7 @@ import Header from "../Header/Header"
 import dynamic from "next/dynamic"
 import Sidebar from "@/components/Sidebar/Sidebar"
 
-const WinampLayoutButton = dynamic(import("../WinampLayoutButton/WinampLayoutButton"), {
+const WinampLayoutButton = dynamic(import("../Winamp/ui/winamp-layout-button"), {
     ssr: false,
 })
 
@@ -16,8 +16,6 @@ interface LayoutProps {
 }
 
 const Layout = ({ children }: LayoutProps) => {
-    console.log("render layout")
-
     return (
         <>
             <Head>

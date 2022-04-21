@@ -18,20 +18,6 @@ const CHANGE_ALL_BANDS_EVENT: Record<string, number> = {
     reset: 50,
 }
 
-const calculateGainValueBandEQ = (value: number) => {
-    const db = (value / 100) * 24 - 12
-    const gainValue = Math.pow(10, db / 20)
-
-    return gainValue
-}
-
-// const calculatePercentFromBandEQ = (gain:number = 4.8) => {
-//     gain = (value / 100) * 24 - 12
-//     const gainValue = Math.pow(10, db / 20)
-
-//     return gainValue
-// }
-
 export const createWinampEQFactory = ($Media: Store<Nullable<MediaElement>>) => {
     const loadPresetFx = createEffect<[MediaElement, PRESET], void>(([media, preset]) => {
         const callSetBandScoped = scopeBind(setBand, { scope: getClientScope()! })
