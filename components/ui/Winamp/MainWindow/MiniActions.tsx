@@ -1,5 +1,6 @@
-import { winamp, winampControls, winampStates } from "@/features/media/winamp"
+import { winamp, winampControls } from "@/features/media/winamp"
 import { useEvent, useStore } from "effector-react"
+import { memo } from "react"
 import WinampButton from "../WinampButton"
 
 interface MiniActionsProps {
@@ -10,23 +11,16 @@ const MiniActions = ({ bottom = false }: MiniActionsProps) => {
     const handleMinimize = () => {}
     const playing = useStore(winamp.$mediaStatus)
 
-    const [
-        handlePlay,
-        handlePause,
-        handleSetLoop,
-        handleSetShuffle,
-        handlePrevTrackClick,
-        handleNextTrackClick,
-        handleStopClick,
-    ] = useEvent([
-        winampControls.play,
-        winampControls.pause,
-        winampControls.toggleLoop,
-        winampControls.toggleShuffle,
-        winampControls.prevTrack,
-        winampControls.nextTrack,
-        winampControls.stop,
-    ])
+    const [handlePlay, handlePause, handlePrevTrackClick, handleNextTrackClick, handleStopClick] =
+        useEvent([
+            winampControls.play,
+            winampControls.pause,
+            winampControls.toggleLoop,
+            winampControls.toggleShuffle,
+            winampControls.prevTrack,
+            winampControls.nextTrack,
+            winampControls.stop,
+        ])
     return (
         <div className="flex items-center">
             <WinampButton
@@ -50,7 +44,7 @@ const MiniActions = ({ bottom = false }: MiniActionsProps) => {
             <WinampButton
                 id="stop"
                 title="Stop"
-                onClick={() => handleStopClick("STOPPED")}
+                onClick={handleStopClick}
                 className="h-2.5 w-2.5 cursor-winamp"
             />
             <WinampButton
@@ -71,4 +65,4 @@ const MiniActions = ({ bottom = false }: MiniActionsProps) => {
     )
 }
 
-export default MiniActions
+export default memo(MiniActions)
