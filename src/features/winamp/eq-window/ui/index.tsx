@@ -8,8 +8,6 @@ import { EQButtons } from "./buttons"
 import { EQHeader } from "./header"
 import { Sliders } from "./sliders"
 
-interface EQWindowProps {}
-
 const WINDOW_NAME = "EQUALIZER"
 
 export const EQWindow = () => {
