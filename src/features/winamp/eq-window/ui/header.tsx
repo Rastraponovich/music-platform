@@ -12,43 +12,44 @@ interface EQHeaderProps {
 
 const WINDOW_NAME = "EQUALIZER"
 
-const EQHeader = ({ onMouseDown, onMouseMove, onMouseUp, onMouseLeave }: EQHeaderProps) => {
-    const minimized = useStore(eq.$minimized)
-    const windowState = useStore(winampStates.$activeWindow)
-    const handleActiveWinow = useEvent(winampStates.changeWindowState)
+export const EQHeader = memo(
+    ({ onMouseDown, onMouseMove, onMouseUp, onMouseLeave }: EQHeaderProps) => {
+        const minimized = useStore(eq.$minimized)
+        const windowState = useStore(winampStates.$activeWindow)
+        const handleActiveWinow = useEvent(winampStates.changeWindowState)
 
-    const handleMinimize = useEvent(eq.toggleMinimized)
-    const handleCloseEQ = useEvent(eq.toggleVisibleEQ)
+        const handleMinimize = useEvent(eq.toggleMinimized)
+        const handleCloseEQ = useEvent(eq.toggleVisibleEQ)
 
-    const handleOnMouseDown = (e: MouseEvent<HTMLElement>) => {
-        handleActiveWinow(WINDOW_NAME)
-        onMouseDown(e)
+        const handleOnMouseDown = (e: MouseEvent<HTMLElement>) => {
+            handleActiveWinow(WINDOW_NAME)
+            onMouseDown(e)
+        }
+
+        return (
+            <div
+                className={clsx(
+                    "equalizer-top relative flex h-3.5 cursor-winamp-move justify-end",
+                    windowState === WINDOW_NAME && "active",
+                    minimized && "shade"
+                )}
+                onMouseDown={handleOnMouseDown}
+                onMouseMove={onMouseMove}
+                onMouseUp={onMouseUp}
+                onMouseLeave={onMouseLeave}
+            >
+                <button
+                    id="equalizer-shade"
+                    className="h-3.5 w-3.5 cursor-winamp-move"
+                    onClick={handleMinimize}
+                />
+                <button
+                    id="equalizer-close"
+                    className="h-3.5 w-3.5 cursor-winamp-move"
+                    onClick={handleCloseEQ}
+                />
+            </div>
+        )
     }
-
-    return (
-        <div
-            className={clsx(
-                "equalizer-top relative flex h-3.5 cursor-winamp-move justify-end",
-                windowState === WINDOW_NAME && "active",
-                minimized && "shade"
-            )}
-            onMouseDown={handleOnMouseDown}
-            onMouseMove={onMouseMove}
-            onMouseUp={onMouseUp}
-            onMouseLeave={onMouseLeave}
-        >
-            <button
-                id="equalizer-shade"
-                className="h-3.5 w-3.5 cursor-winamp-move"
-                onClick={handleMinimize}
-            />
-            <button
-                id="equalizer-close"
-                className="h-3.5 w-3.5 cursor-winamp-move"
-                onClick={handleCloseEQ}
-            />
-        </div>
-    )
-}
-
-export default memo(EQHeader)
+)
+EQHeader.displayName = "EQHeader"
