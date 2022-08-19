@@ -12,12 +12,12 @@ interface PlaylistHeaderProps {
 }
 const WINDOW_NAME = "PLAYLIST"
 
-const PlaylistHeader: FC<PlaylistHeaderProps> = ({
+const PlaylistHeader = ({
     onMouseDown,
     onMouseMove,
     onMouseUp,
     onMouseLeave,
-}) => {
+}: PlaylistHeaderProps) => {
     const windowState = useStore(winampStates.$activeWindow)
     return (
         <div

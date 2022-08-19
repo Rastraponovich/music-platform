@@ -11,9 +11,9 @@ import MiniTimer from "./MiniTimer"
 import PlaylistHeader from "./PlaylistHeader"
 import { MiniActions } from "@/src/features/winamp/mini-actions"
 import { convertTimeToString } from "@/utils/utils"
-import CharacterStrings from "../CharacterStrings/CharacterStrings"
 import dynamic from "next/dynamic"
 import Playlist from "./Playlist"
+import { CharacterStrings } from "@/src/shared/ui/winamp/character-strings"
 
 const OptionMenu = dynamic(() => import("./PlaylistMenus/OptionMenu"), { ssr: false })
 const AddMenu = dynamic(() => import("./PlaylistMenus/AddMenu"), { ssr: false })

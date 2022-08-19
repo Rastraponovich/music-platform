@@ -3,7 +3,7 @@ import { useEvent, useStore } from "effector-react"
 import { progress, winamp } from "@/features/media/winamp"
 
 import { TIME_MODE } from "@/features/music/types"
-import CharacterString from "../CharacterStrings/CharacterString"
+import { CharacterString } from "@/src/shared/ui/winamp/character-strings"
 
 interface MiniTimerProps {
     className?: string

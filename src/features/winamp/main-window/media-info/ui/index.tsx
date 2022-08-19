@@ -2,16 +2,12 @@ import { useStore } from "effector-react"
 
 import { playlist, winamp, winampStates } from "@/features/media/winamp"
 
-import KHZ from "./KHZ"
-import KBPS from "./KBPS"
-import MonoStereo from "./MonoStereo"
-import MediaInfoTrack from "./MediaInfoTrack"
+import { Ticker } from "./ticker"
 import { WINAMP_STATE } from "@/features/music/constants"
 import { useMemo } from "react"
+import { KBPS, MonoStereo, KHZ } from "./info"
 
-interface MediaInfoProps {}
-
-const MediaInfo = () => {
+export const MediaInfo = () => {
     const currentTrack = useStore(winamp.$currentTrack)
     const currentId = useStore(playlist.$currentPlayedTrackIndex)
     const playerState = useStore(winamp.$mediaStatus)
@@ -24,17 +20,14 @@ const MediaInfo = () => {
 
     return (
         <div className="media-info flex text-[#00FF00]">
-            {/* бегущая строка */}
-            {allow && <MediaInfoTrack currentTrack={currentTrack!} currentId={currentId!} />}
+            {allow && <Ticker currentTrack={currentTrack!} currentId={currentId!} />}
             {playerState !== "STOPPED" && (
-                <KBPS bitrate={currentTrack?.metaData.format.bitrate || 0} />
-            )}
-            {playerState !== "STOPPED" && (
-                <KHZ sampleRate={currentTrack?.metaData.format.sampleRate || 0} />
+                <>
+                    <KBPS bitrate={currentTrack?.metaData.format.bitrate || 0} />
+                    <KHZ sampleRate={currentTrack?.metaData.format.sampleRate || 0} />
+                </>
             )}
             <MonoStereo numberOfChannels={currentTrack?.metaData.format.numberOfChannels || 0} />
         </div>
     )
 }
-
-export default MediaInfo

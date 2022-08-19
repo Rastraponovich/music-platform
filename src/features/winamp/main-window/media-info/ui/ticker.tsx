@@ -2,39 +2,36 @@ import React, { memo, useEffect, useState, MouseEvent, useMemo, useRef } from "r
 
 import { Nullable } from "@/types"
 import { Track } from "@/features/music/types"
-import CharacterStrings from "../../CharacterStrings/CharacterStrings"
+import { CharacterStrings } from "@/src/shared/ui/winamp/character-strings"
 import { marqueInfo } from "@/features/media/winamp"
 import { useStore } from "effector-react"
-
-const SEPARATOR = "  ***  "
-const MARQUEE_MAX_LENGTH = 31
-
-const isLong = (text: string): boolean => text.length >= MARQUEE_MAX_LENGTH
+import { isLong, MARQUEE_MAX_LENGTH, MINUTE, SEPARATOR } from "../lib"
+import { selectors } from "../model"
 
 interface MediaInfoTrackProps {
     currentTrack: Track
     currentId: number
 }
 
-const MediaInfoTrack = ({ currentTrack, currentId }: MediaInfoTrackProps) => {
+export const Ticker = memo(({ currentTrack, currentId }: MediaInfoTrackProps) => {
     let timerId = useRef<any>(null)
     const ref = useRef<Nullable<HTMLDivElement>>(null)
 
     const [pos, setpos] = useState(0)
     const [diff, setDiff] = useState(0)
 
-    const enabledMarque = useStore(marqueInfo.$enabledMaruqeInfo)
-    const marqueInfoText = useStore(marqueInfo.$winampMarqueInfo)
+    const enabledMarque = selectors.useEnabledMarque()
+    const marqueInfoText = selectors.useMarqueInfoText()
 
     const [track, setTrack] = useState(SEPARATOR)
     const [allowDragging, setAllowDragging] = useState<boolean>(false)
 
     const min = useMemo(
-        () => Math.floor(currentTrack.metaData.format.duration / 60),
+        () => Math.floor(currentTrack.metaData.format.duration / MINUTE),
         [currentTrack]
     )
     const sec = useMemo(
-        () => Math.floor(currentTrack.metaData.format.duration % 60),
+        () => Math.floor(currentTrack.metaData.format.duration % MINUTE),
         [currentTrack]
     )
 
@@ -103,6 +100,6 @@ const MediaInfoTrack = ({ currentTrack, currentId }: MediaInfoTrackProps) => {
             )}
         </div>
     )
-}
+})
 
-export default memo(MediaInfoTrack)
+Ticker.displayName = "MediaInfoTrack"
