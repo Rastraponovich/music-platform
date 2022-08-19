@@ -1,26 +1,26 @@
-import { useState, useEffect } from "react"
 
-import { useEvent, useStore } from "effector-react/scope"
+import { useEvent } from "effector-react/scope"
 
 import { marqueInfo, volume } from "@/features/media/winamp"
-
-interface VolumeBarProps {}
+import { VOLUME_BG_OFFSET } from "./lib"
+import { selectors } from "./model"
 
 const VolumeBar = () => {
-    const currentVolume = useStore(volume.$volume)
+    const currentVolume = selectors.useCurrentVolume()
+    const currentVolumeStep = selectors.useCurrentVolumeStep()
     const onChangeVolume = useEvent(volume.changeVolume)
-
     const handleMouseDown = useEvent(marqueInfo.enabledMarqueInfo)
     const handleMouseUp = useEvent(marqueInfo.disabledMarqueInfo)
 
-    const [currentVolumeStep, setCurrentVolumeStep] = useState(Math.floor(currentVolume / 3.57))
-
-    useEffect(() => {
-        setCurrentVolumeStep(Math.floor(currentVolume / 3.57))
-    }, [currentVolumeStep, currentVolume])
-
     return (
-        <div id="volume" style={{ backgroundPosition: `0px -${currentVolumeStep * 15 - 15}px` }}>
+        <div
+            id="volume"
+            style={{
+                backgroundPosition: `0px -${
+                    currentVolumeStep! * VOLUME_BG_OFFSET - VOLUME_BG_OFFSET
+                }px`,
+            }}
+        >
             <input
                 type="range"
                 min="0"
