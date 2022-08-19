@@ -2,12 +2,10 @@ import { useEvent, useStore } from "effector-react"
 
 import { eq } from "@/features/media/winamp"
 
-import EQSlider from "./EQSlider"
+import { EQSlider } from "./slider"
 import { useCallback } from "react"
 
-interface EQSlidersProps {}
-
-const EQSliders = () => {
+export const Sliders = () => {
     const bands = useStore(eq.$bands)
     const preamp = useStore(eq.$preamp)
     const handleChangePreamp = useEvent(eq.changePreampValue)
@@ -18,6 +16,10 @@ const EQSliders = () => {
     const handleChange = useEvent(eq.changeEQBand)
 
     const memoHandleChange = useCallback((e) => handleChange(e), [])
+
+    const handleSetMaxBandsValuesClicked = () => handleChangeAllBandsValues("max")
+    const handleSetMinBandsValuesClicked = () => handleChangeAllBandsValues("min")
+    const handleResetBandsValuesClicked = () => handleChangeAllBandsValues("reset")
 
     return (
         <div className="flex space-x-1 px-[21px] pt-1">
@@ -30,15 +32,15 @@ const EQSliders = () => {
             <div className=" flex w-3.5 flex-col justify-between" style={{ margin: "0 12px" }}>
                 <button
                     className="h-2 w-4 cursor-winamp"
-                    onClick={() => handleChangeAllBandsValues("max")}
+                    onClick={handleSetMaxBandsValuesClicked}
                 ></button>
                 <button
                     className="h-2 w-4 cursor-winamp"
-                    onClick={() => handleChangeAllBandsValues("reset")}
+                    onClick={handleResetBandsValuesClicked}
                 ></button>
                 <button
                     className="h-2 w-4 cursor-winamp"
-                    onClick={() => handleChangeAllBandsValues("min")}
+                    onClick={handleSetMinBandsValuesClicked}
                 ></button>
             </div>
 
@@ -55,5 +57,3 @@ const EQSliders = () => {
         </div>
     )
 }
-
-export default EQSliders

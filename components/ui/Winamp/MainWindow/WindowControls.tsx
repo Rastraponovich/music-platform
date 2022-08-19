@@ -2,7 +2,7 @@ import { useEvent, useStore } from "effector-react"
 
 import { eq, playlist } from "@/features/media/winamp"
 
-import WinampButton from "../WinampButton"
+import { WinampButton } from "@/src/shared/ui/winamp/winamp-button"
 
 interface WindowControlsProps {}
 

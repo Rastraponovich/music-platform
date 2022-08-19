@@ -9,10 +9,11 @@ interface WinampButtonProps {
     active?: boolean
 }
 
-const WinampButton = ({ id, className, onClick, title, active }: WinampButtonProps) => {
+export const WinampButton = memo(({ id, className, onClick, title, active }: WinampButtonProps) => {
     const [clicked, setClicked] = useState(false)
 
     const handleClick = () => setClicked((prev) => !prev)
+    const hanldeMouseLeave = () => setClicked(false)
 
     return (
         <button
@@ -22,9 +23,8 @@ const WinampButton = ({ id, className, onClick, title, active }: WinampButtonPro
             onClick={onClick}
             onMouseDown={handleClick}
             onMouseUp={handleClick}
-            onMouseLeave={() => setClicked(false)}
+            onMouseLeave={hanldeMouseLeave}
         />
     )
-}
-
-export default memo(WinampButton)
+})
+WinampButton.displayName = "WinampButton"

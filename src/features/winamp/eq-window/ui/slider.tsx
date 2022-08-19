@@ -1,7 +1,12 @@
 import { marqueInfo } from "@/features/media/winamp"
 import clsx from "clsx"
 import { useEvent } from "effector-react"
-import React, { memo, FC, useState, useMemo, ChangeEvent, MouseEvent } from "react"
+import React, { memo, useState, useMemo, ChangeEvent, MouseEvent } from "react"
+
+const WIDE_SPRITE = 15
+const TALL_SPRITE = 65
+const OFFSET = 14
+const SPRITE_ELEMENT_OFFSET = 27
 
 interface EQSliderProps {
     name: string
@@ -12,17 +17,17 @@ interface EQSliderProps {
 }
 
 const spriteOffsets = (number: number): { x: number; y: number } => {
-    const x = number % 14
-    const y = Math.floor(number / 14)
+    const x = number % OFFSET
+    const y = Math.floor(number / OFFSET)
     return { x, y }
 }
 
 const spriteNumber = (value: number): number => {
     const percent = value / 100
-    return Math.round(percent * 27)
+    return Math.round(percent * SPRITE_ELEMENT_OFFSET)
 }
 
-const EQSlider = ({ name, value, onChange, reset, title }: EQSliderProps) => {
+export const EQSlider = memo(({ name, value, onChange, reset, title }: EQSliderProps) => {
     const [active, setActive] = useState(false)
 
     const mouseDown = useEvent(marqueInfo.enabledMarqueInfo)
@@ -39,8 +44,8 @@ const EQSlider = ({ name, value, onChange, reset, title }: EQSliderProps) => {
 
     const backgroundPosition = useMemo(() => {
         const { x, y } = spriteOffsets(spriteNumber(value))
-        const xOffset = x * 15 // Each sprite is 15px wide
-        const yOffset = y * 65 // Each sprite is 15px tall
+        const xOffset = x * WIDE_SPRITE
+        const yOffset = y * TALL_SPRITE
         return `-${xOffset}px -${yOffset}px`
     }, [value])
 
@@ -70,6 +75,5 @@ const EQSlider = ({ name, value, onChange, reset, title }: EQSliderProps) => {
             />
         </label>
     )
-}
-
-export default memo(EQSlider)
+})
+EQSlider.displayName = "EQSlider"

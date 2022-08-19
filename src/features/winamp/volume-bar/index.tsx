@@ -1,11 +1,10 @@
-
 import { useEvent } from "effector-react/scope"
 
 import { marqueInfo, volume } from "@/features/media/winamp"
 import { VOLUME_BG_OFFSET } from "./lib"
 import { selectors } from "./model"
 
-const VolumeBar = () => {
+export const VolumeBar = () => {
     const currentVolume = selectors.useCurrentVolume()
     const currentVolumeStep = selectors.useCurrentVolumeStep()
     const onChangeVolume = useEvent(volume.changeVolume)
@@ -36,5 +35,3 @@ const VolumeBar = () => {
         </div>
     )
 }
-
-export default VolumeBar
