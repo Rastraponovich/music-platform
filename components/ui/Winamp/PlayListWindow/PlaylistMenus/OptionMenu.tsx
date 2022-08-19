@@ -1,4 +1,5 @@
-import WinampButton from "../../WinampButton"
+import { WinampButton } from "@/src/shared/ui/winamp/winamp-button"
+
 import PlaylistMenu from "./PlaylistMenu"
 
 interface OptionMenuProps {}

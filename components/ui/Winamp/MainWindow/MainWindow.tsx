@@ -11,12 +11,12 @@ import { useChangeCurentTime } from "@/hooks/useChangeCurrentTime"
 import Controls from "./Controls"
 import TitleBar from "./TitleBar"
 import StatusBar from "./StatusBar"
-import VolumeBar from "../volume-bar"
-import BalanceBar from "./BalanceBar"
 import WindowControls from "./WindowControls"
 import MediaInfo from "./MediaInfo/MediaInfo"
 import Progressbar from "../../Progressbar/Progressbar"
 import Draggable from "@/components/Draggable/Draggable"
+import { VolumeBar } from "@/src/features/winamp/volume-bar"
+import { BalanceBar } from "@/src/features/winamp/balance-bar"
 
 interface AsidePlayerProps {}
 

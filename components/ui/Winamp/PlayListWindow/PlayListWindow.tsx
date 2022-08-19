@@ -1,19 +1,15 @@
 import clsx from "clsx"
-import { useRef, useState } from "react"
-import { useEvent, useList, useStore } from "effector-react/scope"
+import { useRef } from "react"
+import { useEvent, useStore } from "effector-react/scope"
 
 import { useDraggable } from "@/hooks/useDraggable"
 import { useDelPressKeyButton } from "@/hooks/useChangeCurrentTime"
 
-import { duration, playlist, winamp, winampStates } from "@/features/media/winamp"
+import { duration, playlist, winampStates } from "@/features/media/winamp"
 
 import MiniTimer from "./MiniTimer"
 import PlaylistHeader from "./PlaylistHeader"
-import PlaylistTrack from "./PlaylistTrack"
-import MiniActions from "../MainWindow/mini-actions"
-import WinampButton from "../WinampButton"
-import PlaylistMenu from "./PlaylistMenus/PlaylistMenu"
-import MiscMenu from "./PlaylistMenus/MiscMenu"
+import { MiniActions } from "@/src/features/winamp/mini-actions"
 import { convertTimeToString } from "@/utils/utils"
 import CharacterStrings from "../CharacterStrings/CharacterStrings"
 import dynamic from "next/dynamic"

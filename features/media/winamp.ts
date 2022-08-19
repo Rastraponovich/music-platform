@@ -308,6 +308,8 @@ sample({
 })
 
 const setMediaStatus = createEvent<TMediaStatus>()
+//@ts-ignore
+//TODO:fix them
 const $mediaStatus = createStore<TMediaStatus>(MEDIA_STATUS.STOPPED).on(
     setMediaStatus,
     (_, status) => status

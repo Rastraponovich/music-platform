@@ -4,7 +4,7 @@ import { useEvent, useStore } from "effector-react"
 
 import { winamp, winampControls } from "@/features/media/winamp"
 
-import WinampButton from "../WinampButton"
+import { WinampButton } from "@/src/shared/ui/winamp/winamp-button"
 
 const Controls = () => {
     const playing = useStore(winamp.$mediaStatus)

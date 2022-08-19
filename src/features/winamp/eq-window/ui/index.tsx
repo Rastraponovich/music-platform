@@ -3,15 +3,15 @@ import { useDraggable } from "@/hooks/useDraggable"
 import clsx from "clsx"
 import { useEvent, useStore } from "effector-react"
 import { useRef } from "react"
-import EQButtons from "./EQButtons"
-import EQHeader from "./EQHeader"
-import EQSliders from "./EQSliders"
+import { EQButtons } from "./buttons"
+import EQHeader from "./header"
+import { Sliders } from "./sliders"
 
 interface EQWindowProps {}
 
 const WINDOW_NAME = "EQUALIZER"
 
-const EQWindow = () => {
+export const EQWindow = () => {
     const minimized = useStore(eq.$minimized)
     const visible = useStore(eq.$visibleEQ)
     const ref = useRef(null)
@@ -40,9 +40,7 @@ const EQWindow = () => {
                 onMouseLeave={onDragEnd}
             />
             <EQButtons />
-            <EQSliders />
+            <Sliders />
         </div>
     )
 }
-
-export default EQWindow
