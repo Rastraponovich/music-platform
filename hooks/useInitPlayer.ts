@@ -7,11 +7,7 @@ export const useInitPlayer = () => {
 
     useEffect(() => {
         init()
-        console.log("init")
-
         return () => {
-            console.log("destroy")
-
             destroy()
         }
     }, [])

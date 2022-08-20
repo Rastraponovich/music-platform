@@ -1,20 +1,17 @@
 import Image from "next/image"
 import { useStore } from "effector-react"
-import { memo, FC, useState, useMemo } from "react"
+import { memo, useMemo } from "react"
 
 import { useEvent } from "effector-react/scope"
 
 import { Song } from "@/features/music/types"
 
 import TrackTimer from "./TrackTimer"
-import Progressbar from "../ui/Progressbar/Progressbar"
-import { duration, playlist, progress, winamp, winampControls } from "@/features/media/winamp"
+import { duration, progress, winamp, winampControls } from "@/features/media/winamp"
 import { MEDIA_STATUS } from "@/features/media/constants"
 
 import clsx from "clsx"
-import Comments from "./Comments"
 import { convertTimeToObj } from "@/utils/utils"
-import { AnnotationIcon, PlusSmIcon } from "@heroicons/react/outline"
 import { PauseIcon, PlayIcon } from "@heroicons/react/solid"
 
 interface TrackListItemProps {
