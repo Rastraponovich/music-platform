@@ -1,45 +1,51 @@
+import clsx from "clsx"
 import Image from "next/image"
-import { useStore } from "effector-react"
-import { memo, FC, useState, useMemo } from "react"
+import { useList, useStore } from "effector-react"
+import { memo, useState, useMemo, useCallback } from "react"
 
 import { useEvent } from "effector-react/scope"
 
-import { Song } from "@/features/music/types"
-
-import TrackTimer from "./TrackTimer"
+import { MEDIA_STATUS } from "@/features/media/constants"
 import { Progressbar } from "@/src/shared/ui/winamp/progress-bar"
 import { playlist, winamp, winampControls } from "@/features/media/winamp"
-import { MEDIA_STATUS } from "@/features/media/constants"
 
-import clsx from "clsx"
-import Comments from "./Comments"
+import Comments from "@/components/TrackListItem/Comments"
+import TrackTimer from "@/components/TrackListItem/TrackTimer"
 import { convertTimeToObj } from "@/utils/utils"
-import { AnnotationIcon, HeartIcon, PlusSmIcon, TrashIcon } from "@heroicons/react/outline"
-import { PauseIcon, PlayIcon, HeartIcon as Fav } from "@heroicons/react/solid"
 
+import { PauseIcon, PlayIcon } from "@heroicons/react/solid"
+import { songLib } from "../.."
+import { $songs, actions, selectors } from "../../model"
+import { Actions } from "./buttons"
+
+/**
+ * интерфейс TrackListItem
+ */
 interface TrackListItemProps {
-    track: Song
+    track: songLib.Song
     isCurrentTrack: boolean
-    addToFavorites?(id: Song["id"]): void
-    favorite?: boolean
 }
 
-const TrackListItem: FC<TrackListItemProps> = ({
-    track,
-    isCurrentTrack,
-    addToFavorites,
-    favorite,
-}) => {
-    // console.log("render track", track.name)
-
+/**
+ * ui Трека из списка треков
+ * @param {boolean} isCurrentTrack
+ * @param {track} songLib.Song
+ */
+export const TrackListItem = memo(({ track, isCurrentTrack }: TrackListItemProps) => {
     const mediaStatus = useStore(winamp.$mediaStatus)
+
+    const [hovered, setHovered] = useState(false)
+
+    const isFavorite = selectors.useFavoriteTrack(track?.id) || false
+
+    const handleAddToFavButtonClicked = useEvent(actions.addToFavoriteButtonClicked)
 
     const { firstMinute, lastSecond, lastMinute, firstSecond } = useMemo(
         () => convertTimeToObj(track?.metaData?.format.duration),
         [track]
     )
 
-    const [handleSelectTrack, handlePlay, handlePause, handleAddToPlayList] = useEvent([
+    const [handleSelectTrack, handlePlay, handlePause, addToPlayList] = useEvent([
         winamp.selectTrackFromList,
         winampControls.play,
         winampControls.pause,
@@ -54,16 +60,20 @@ const TrackListItem: FC<TrackListItemProps> = ({
 
     const [comments, showComments] = useState(false)
 
-    const toggleComments = () => showComments((prev) => !prev)
+    const toggleComments = useCallback(() => showComments((prev) => !prev), [])
 
     const handleAddToFavorites = () => {
-        addToFavorites!(track!.id)
+        handleAddToFavButtonClicked(track!.id)
     }
 
     const needToShow = isCurrentTrack && mediaStatus !== MEDIA_STATUS.STOPPED
 
     return (
-        <div className="relative  flex flex-col overflow-hidden shadow-sm">
+        <div
+            className="relative  flex flex-col overflow-hidden shadow-sm"
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+        >
             <div
                 className={clsx(
                     "z-20 grid grid-cols-12 items-center rounded bg-white p-2",
@@ -119,41 +129,34 @@ const TrackListItem: FC<TrackListItemProps> = ({
                         {lastSecond}
                     </span>
                 </div>
-
-                <div className="col-span-2 col-end-13 flex items-center justify-end space-x-2 justify-self-start">
-                    <button
-                        onClick={() => handleAddToPlayList(track)}
-                        title="добавить в плейлист winamp"
-                    >
-                        <PlusSmIcon className="h-6 w-6 text-gray-500 duration-200 hover:animate-cross-spin hover:text-gray-900" />
-                    </button>
-
-                    <button
-                        className="group indicator"
-                        onClick={toggleComments}
-                        title="показать\скрыть комментарии"
-                    >
-                        <span className="badge indicator-item badge-sm cursor-pointer border-gray-500 bg-gray-500 group-hover:border-gray-900 group-hover:bg-gray-900">
-                            {track.comments.length}
-                        </span>
-                        <AnnotationIcon className="h-6 w-6 text-gray-500 duration-200 group-hover:text-gray-900" />
-                    </button>
-
-                    <button onClick={toggleComments} title="показать\скрыть комментарии">
-                        <TrashIcon className="h-5 w-6 text-gray-500 duration-200 group-hover:text-gray-900" />
-                    </button>
-                    <button onClick={handleAddToFavorites} title="добавить в избранное">
-                        {!favorite ? (
-                            <HeartIcon className=" h-5 w-6 text-gray-500 duration-200 group-hover:text-gray-900" />
-                        ) : (
-                            <Fav className=" h-5 w-6 text-gray-500 duration-200 group-hover:text-gray-900" />
-                        )}
-                    </button>
-                </div>
+                {hovered && (
+                    <Actions
+                        isFavorite={isFavorite}
+                        track={track}
+                        toggleComments={toggleComments}
+                        addToFavorites={handleAddToFavorites}
+                    />
+                )}
             </div>
             <Comments opened={comments} comments={track.comments} />
         </div>
     )
-}
+})
 
-export default memo(TrackListItem)
+TrackListItem.displayName = "TrackListItem"
+
+export const Tracklist = () => {
+    const currentTrack = useStore(winamp.$currentTrack)
+    const countSongs = selectors.useCountSongs()
+
+    return (
+        <div className="flex  flex-col divide-y-2 divide-gray-200">
+            {useList($songs, {
+                keys: [currentTrack, countSongs],
+                fn: (song) => (
+                    <TrackListItem track={song} isCurrentTrack={currentTrack?.id === song.id} />
+                ),
+            })}
+        </div>
+    )
+}

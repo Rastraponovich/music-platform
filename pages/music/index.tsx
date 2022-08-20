@@ -1,10 +1,8 @@
 import { GetServerSideProps, NextPage } from "next"
 import { allSettled, fork, serialize } from "effector"
-import { useEvent, useList, useStore } from "effector-react"
+import { useEvent, useStore } from "effector-react"
 
-import { $countSongs, $songs, getSongs } from "@/features/music"
-
-import TrackListItem from "@/components/TrackListItem/TrackListItem"
+import { songModel, Tracklist } from "@/src/entity/songs"
 import { winamp } from "@/features/media/winamp"
 import WinampIcon from "@/components/ui/icons/WinampIcon/WinampIcon"
 
@@ -17,29 +15,16 @@ import { MusicNoteIcon, PlayIcon } from "@heroicons/react/solid"
 import { useState } from "react"
 import { Nullable } from "@/types"
 import clsx from "clsx"
-import { Song } from "@/features/music/types"
+import { getSongs } from "@/features/music"
 
 const MusicPage: NextPage = () => {
-    const [fav, setFavs] = useState<Song["id"][]>([])
-    const handleAddToFavorites = (id: Song["id"]) => {
-        const candidate = fav.some((item) => item === id)
-
-        if (candidate) {
-            setFavs(fav.filter((item) => item !== id))
-        } else {
-            setFavs([...fav, id])
-        }
-    }
     const hanldePlayAll = useEvent(winamp.playAllTracksFromList)
 
     const [activePage, setActivePage] = useState<Nullable<number>>(null)
 
-    const currentTrack = useStore(winamp.$currentTrack)
-
     const handleShowWinamp = useEvent(winamp.show)
-    console.log("render list")
 
-    const countSongs = useStore($countSongs)
+    const countSongs = songModel.selectors.useCountSongs()
 
     return (
         <main className="grow px-20 py-10">
@@ -73,19 +58,7 @@ const MusicPage: NextPage = () => {
                     <MusicNoteIcon className="mr-2 h-4 w-4 rounded-full bg-black p-1 text-white" />
                     <span className="mb-1">всего треков: {countSongs}</span>
                 </div>
-                <div className="flex  flex-col divide-y-2 divide-gray-200">
-                    {useList($songs, {
-                        keys: [currentTrack, countSongs, fav],
-                        fn: (song) => (
-                            <TrackListItem
-                                addToFavorites={handleAddToFavorites}
-                                favorite={fav.some((item) => item === song.id)}
-                                track={song}
-                                isCurrentTrack={currentTrack?.id === song.id}
-                            />
-                        ),
-                    })}
-                </div>
+                <Tracklist />
             </section>
 
             <div className="btn-group items-center justify-center">
@@ -123,7 +96,7 @@ export default MusicPage
 export const getServerSideProps: GetServerSideProps = async () => {
     const scope = fork()
 
-    await allSettled(getSongs, { scope })
+    await allSettled(songModel.actions.getSongs, { scope })
 
     return {
         props: {

@@ -1,2 +1,2 @@
 export * from "./model"
-export * as selectros from "./selectors"
+export * as selectors from "./selectors"

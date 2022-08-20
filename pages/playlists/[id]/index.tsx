@@ -1,6 +1,6 @@
 import AlbumInfo from "@/components/Albums/Album/AlbumInfo"
 import AlbumInfoItem from "@/components/Albums/Album/AlbumInfoItem"
-import TrackListItem from "@/components/TrackListItem/TrackListItem"
+import { TrackListItem } from "@/src/entity/songs"
 import PlaylistFormModal from "@/components/ui/PlaylistForm/PlaylistFormModal"
 import Rating from "@/components/ui/Rating/Rating"
 import { $songs } from "@/features/music"

@@ -4,6 +4,7 @@ import { saveSongFx, getAllSongsFx, searchTrackFx } from "./api"
 
 import { debounce } from "patronum"
 import { songLib } from ".."
+import { Song } from "../lib"
 
 const getSongs = createEvent()
 
@@ -70,10 +71,28 @@ sample({
     target: saveSongFx,
 })
 
+export const $favoritesTracks = createStore<Song["id"][]>([])
+
+export const addToFavoriteButtonClicked = createEvent<Song["id"]>()
+
+sample({
+    clock: addToFavoriteButtonClicked,
+    source: $favoritesTracks,
+    fn: (favTracks, id) => {
+        const condition = favTracks.some((track) => track === id)
+
+        if (condition) return favTracks.filter((track) => track !== id)
+
+        return [...favTracks, id]
+    },
+    target: $favoritesTracks,
+})
+
 export const actions = {
     getSongs,
     submitted,
     changeSong,
     uploadFile,
     searchTrack,
+    addToFavoriteButtonClicked,
 }
