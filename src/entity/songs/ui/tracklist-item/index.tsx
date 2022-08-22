@@ -34,8 +34,6 @@ interface TrackListItemProps {
 export const TrackListItem = memo(({ track, isCurrentTrack }: TrackListItemProps) => {
     const mediaStatus = useStore(winamp.$mediaStatus)
 
-    const [hovered, setHovered] = useState(false)
-
     const isFavorite = selectors.useFavoriteTrack(track?.id) || false
 
     const handleAddToFavButtonClicked = useEvent(actions.addToFavoriteButtonClicked)
@@ -69,15 +67,12 @@ export const TrackListItem = memo(({ track, isCurrentTrack }: TrackListItemProps
     const needToShow = isCurrentTrack && mediaStatus !== MEDIA_STATUS.STOPPED
 
     return (
-        <div
-            className="relative  flex flex-col overflow-hidden shadow-sm"
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-        >
+        <div className="relative flex flex-col overflow-hidden shadow-sm">
             <div
                 className={clsx(
-                    "z-20 grid grid-cols-12 items-center rounded bg-white p-2",
-                    comments && "drop-shadow-xl"
+                    "z-20 grid grid-cols-[32px_40px_3fr_minmax(0,130px)] items-center rounded bg-white p-2 text-sm md:text-base",
+                    comments && "drop-shadow-xl",
+                    isCurrentTrack && "bg-orange-300"
                 )}
             >
                 <button
@@ -101,7 +96,7 @@ export const TrackListItem = memo(({ track, isCurrentTrack }: TrackListItemProps
                         <PlayIcon className="h-8 w-8" />
                     )}
                 </button>
-                <div className="col-span-7 flex space-x-2">
+                <div className="col-span-1 flex items-center">
                     <Image
                         src={`${process.env.NEXT_PUBLIC_BACKEND}/images/${track.cover}`}
                         objectFit="contain"
@@ -109,34 +104,34 @@ export const TrackListItem = memo(({ track, isCurrentTrack }: TrackListItemProps
                         width={40}
                         alt={`${track.artist} ${track.name}`}
                     />
-                    <div className=" flex grow flex-col justify-center text-base">
-                        <div className="flex grow">
-                            <span className=" font-normal text-gray-800 after:mx-2 after:content-['-']">
-                                {track.artist}
-                            </span>
-
-                            <span className=" truncate font-semibold">{track.name}</span>
-                        </div>
-                        {needToShow && <Progressbar />}
-                    </div>
                 </div>
-                <div className="col-span-1 col-start-10 mr-2 flex justify-self-end text-sm text-gray-800">
-                    {needToShow && <TrackTimer />}
-
-                    <span>
-                        {firstMinute}
-                        {lastMinute}:{firstSecond}
-                        {lastSecond}
+                <div className="col-span-1 flex h-full grow flex-col items-stretch justify-start truncate px-2">
+                    <span className=" truncate font-normal text-gray-800 ">
+                        {track.artist.trim()}&nbsp;
+                        <b className=" font-semibold before:content-['–']">
+                            &nbsp;{track.name.trim()}
+                        </b>
                     </span>
+                    {needToShow && <Progressbar />}
                 </div>
-                {hovered && (
+
+                <div className="col-span-1 mr-2 flex h-full flex-col items-end justify-self-end text-xs text-gray-800 md:text-sm">
+                    <div className="flex">
+                        {needToShow && <TrackTimer />}
+
+                        <span>
+                            {firstMinute}
+                            {lastMinute}:{firstSecond}
+                            {lastSecond}
+                        </span>
+                    </div>
                     <Actions
                         isFavorite={isFavorite}
                         track={track}
                         toggleComments={toggleComments}
                         addToFavorites={handleAddToFavorites}
                     />
-                )}
+                </div>
             </div>
             <Comments opened={comments} comments={track.comments} />
         </div>
