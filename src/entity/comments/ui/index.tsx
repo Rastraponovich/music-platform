@@ -1,14 +1,17 @@
 import clsx from "clsx"
-import React, { memo, FC, useState } from "react"
-import Comment from "./Comment"
+import React, { memo, useState } from "react"
+import Comment from "@/components/TrackListItem/Comment"
+import { TComment } from "../lib"
 
 interface CommentsProps {
     opened: boolean
-    comments: any[]
+    trackId: number
 }
 
-const Comments: FC<CommentsProps> = ({ opened, comments }) => {
+export const Comments = memo(({ opened, trackId }: CommentsProps) => {
     const [focus, setFocus] = useState(false)
+    const comments: TComment[] = []
+
     return (
         <div
             className={clsx(
@@ -51,6 +54,5 @@ const Comments: FC<CommentsProps> = ({ opened, comments }) => {
             </form>
         </div>
     )
-}
-
-export default memo(Comments)
+})
+Comments.displayName = "Comments"

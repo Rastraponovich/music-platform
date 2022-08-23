@@ -2,8 +2,6 @@
 import { Playlist } from "@/features/playlist/types"
 import { Nullable } from "@/types"
 
-export {}
-
 export type Song = {
     id?: number
     name: string
@@ -12,7 +10,7 @@ export type Song = {
     path: string
     cover: string
     likes: number
-    comments: any[]
+    comments: number[]
     userId?: number
     user?: any
     metaData: {

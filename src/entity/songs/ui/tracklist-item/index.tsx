@@ -9,7 +9,7 @@ import { MEDIA_STATUS } from "@/features/media/constants"
 import { Progressbar } from "@/src/shared/ui/winamp/progress-bar"
 import { playlist, winamp, winampControls } from "@/features/media/winamp"
 
-import Comments from "@/components/TrackListItem/Comments"
+import { Comments } from "@/src/entity/comments"
 import TrackTimer from "@/components/TrackListItem/TrackTimer"
 import { convertTimeToObj } from "@/utils/utils"
 
@@ -17,6 +17,7 @@ import { PauseIcon, PlayIcon } from "@heroicons/react/solid"
 import { songLib } from "../.."
 import { $songs, actions, selectors } from "../../model"
 import { Actions } from "./buttons"
+import { Track } from "@/features/music/types"
 
 /**
  * интерфейс TrackListItem
@@ -33,9 +34,7 @@ interface TrackListItemProps {
  */
 export const TrackListItem = memo(({ track, isCurrentTrack }: TrackListItemProps) => {
     const mediaStatus = useStore(winamp.$mediaStatus)
-
     const isFavorite = selectors.useFavoriteTrack(track?.id) || false
-
     const handleAddToFavButtonClicked = useEvent(actions.addToFavoriteButtonClicked)
 
     const { firstMinute, lastSecond, lastMinute, firstSecond } = useMemo(
@@ -43,18 +42,22 @@ export const TrackListItem = memo(({ track, isCurrentTrack }: TrackListItemProps
         [track]
     )
 
-    const [handleSelectTrack, handlePlay, handlePause, addToPlayList] = useEvent([
+    const [handleSelectTrack, handlePlay, handlePause] = useEvent([
         winamp.selectTrackFromList,
         winampControls.play,
         winampControls.pause,
-        playlist.addTrackToPlaylist,
     ])
 
-    const play = () => {
-        if (!isCurrentTrack) return handleSelectTrack(track)
-        if (mediaStatus === "PLAYING") return handlePause()
-        return handlePlay()
-    }
+    const play = useCallback(() => {
+        switch (true) {
+            case !isCurrentTrack:
+                return handleSelectTrack(track)
+            case mediaStatus === "PLAYING":
+                return handlePause()
+            default:
+                return handlePlay()
+        }
+    }, [isCurrentTrack, mediaStatus, track])
 
     const [comments, showComments] = useState(false)
 
@@ -75,27 +78,7 @@ export const TrackListItem = memo(({ track, isCurrentTrack }: TrackListItemProps
                     isCurrentTrack && "bg-orange-300"
                 )}
             >
-                <button
-                    onClick={play}
-                    className={clsx(
-                        "col-span-1 justify-self-center text-gray-500 duration-150 hover:text-black",
-                        isCurrentTrack &&
-                            mediaStatus === "PLAYING" &&
-                            "animate-pulse  text-black hover:animate-none"
-                    )}
-                    title="play/pause"
-                >
-                    {isCurrentTrack ? (
-                        mediaStatus === "PLAYING" ? (
-                            // <PauseIcon size="small" />
-                            <PauseIcon className="h-8 w-8" />
-                        ) : (
-                            <PlayIcon className="h-8 w-8" />
-                        )
-                    ) : (
-                        <PlayIcon className="h-8 w-8" />
-                    )}
-                </button>
+                <PlayButton onClick={play} isCurrentTrack={isCurrentTrack} />
                 <div className="col-span-1 flex items-center">
                     <Image
                         src={`${process.env.NEXT_PUBLIC_BACKEND}/images/${track.cover}`}
@@ -133,7 +116,7 @@ export const TrackListItem = memo(({ track, isCurrentTrack }: TrackListItemProps
                     />
                 </div>
             </div>
-            <Comments opened={comments} comments={track.comments} />
+            <Comments opened={comments} trackId={track.id!} />
         </div>
     )
 })
@@ -141,7 +124,7 @@ export const TrackListItem = memo(({ track, isCurrentTrack }: TrackListItemProps
 TrackListItem.displayName = "TrackListItem"
 
 export const Tracklist = () => {
-    const currentTrack = useStore(winamp.$currentTrack)
+    const currentTrack = useStore(winamp.$currentTrack) as Track
     const countSongs = selectors.useCountSongs()
 
     return (
@@ -155,3 +138,35 @@ export const Tracklist = () => {
         </div>
     )
 }
+
+interface PlayButtonProps {
+    isCurrentTrack: boolean
+    onClick(): void
+}
+
+const PlayButton = memo(({ isCurrentTrack, onClick }: PlayButtonProps) => {
+    const mediaStatus = useStore(winamp.$mediaStatus)
+    return (
+        <button
+            onClick={onClick}
+            className={clsx(
+                "col-span-1 justify-self-center text-gray-500 duration-150 hover:text-black",
+                isCurrentTrack &&
+                    mediaStatus === "PLAYING" &&
+                    "animate-pulse  text-black hover:animate-none"
+            )}
+            title="play/pause"
+        >
+            {isCurrentTrack ? (
+                mediaStatus === "PLAYING" ? (
+                    <PauseIcon className="h-8 w-8" />
+                ) : (
+                    <PlayIcon className="h-8 w-8" />
+                )
+            ) : (
+                <PlayIcon className="h-8 w-8" />
+            )}
+        </button>
+    )
+})
+PlayButton.displayName = "PlayButton"
