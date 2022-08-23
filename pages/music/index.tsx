@@ -12,46 +12,18 @@ import MusicFilter from "@/components/MusicFilter/MusicFilter"
 import PlaylistFormModal from "@/components/ui/PlaylistForm/PlaylistFormModal"
 import UploadFormModal from "@/components/UploadForm/UploadFormModal"
 import { MusicNoteIcon, PlayIcon } from "@heroicons/react/solid"
-import { useState } from "react"
+import { memo, useState } from "react"
 import { Nullable } from "@/types"
 import clsx from "clsx"
-import { getSongs } from "@/features/music"
 
 const MusicPage: NextPage = () => {
-    const hanldePlayAll = useEvent(winamp.playAllTracksFromList)
-
-    const [activePage, setActivePage] = useState<Nullable<number>>(null)
-
-    const handleShowWinamp = useEvent(winamp.show)
-
     const countSongs = songModel.selectors.useCountSongs()
 
     return (
         <main className="grow px-20 py-10">
             <SearchInput />
             <MusicFilter />
-
-            <div className="flex justify-start space-x-2">
-                <button
-                    onClick={handleShowWinamp}
-                    title="открыть winamp"
-                    className="btn btn-square no-animation btn-xs hover:shadow-lg"
-                >
-                    <WinampIcon size="extraSmall" />
-                </button>
-                <button
-                    onClick={hanldePlayAll}
-                    title="воспроизвести все треки"
-                    className="btn no-animation btn-xs gap-2  hover:shadow-lg"
-                >
-                    <PlayIcon className="h-4 w-4" />
-                    play all tracks
-                </button>
-                <PlaylistFormModal />
-
-                <div className="grow"></div>
-                <UploadFormModal />
-            </div>
+            <PageActions />
 
             <section className="flex flex-col py-4">
                 <div className="mb-2 flex items-center self-end text-right text-sm">
@@ -60,33 +32,7 @@ const MusicPage: NextPage = () => {
                 </div>
                 <Tracklist />
             </section>
-
-            <div className="btn-group items-center justify-center">
-                <button
-                    className={clsx("btn btn-sm", activePage === 1 && "btn-active")}
-                    onClick={() => setActivePage(1)}
-                >
-                    1
-                </button>
-                <button
-                    className={clsx("btn btn-sm", activePage === 2 && "btn-active")}
-                    onClick={() => setActivePage(2)}
-                >
-                    2
-                </button>
-                <button
-                    className={clsx("btn btn-sm", activePage === 3 && "btn-active")}
-                    onClick={() => setActivePage(3)}
-                >
-                    3
-                </button>
-                <button
-                    className={clsx("btn btn-sm", activePage === 4 && "btn-active")}
-                    onClick={() => setActivePage(4)}
-                >
-                    4
-                </button>
-            </div>
+            <Pagination />
         </main>
     )
 }
@@ -104,3 +50,69 @@ export const getServerSideProps: GetServerSideProps = async () => {
         },
     }
 }
+
+const PageActions = () => {
+    const handleShowWinamp = useEvent(winamp.show)
+    const hanldePlayAll = useEvent(winamp.playAllTracksFromList)
+
+    return (
+        <div className="flex flex-wrap justify-start gap-2">
+            <button
+                onClick={handleShowWinamp}
+                title="открыть winamp"
+                className="btn no-animation btn-square btn-xs hover:shadow-lg"
+            >
+                <WinampIcon size="extraSmall" />
+            </button>
+            <button
+                onClick={hanldePlayAll}
+                title="воспроизвести все треки"
+                className="btn no-animation btn-xs hover:shadow-lg"
+            >
+                <PlayIcon className="h-4 w-4" />
+                play all tracks
+            </button>
+            <PlaylistFormModal />
+            <UploadFormModal />
+        </div>
+    )
+}
+
+const Pagination = () => {
+    const [currentPage, setCurrentPage] = useState(1)
+    const pages = [1, 2, 3, 4]
+    return (
+        <div className="btn-group items-center justify-center">
+            {pages.map((page) => (
+                <PaginationButton
+                    id={page}
+                    onClick={setCurrentPage}
+                    isActive={currentPage === page}
+                />
+            ))}
+        </div>
+    )
+}
+
+interface PaginationButtonProps {
+    onClick(id: number): void
+    id: number
+    isActive: boolean
+}
+
+const PaginationButton = memo(({ onClick, isActive, id }: PaginationButtonProps) => {
+    const handleButtonClicked = () => {
+        onClick(id)
+    }
+
+    return (
+        <button
+            className={clsx("btn btn-sm", isActive && "btn-active")}
+            onClick={handleButtonClicked}
+        >
+            {id}
+        </button>
+    )
+})
+
+PaginationButton.displayName = "PaginationButton"

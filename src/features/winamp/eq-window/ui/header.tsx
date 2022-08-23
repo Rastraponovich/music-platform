@@ -1,7 +1,8 @@
 import clsx from "clsx"
 import { memo, MouseEvent } from "react"
-import { useEvent, useStore } from "effector-react"
-import { eq, winampStates } from "@/features/media/winamp"
+import { useEvent } from "effector-react"
+import { useMinimized, useWindowState } from "../model/selectors"
+import { actions } from "../model"
 
 interface EQHeaderProps {
     onMouseDown: (e: MouseEvent<HTMLElement>) => void
@@ -14,17 +15,11 @@ const WINDOW_NAME = "EQUALIZER"
 
 export const EQHeader = memo(
     ({ onMouseDown, onMouseMove, onMouseUp, onMouseLeave }: EQHeaderProps) => {
-        const minimized = useStore(eq.$minimized)
-        const windowState = useStore(winampStates.$activeWindow)
-        const handleActiveWinow = useEvent(winampStates.changeWindowState)
+        const minimized = useMinimized()
+        const windowState = useWindowState()
 
-        const handleMinimize = useEvent(eq.toggleMinimized)
-        const handleCloseEQ = useEvent(eq.toggleVisibleEQ)
-
-        const handleOnMouseDown = (e: MouseEvent<HTMLElement>) => {
-            handleActiveWinow(WINDOW_NAME)
-            onMouseDown(e)
-        }
+        const handleMinimizedButtonClicked = useEvent(actions.toggleMinimized)
+        const handleCloseEQButtonClicked = useEvent(actions.closeEQ)
 
         return (
             <div
@@ -33,7 +28,7 @@ export const EQHeader = memo(
                     windowState === WINDOW_NAME && "active",
                     minimized && "shade"
                 )}
-                onMouseDown={handleOnMouseDown}
+                onMouseDown={onMouseDown}
                 onMouseMove={onMouseMove}
                 onMouseUp={onMouseUp}
                 onMouseLeave={onMouseLeave}
@@ -41,12 +36,12 @@ export const EQHeader = memo(
                 <button
                     id="equalizer-shade"
                     className="h-3.5 w-3.5 cursor-winamp-move"
-                    onClick={handleMinimize}
+                    onClick={handleMinimizedButtonClicked}
                 />
                 <button
                     id="equalizer-close"
                     className="h-3.5 w-3.5 cursor-winamp-move"
-                    onClick={handleCloseEQ}
+                    onClick={handleCloseEQButtonClicked}
                 />
             </div>
         )

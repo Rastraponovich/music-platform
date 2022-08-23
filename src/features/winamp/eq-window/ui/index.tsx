@@ -1,9 +1,8 @@
-import { $clutterBar, winampStates } from "@/features/media/winamp"
 import { useDraggable } from "@/hooks/useDraggable"
 import clsx from "clsx"
-import { useEvent, useStore } from "effector-react"
+import { useEvent } from "effector-react"
 import { useRef } from "react"
-import { selectors } from "../model"
+import { selectors, actions } from "../model"
 import { EQButtons } from "./buttons"
 import { EQHeader } from "./header"
 import { Sliders } from "./sliders"
@@ -15,8 +14,8 @@ export const EQWindow = () => {
     const visibled = selectors.useVisibled()
     const ref = useRef(null)
 
-    const clutter = useStore($clutterBar)
-    const handleActiveWindow = useEvent(winampStates.changeWindowState)
+    const clutter = selectors.useClutterBar()
+    const handleActiveWindow = useEvent(actions.changedWindowState)
 
     const handleActiveWindowClicked = () => handleActiveWindow(WINDOW_NAME)
 

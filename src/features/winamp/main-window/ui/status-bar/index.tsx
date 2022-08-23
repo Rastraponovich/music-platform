@@ -1,31 +1,34 @@
 import clsx from "clsx"
 import dynamic from "next/dynamic"
-import { useEvent, useStore } from "effector-react"
+import { useEvent } from "effector-react"
 import { $clutterBar, changeClutterBar } from "@/features/media/winamp"
 
-import { progress, winamp } from "@/features/media/winamp"
 import { TIME_MODE } from "@/features/music/types"
 import { memo } from "react"
 import { PLAYER_STATES } from "../../lib"
+import { toggleTimeModeButtonClicked } from "../../model"
+import { useClutterBar, usePlayerState, useTimeMode, useTimer } from "../../model/selectors"
+import { changedClutterBar } from "../../model/clutter-bar"
 //@ts-ignore
 const Visualizer = dynamic(() => import("../visualizer").then((mod) => mod.Visualizer), {
     ssr: false,
 })
 
 export const StatusBar = () => {
-    const playerState = useStore(winamp.$mediaStatus)
+    const playerState = usePlayerState()
 
     return (
         <div className="webamp-status flex h-[42px] w-[93px]">
             <ClutterBar />
-            <div
+            <span
                 id="play-pause"
                 className={clsx(
                     PLAYER_STATES[playerState],
+                    "cursor-winamp",
                     "ml-[8px] mt-[6px] h-[9px] w-[9px] bg-no-repeat"
                 )}
-            ></div>
-            <div id="work-indicator" className=""></div>
+            />
+            <span id="work-indicator" className=""></span>
             <TimerDisplay />
             <Visualizer />
         </div>
@@ -33,11 +36,10 @@ export const StatusBar = () => {
 }
 
 const TimerDisplay = () => {
-    const timer = useStore(progress.$timer)
-    const playerState = useStore(winamp.$mediaStatus)
-    const timeMode = useStore(winamp.$timeMode)
-    const { firstSecond, lastSecond, firstMinute, lastMinute } = timer
-    const handleSwitchTimeModeClicked = useEvent(winamp.toggleTimeMode)
+    const { firstSecond, lastSecond, firstMinute, lastMinute } = useTimer()
+    const playerState = usePlayerState()
+    const timeMode = useTimeMode()
+    const handleSwitchTimeModeClicked = useEvent(toggleTimeModeButtonClicked)
 
     return (
         <div
@@ -70,53 +72,58 @@ interface DigitProps {
     id: string
 }
 
-const Digit = memo(({ id, value, className }: DigitProps) => {
-    return (
-        <span
-            id={id}
-            className={clsx(className, value !== undefined ? `digit-${value}` : null)}
-        ></span>
-    )
-})
+const Digit = memo(({ id, value, className }: DigitProps) => (
+    <span id={id} className={clsx(className, value !== undefined ? `digit-${value}` : null)} />
+))
 
 Digit.displayName = "Digit"
 
 const ClutterBar = () => {
-    const clutterBar = useStore($clutterBar)
-    const handleChangeClutterBar = useEvent(changeClutterBar)
+    const clutterBar = useClutterBar()
+    const handleChangedClutterBar = useEvent(changedClutterBar)
 
     return (
         <div id="clutter-bar" className="flex h-[43px] w-2 flex-col justify-start pt-[2px]">
             <div>
                 <div className="handle h-full w-full">
-                    <div
-                        id="button-o"
-                        onClick={() => handleChangeClutterBar("o")}
-                        className={clsx(clutterBar.o && "selected", "h-2 w-2")}
-                    ></div>
+                    <ClutterBarButton
+                        id="o"
+                        onClick={handleChangedClutterBar}
+                        pressed={clutterBar.o}
+                    />
                 </div>
             </div>
-            <div
-                id="button-a"
-                onClick={() => handleChangeClutterBar("a")}
-                className={clsx(clutterBar.a && "selected", "h-2 w-2")}
-            ></div>
-            <div
-                id="button-i"
-                onClick={() => handleChangeClutterBar("i")}
-                className={clsx(clutterBar.i && "selected", "h-2 w-2")}
-            ></div>
-            <div
+            <ClutterBarButton id="a" onClick={handleChangedClutterBar} pressed={clutterBar.a} />
+            <ClutterBarButton id="i" onClick={handleChangedClutterBar} pressed={clutterBar.i} />
+            <ClutterBarButton
+                id="d"
+                onClick={handleChangedClutterBar}
+                pressed={clutterBar.d}
                 title="Toggle Doublesize Mode"
-                id="button-d"
-                className={clsx(clutterBar.d && "selected", "h-2 w-2")}
-                onClick={() => handleChangeClutterBar("d")}
-            ></div>
-            <div
-                id="button-v"
-                onClick={() => handleChangeClutterBar("v")}
-                className={clsx(clutterBar.v && "selected", "h-2 w-2")}
-            ></div>
+            />
+            <ClutterBarButton id="v" onClick={handleChangedClutterBar} pressed={clutterBar.v} />
         </div>
     )
 }
+
+interface ClutterBarButtonProps {
+    id: string
+    onClick(id: string): void
+    pressed: boolean
+    title?: string
+}
+
+const ClutterBarButton = memo(({ onClick, id, pressed, title }: ClutterBarButtonProps) => {
+    const handleButtonClicked = () => onClick(id)
+
+    return (
+        <span
+            title={title}
+            id={`button-${id}`}
+            onClick={handleButtonClicked}
+            className={clsx(pressed && "selected", "h-2 w-2")}
+        />
+    )
+})
+
+ClutterBarButton.displayName = "ClutterBarButton"

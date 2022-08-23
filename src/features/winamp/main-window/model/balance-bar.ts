@@ -1,5 +1,5 @@
 import { balance } from "@/features/media/winamp"
-import { createEvent, createStore } from "effector"
+import { createStore } from "effector"
 import { CURRENT_BALANCE_OFFSET } from "../lib"
 
 export const $currentBalance = createStore(0).on(balance.$currentBalance, (_, balance) => balance)
