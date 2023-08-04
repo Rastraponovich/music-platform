@@ -1,4 +1,4 @@
-import { winampStates } from "@/features/media/winamp"
+import { winampStates } from "@/src/widgets/winamp/model"
 import { WINAMP_STATE } from "@/features/music/constants"
 import { useStore } from "effector-react"
 import React from "react"

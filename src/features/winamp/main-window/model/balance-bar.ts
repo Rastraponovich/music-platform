@@ -1,4 +1,4 @@
-import { balance } from "@/features/media/winamp"
+import { balance } from "@/src/widgets/winamp/model"
 import { createEvent, createStore } from "effector"
 import { CURRENT_BALANCE_OFFSET } from "../lib"
 

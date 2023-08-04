@@ -10,7 +10,7 @@ import UIDialogActions from "../ui/UIDialog/UIDialogActions"
 const UploadFormModal = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false)
 
-    const toggleOpened = useCallback(() => setIsOpen((prev) => !prev), [isOpen])
+    const toggleOpened = useCallback(() => setIsOpen((prev) => !prev), [])
 
     return (
         <>

@@ -3,7 +3,7 @@ import { UserIcon } from "@heroicons/react/solid"
 import { memo } from "react"
 import AlbumInfoItem from "./AlbumInfoItem"
 
-type AlbumInfo = {
+type TAlbumInfo = {
     createdDate: string
     tracks: number
     genre: string
@@ -13,7 +13,7 @@ type AlbumInfo = {
 }
 
 interface AlbumInfoProps {
-    albumProps: AlbumInfo
+    albumProps: TAlbumInfo
 }
 
 const AlbumInfo = ({ albumProps }: AlbumInfoProps) => {

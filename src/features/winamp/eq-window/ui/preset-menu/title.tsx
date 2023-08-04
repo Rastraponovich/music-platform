@@ -1,4 +1,4 @@
-import { winampStates } from "@/features/media/winamp"
+import { winampStates } from "@/src/widgets/winamp/model"
 import clsx from "clsx"
 import { useStore } from "effector-react"
 import { memo, MouseEvent } from "react"

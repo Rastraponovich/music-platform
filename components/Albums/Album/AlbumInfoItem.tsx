@@ -1,4 +1,4 @@
-import React, { memo, FC, ReactNode } from "react"
+import React, { memo, ReactNode } from "react"
 
 interface AlbumInfoItemProps {
     name: string | ReactNode

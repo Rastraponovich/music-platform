@@ -1,4 +1,4 @@
-import { eq } from "@/features/media/winamp"
+import { eq } from "@/src/widgets/winamp/model"
 import { createStore } from "effector"
 
 export const $minimized = createStore<boolean>(false).on(eq.$minimized, (_, state) => state)

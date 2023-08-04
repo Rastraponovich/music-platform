@@ -1,8 +1,8 @@
-import { winamp, winampControls } from "@/features/media/winamp"
+import { winamp, winampControls } from "@/src/widgets/winamp/model"
 import { WinampButton } from "@/src/shared/ui/winamp/winamp-button"
 import clsx from "clsx"
 import { useEvent, useStore } from "effector-react"
-import { eq, playlist } from "@/features/media/winamp"
+import { eq, playlist } from "@/src/widgets/winamp/model"
 
 export const PrevTrackButton = () => {
     const handlePrevTrackButtonClicked = useEvent(winampControls.prevTrack)

@@ -1,4 +1,4 @@
-import { eq } from "@/features/media/winamp"
+import { eq } from "@/src/widgets/winamp/model"
 import { useEvent, useStore } from "effector-react"
 import { useCallback } from "react"
 import { WinampButton } from "@/src/shared/ui/winamp/winamp-button"

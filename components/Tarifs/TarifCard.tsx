@@ -1,7 +1,11 @@
-import { Tarif } from "@/types"
-import { BadgeCheckIcon } from "@heroicons/react/solid"
 import clsx from "clsx"
-import { memo, useMemo, useState } from "react"
+import { memo } from "react"
+
+
+import type { Tarif } from "@/types"
+
+import { BadgeCheckIcon } from "@heroicons/react/solid"
+
 import Button from "../ui/Button/Button"
 
 interface TarifCardProps {

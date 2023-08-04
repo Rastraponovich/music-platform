@@ -1,4 +1,4 @@
-import { marqueInfo, playlist, winamp } from "@/features/media/winamp"
+import { marqueInfo, playlist, winamp } from "@/src/widgets/winamp/model"
 import { Nullable } from "@/types"
 import { createStore, sample } from "effector"
 import { isLong, MARQUEE_MAX_LENGTH, MINUTE, SEPARATOR } from "../lib"

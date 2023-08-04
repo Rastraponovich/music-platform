@@ -1,6 +1,6 @@
 import { useEvent } from "effector-react/scope"
 
-import { marqueInfo, volume } from "@/features/media/winamp"
+import { marqueInfo, volume } from "@/src/widgets/winamp/model"
 import { selectors } from "../../model"
 import { VOLUME_BG_OFFSET } from "../../lib"
 

@@ -1,8 +1,10 @@
-import { Nullable } from "@/types"
-import { tarifCards } from "@/utils/__mock__"
-import { Dialog, Transition } from "@headlessui/react"
 import Image from "next/image"
-import { Fragment, useEffect, useMemo, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
+
+import { Dialog, Transition } from "@headlessui/react"
+
+import { tarifCards } from "@/utils/__mock__"
+
 import Button from "../ui/Button/Button"
 import Input from "../ui/Input/Input"
 import TarifCard from "./TarifCard"

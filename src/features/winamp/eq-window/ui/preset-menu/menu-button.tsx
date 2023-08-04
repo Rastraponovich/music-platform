@@ -1,4 +1,4 @@
-import { eq } from "@/features/media/winamp"
+import { eq } from "@/src/widgets/winamp/model"
 import { useEvent } from "effector-react"
 import React, { memo, ReactNode } from "react"
 

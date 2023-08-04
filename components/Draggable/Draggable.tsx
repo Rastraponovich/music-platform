@@ -1,6 +1,6 @@
 import { TWinampWindow } from "@/features/music/types"
 import { useDraggable } from "@/hooks/useDraggable"
-import React, { memo, FC, useRef, ReactNode } from "react"
+import { memo, useRef, ReactNode } from "react"
 
 interface DraggableProps {
     children: ReactNode

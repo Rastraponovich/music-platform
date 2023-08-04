@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback, useEffect } from "react"
 import { usePaintBar, usePaintBarFrame } from "@/hooks/useBarVisualizer"
 import { usePaintOscilloscopeFrame } from "@/hooks/useOscilloscopeVisualizer"
 
-import { $baseSkinColors, $Media, winamp, winampStates } from "@/features/media/winamp"
+import { $baseSkinColors, $Media, winamp, winampStates } from "@/src/widgets/winamp/model"
 import { $dummyVizData, $visualizerStyle, toggleVisualizerStyle } from "@/features/media/visualizer"
 
 import { VISUALIZERS } from "@/features/music/constants"

@@ -1,4 +1,4 @@
-import { volume } from "@/features/media/winamp"
+import { volume } from "@/src/widgets/winamp/model"
 import { createStore } from "effector"
 import { VOLUME_STEP } from "../lib"
 

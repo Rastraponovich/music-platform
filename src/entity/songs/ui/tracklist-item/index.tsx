@@ -7,7 +7,7 @@ import { useEvent } from "effector-react/scope"
 
 import { MEDIA_STATUS } from "@/features/media/constants"
 import { Progressbar } from "@/src/shared/ui/winamp/progress-bar"
-import { playlist, winamp, winampControls } from "@/features/media/winamp"
+import { playlist, winamp, winampControls } from "@/src/widgets/winamp/model"
 
 import Comments from "@/components/TrackListItem/Comments"
 import TrackTimer from "@/components/TrackListItem/TrackTimer"

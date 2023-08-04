@@ -1,4 +1,4 @@
-import { eq } from "@/features/media/winamp"
+import { eq } from "@/src/widgets/winamp/model"
 import { PRESET } from "@/features/music/types"
 import clsx from "clsx"
 import { useEvent, useList, useStore } from "effector-react"

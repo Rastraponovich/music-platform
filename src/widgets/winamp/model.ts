@@ -3,8 +3,8 @@ import { Nullable } from "@/types"
 import { baseSkinColors } from "@/types/ui.types"
 import { sample, createEffect, createEvent, createStore, guard, scopeBind, forward } from "effector"
 
-import { $songs } from "../music"
-import { BANDS, MEDIA_STATUS, WINAMP_STATE, WINAMP_WINDOW_STATE } from "../music/constants"
+import { $songs } from "../../../features/music"
+import { BANDS, MEDIA_STATUS, WINAMP_STATE, WINAMP_WINDOW_STATE } from "../../../features/music/constants"
 import {
     Band,
     Track,
@@ -14,14 +14,14 @@ import {
     StereoBalanceNodeType,
     _BANDS,
     TMediaStatus,
-} from "../music/types"
-import StereoBalanceNode from "./StereoBalanceNode"
-import { createWinampVolumeFactory } from "../music/winamp-volume"
-import { createWinampPlaylistFactory } from "../music/winamp-playlist"
-import { createWinampEQFactory } from "../music/winamp-eq"
-import { createWinampProgressFactory } from "../music/winamp-progress"
+} from "../../../features/music/types"
+import StereoBalanceNode from "../../../features/media/StereoBalanceNode"
+import { createWinampVolumeFactory } from "../../../features/music/winamp-volume"
+import { createWinampPlaylistFactory } from "../../../features/music/winamp-playlist"
+import { createWinampEQFactory } from "../../../features/music/winamp-eq"
+import { createWinampProgressFactory } from "../../../features/music/winamp-progress"
 
-import { createWinampBalanceFactory } from "../music/winamp-balance"
+import { createWinampBalanceFactory } from "../../../features/music/winamp-balance"
 import { debug } from "patronum"
 import { convertTimeToString, _snapBandValue } from "@/utils/utils"
 declare global {

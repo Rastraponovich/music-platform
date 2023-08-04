@@ -1,16 +1,14 @@
 import { $songs } from "@/features/music"
 import { Song } from "@/features/music/types"
-import { Combobox } from "@headlessui/react"
 import { SearchIcon } from "@heroicons/react/outline"
-import clsx from "clsx"
-import { useStore } from "effector-react"
+import { useUnit } from "effector-react"
 import { useState, useEffect, useCallback } from "react"
 import Input from "../Input/Input"
 import SelectSearch from "../SelectSearch/SelectSearch"
 import PlaylistFormTrack from "./PlaylistFormTrack"
 
 const PlaylistForm = () => {
-    const songs = useStore($songs)
+    const songs = useUnit($songs)
     const [isOpenedValues, setIsOpenedValues] = useState<boolean>(false)
     const [searchValue, setSearchValue] = useState("")
     const [selectedSongs, setSelectedSongs] = useState<Song[]>([])
@@ -50,12 +48,12 @@ const PlaylistForm = () => {
         (e: React.ChangeEvent<HTMLInputElement>) => {
             setSearchValue(e.target.value)
         },
-        [searchValue]
+        []
     )
 
     const handleToggleValues = useCallback(
         () => setIsOpenedValues((prev) => !prev),
-        [isOpenedValues]
+        []
     )
 
     return (

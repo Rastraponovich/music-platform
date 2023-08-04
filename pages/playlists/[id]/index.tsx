@@ -1,16 +1,20 @@
-import AlbumInfo from "@/components/Albums/Album/AlbumInfo"
-import AlbumInfoItem from "@/components/Albums/Album/AlbumInfoItem"
+import Image from "next/image"
+import { useUnit } from "effector-react"
+import { fork, serialize } from "effector"
+
+
+import { $songs } from "@/features/music"
+
+
+import type { Album } from "@/types"
 import { TrackListItem } from "@/src/entity/songs"
+import type { GetServerSideProps, NextPage } from "next"
+
+import { albums } from "@/utils/__mock__"
+
+import AlbumInfo from "@/components/Albums/Album/AlbumInfo"
 import PlaylistFormModal from "@/components/ui/PlaylistForm/PlaylistFormModal"
 import Rating from "@/components/ui/Rating/Rating"
-import { $songs } from "@/features/music"
-import { Album } from "@/types"
-import { albums } from "@/utils/__mock__"
-import { StarIcon } from "@heroicons/react/outline"
-import { allSettled, fork, serialize } from "effector"
-import { useStore } from "effector-react"
-import { GetServerSideProps, NextPage } from "next"
-import Image from "next/image"
 
 interface PlaylistPageProps {
     playlist: Album
@@ -26,7 +30,7 @@ const albumInfo = {
 }
 
 const PlaylistPage: NextPage<PlaylistPageProps> = ({ playlist }) => {
-    const songs = useStore($songs)
+    const songs = useUnit($songs)
     return (
         <main className="grow space-y-4 px-20 pb-5 pt-1">
             <h2 className="text-2xl font-semibold">Плейлист</h2>

@@ -1,16 +1,20 @@
-import { Fragment, useState } from "react"
-import { Dialog, Transition } from "@headlessui/react"
-import { XIcon } from "@heroicons/react/outline"
-import { useStore, useEvent } from "effector-react"
-import { $openedSidebar, toggleSidebar } from "@/features/sidebar"
-import Navbar from "../ui/Navbar/Navbar"
 import Link from "next/link"
 import Image from "next/image"
+import { Fragment } from "react"
+import { useUnit } from "effector-react"
+
+import { Dialog, Transition } from "@headlessui/react"
+
+
+import { $openedSidebar, toggleSidebar } from "@/features/sidebar"
+
+import { XIcon } from "@heroicons/react/outline"
+import Navbar from "../ui/Navbar/Navbar"
 import Auth from "../Auth/Auth"
 
 const Sidebar = () => {
-    const open = useStore($openedSidebar)
-    const handleToggleSidebar = useEvent(toggleSidebar)
+    const open = useUnit($openedSidebar)
+    const handleToggleSidebar = useUnit(toggleSidebar)
 
     return (
         <Transition.Root show={open} as={Fragment}>

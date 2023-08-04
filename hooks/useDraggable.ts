@@ -1,4 +1,4 @@
-import { winampStates } from "@/features/media/winamp"
+import { winampStates } from "@/src/widgets/winamp/model"
 import { DEFALUT_WINDOW_STATE } from "@/features/music/constants"
 import { TWinampWindow, UseDraggblePosition, UseDraggbleReturnProps } from "@/features/music/types"
 import { useEvent } from "effector-react"

@@ -1,4 +1,4 @@
-import { $clutterBar, winampStates } from "@/features/media/winamp"
+import { $clutterBar, winampStates } from "@/src/widgets/winamp/model"
 import { useDraggable } from "@/hooks/useDraggable"
 import clsx from "clsx"
 import { useEvent, useStore } from "effector-react"

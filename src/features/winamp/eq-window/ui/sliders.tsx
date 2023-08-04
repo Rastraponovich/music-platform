@@ -1,6 +1,6 @@
 import { useEvent, useStore } from "effector-react"
 
-import { eq } from "@/features/media/winamp"
+import { eq } from "@/src/widgets/winamp/model"
 
 import { EQSlider } from "./slider"
 import { useCallback } from "react"

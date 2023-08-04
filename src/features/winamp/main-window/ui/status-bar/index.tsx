@@ -1,9 +1,9 @@
 import clsx from "clsx"
 import dynamic from "next/dynamic"
 import { useEvent, useStore } from "effector-react"
-import { $clutterBar, changeClutterBar } from "@/features/media/winamp"
+import { $clutterBar, changeClutterBar } from "@/src/widgets/winamp/model"
 
-import { progress, winamp } from "@/features/media/winamp"
+import { progress, winamp } from "@/src/widgets/winamp/model"
 import { TIME_MODE } from "@/features/music/types"
 import { memo } from "react"
 import { PLAYER_STATES } from "../../lib"

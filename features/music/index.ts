@@ -9,10 +9,10 @@ const getSongs = createEvent()
 
 const searchTrack = createEvent<string>()
 
-const searchTrackNameFiled = createStore<string>("").on(searchTrack, (_, trackName) => trackName)
+const $searchTrackNameFiled = createStore<string>("").on(searchTrack, (_, trackName) => trackName)
 
 const debouncedSearch = debounce({
-    source: searchTrackNameFiled,
+    source: $searchTrackNameFiled,
     timeout: 500,
     target: MusicAPI.searchTrackFx,
 })

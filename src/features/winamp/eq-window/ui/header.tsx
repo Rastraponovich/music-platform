@@ -1,7 +1,7 @@
 import clsx from "clsx"
 import { memo, MouseEvent } from "react"
 import { useEvent, useStore } from "effector-react"
-import { eq, winampStates } from "@/features/media/winamp"
+import { eq, winampStates } from "@/src/widgets/winamp/model"
 
 interface EQHeaderProps {
     onMouseDown: (e: MouseEvent<HTMLElement>) => void

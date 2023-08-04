@@ -12,7 +12,7 @@ const PlaylistFormModal = () => {
 
     const handleToggleOpened = useCallback(() => {
         setIsOpened((prev) => !prev)
-    }, [isOpened])
+    }, [])
 
     return (
         <>

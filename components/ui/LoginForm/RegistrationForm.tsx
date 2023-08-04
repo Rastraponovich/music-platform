@@ -12,14 +12,14 @@ const RegistrationForm = () => {
         (e: ChangeEvent<HTMLInputElement>) => {
             setLogin(e.target.value)
         },
-        [login]
+        []
     )
 
     const handleChangePassword = useCallback(
         (e: ChangeEvent<HTMLInputElement>) => {
             setPassword(e.target.value)
         },
-        [password]
+        []
     )
 
     return (

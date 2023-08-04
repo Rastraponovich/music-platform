@@ -1,4 +1,4 @@
-import { marqueInfo } from "@/features/media/winamp"
+import { marqueInfo } from "@/src/widgets/winamp/model"
 import clsx from "clsx"
 import { useEvent } from "effector-react"
 import React, { memo, useState, useMemo, ChangeEvent, MouseEvent } from "react"
