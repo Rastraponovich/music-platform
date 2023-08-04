@@ -1,6 +1,6 @@
 import { externalAPI } from "@/utils/axiosInstanse"
 import axios from "axios"
-import { Song } from "./models"
+import { Song } from "../lib/models"
 
 export const getMetadataAPI = async (name: string) => {
     return await externalAPI.get(`api/songs/metadata/${name}`, { withCredentials: false })
@@ -26,3 +26,6 @@ export const saveSongAPI = async (song: Song & { image: File; music: File }) => 
 }
 export const updateSongAPI = async ({ id, song }: { id: number; song: Song }) =>
     await externalAPI.patch(`/songs/${id}`, song)
+
+export const getTrackCommentsAPI = async (id: number) =>
+    await externalAPI.get(`/songs/${id}/comments`)

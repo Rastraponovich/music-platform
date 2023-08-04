@@ -359,11 +359,14 @@ sample({
     target: $winampState,
 })
 
-const $currentTrack = createStore<Nullable<Track>>(null).on(loadUrlFx.doneData, (_, track) => track)
+const $currentTrack = createStore<Nullable<Track>>(null).on(loadUrlFx.doneData, (_, track) => ({
+    ...track,
+}))
 
 sample({
     clock: initWinamp,
     source: $currentTrack,
+    filter: (track, _) => track !== null,
     fn: (track, _) => track!,
     target: createWinampFx,
 })

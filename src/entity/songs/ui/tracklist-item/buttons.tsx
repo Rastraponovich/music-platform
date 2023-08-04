@@ -20,6 +20,7 @@ interface AddToFavoritesButtonProps extends ButtonProps {
 }
 
 const AddToFavoritesButton = ({ onClick, isFavorite }: AddToFavoritesButtonProps) => {
+    const styles = "h-5 w-6 text-gray-500 duration-200 group-hover:text-gray-900"
     return (
         <button onClick={onClick} title="добавить в избранное">
             {!isFavorite ? (
@@ -56,10 +57,10 @@ interface ToggleCommentsButtonProps2 extends ButtonProps {
 const ToggleCommentsButton2 = ({ onClick, commentsCount }: ToggleCommentsButtonProps2) => {
     return (
         <button className="group indicator" onClick={onClick} title="показать\скрыть комментарии">
-            <span className="badge indicator-item badge-sm cursor-pointer border-gray-500 bg-gray-500 group-hover:border-gray-900 group-hover:bg-gray-900">
+            <span className="badge badge-xs indicator-item cursor-pointer border-gray-500 bg-gray-500 text-[10px] group-hover:border-gray-900 group-hover:bg-gray-900">
                 {commentsCount}
             </span>
-            <AnnotationIcon className="h-6 w-6 text-gray-500 duration-200 group-hover:text-gray-900" />
+            <AnnotationIcon className="h-5 w-5 text-gray-500 duration-200 group-hover:text-gray-900" />
         </button>
     )
 }
@@ -78,7 +79,7 @@ interface ActionsProps {
 export const Actions = memo(
     ({ track, toggleComments, addToFavorites, isFavorite = false }: ActionsProps) => {
         return (
-            <div className="col-span-2 col-end-13 flex items-center justify-end space-x-2 justify-self-start">
+            <div className="flex items-center justify-end space-x-1 justify-self-end">
                 <AddToPlaylistButton track={track} />
                 <ToggleCommentsButton2
                     onClick={toggleComments}
