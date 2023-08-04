@@ -1,9 +1,9 @@
-import { $clutterBar, progress, winamp } from "@/features/media/winamp"
 import type { TIME_MODE, TMediaStatus } from "@/features/music/types"
 
 import { useStore } from "effector-react"
 import { $currentBalance, $currentBalanceStep } from "./balance-bar"
 import { $currentVolume, $currentVolumeStep } from "./volume-bar"
+import { $clutterBar, progress, winamp } from "@/src/widgets/winamp"
 
 /**
  * возвращает текущее положение баланса

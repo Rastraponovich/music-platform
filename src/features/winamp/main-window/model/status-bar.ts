@@ -1,4 +1,4 @@
-import { winamp } from "@/features/media/winamp"
+import { winamp } from "~/widgets/winamp"
 import { sample, createEvent } from "effector"
 
 export const toggleTimeModeButtonClicked = createEvent()

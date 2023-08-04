@@ -1,5 +1,5 @@
-import { eq, winampStates } from "@/features/media/winamp";
 import { TWinampWindow } from "@/features/music/types";
+import { eq, winampStates } from "@/src/widgets/winamp";
 import { createEvent, createStore, sample, split } from "effector";
 import { condition } from "patronum";
 

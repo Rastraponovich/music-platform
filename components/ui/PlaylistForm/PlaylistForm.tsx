@@ -2,7 +2,7 @@ import { $songs } from "@/features/music"
 import { Song } from "@/features/music/types"
 import { SearchIcon } from "@heroicons/react/outline"
 import { useUnit } from "effector-react"
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, ChangeEvent } from "react"
 import Input from "../Input/Input"
 import SelectSearch from "../SelectSearch/SelectSearch"
 import PlaylistFormTrack from "./PlaylistFormTrack"
@@ -45,7 +45,7 @@ const PlaylistForm = () => {
     }, [searchValue, songs])
 
     const handleSearch = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
+        (e: ChangeEvent<HTMLInputElement>) => {
             setSearchValue(e.target.value)
         },
         []

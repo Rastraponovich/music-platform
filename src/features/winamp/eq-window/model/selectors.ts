@@ -1,7 +1,7 @@
-import { $clutterBar, winampStates } from "@/features/media/winamp"
 import { TWinampWindow } from "@/features/music/types"
 import { useStore } from "effector-react"
 import { $enabledAutoEQ, $enabledEQ, $minimized, $visibled } from "./model"
+import { $clutterBar, winampStates } from "@/src/widgets/winamp"
 
 /**
  *

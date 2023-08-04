@@ -45,7 +45,7 @@ export const Ticker = memo(({ currentTrack, currentId }: MediaInfoTrackProps) =>
     setTrack(isLong(text) ? `${text}${SEPARATOR}${text}` : text.padEnd(MARQUEE_MAX_LENGTH, " "));
 
     return () => setpos(1);
-  }, [currentId, min, sec, track.length]);
+  }, [currentId, min, sec, currentTrack.artist, currentTrack.name]);
 
   useEffect(() => {
     timerId.current = setInterval(() => {
@@ -55,7 +55,7 @@ export const Ticker = memo(({ currentTrack, currentId }: MediaInfoTrackProps) =>
       }
     }, 220);
     return () => clearInterval(timerId.current);
-  }, [pos, currentId, allowDragging]);
+  }, [pos, currentId, allowDragging, track.length]);
 
   const handleDragStart = (e: MouseEvent<HTMLElement>) => {
     e.preventDefault();
