@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import React, { memo, FC, InputHTMLAttributes } from "react"
+import React, { memo, InputHTMLAttributes } from "react"
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     title?: string

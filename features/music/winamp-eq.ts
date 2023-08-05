@@ -248,8 +248,8 @@ export const createWinampEQFactory = ($Media: Store<Nullable<MediaElement>>) => 
     sample({
         clock: loadPreset,
         source: $selectedPreset,
+        filter: (preset, _) => !!preset,
         fn: (preset, _) => preset!,
-        filter: (preset, _) => preset !== null,
         target: $currentPreset,
     })
 

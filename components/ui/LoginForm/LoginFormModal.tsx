@@ -2,7 +2,7 @@ import { Dialog, Tab, Transition } from "@headlessui/react"
 import { XIcon } from "@heroicons/react/outline"
 import clsx from "clsx"
 
-import React, { useState, Fragment, useCallback, ChangeEvent, useRef } from "react"
+import React, { useState, Fragment, useCallback, useRef } from "react"
 import Button from "../Button/Button"
 import UIDialogTitle from "../UIDialog/UIDialogTitle"
 import LoginFormTabs from "./LoginFormTabs"
@@ -12,7 +12,7 @@ const LoginFormModal = () => {
     let completeButtonRef = useRef(null)
     const handleToggleOpened = useCallback(() => {
         setIsOpened((prev) => !prev)
-    }, [isOpened])
+    }, [])
 
     return (
         <>

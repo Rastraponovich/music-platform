@@ -1,9 +1,9 @@
-import { ChangeEvent, memo } from "react"
+import {  ChangeEventHandler, memo } from "react"
 
 interface TrackProgressProps {
     currentValue: number
     maxValue: number | string
-    onChange: (e: ChangeEvent<HTMLInputElement>) => void
+    onChange: ChangeEventHandler<HTMLInputElement>
 }
 
 const TrackProgress = ({ currentValue, maxValue, onChange }: TrackProgressProps) => {

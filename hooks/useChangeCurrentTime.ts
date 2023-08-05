@@ -1,4 +1,4 @@
-import { playlist, progress, volume, winampStates } from "@/features/media/winamp"
+import { playlist, progress, volume, winampStates } from "@/src/widgets/winamp/model"
 import { WINAMP_WINDOW_STATE } from "@/features/music/constants"
 import { useEvent, useStore } from "effector-react"
 import { useEffect } from "react"

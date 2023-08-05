@@ -1,4 +1,4 @@
-import { winampControls } from "@/features/media/winamp"
+import { winampControls } from "@/src/widgets/winamp/model"
 import { WinampButton } from "@/src/shared/ui/winamp/winamp-button"
 import { useEvent } from "effector-react"
 import { selectors } from "../model"

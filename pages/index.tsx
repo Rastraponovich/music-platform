@@ -1,9 +1,12 @@
+import Image from "next/image"
+
+
+import type { NextPage } from "next"
+
 import AlbumsList from "@/components/Albums/AlbumsList"
 import Tarifs from "@/components/Tarifs/Tarifs"
-import { getPlaylists } from "@/features/playlist"
-import { allSettled, fork, serialize } from "effector"
-import type { GetServerSideProps, NextPage } from "next"
-import Image from "next/image"
+// import { getPlaylists } from "@/features/playlist"
+// import { allSettled, fork, serialize } from "effector"
 
 const Home: NextPage = () => {
     return (

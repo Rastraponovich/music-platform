@@ -1,3 +1,11 @@
 {
-  "extends": "next/core-web-vitals"
+  "plugins": ["prettier", "effector", "react"],
+  "extends": [
+    "next",
+    "eslint:recommended",
+    "next/core-web-vitals",
+    "plugin:effector/recommended",
+    "plugin:effector/react"
+  ],
+  "rules": {}
 }

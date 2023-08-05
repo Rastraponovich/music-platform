@@ -1,4 +1,4 @@
-import { $baseSkinColors } from "@/features/media/winamp"
+import { $baseSkinColors } from "@/src/widgets/winamp/model"
 import { useStore } from "effector-react"
 import { useMemo, useCallback, useState } from "react"
 

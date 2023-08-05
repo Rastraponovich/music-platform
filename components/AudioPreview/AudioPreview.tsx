@@ -1,4 +1,4 @@
-import React, { memo, FC } from "react"
+import  { memo } from "react"
 
 interface AudioPreviewProps {
     audio: File

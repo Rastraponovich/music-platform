@@ -1,18 +1,18 @@
-import { useIsHovered } from "@/hooks/useIsHovered"
-import clsx from "clsx"
-import React, { memo, FC, ReactNode } from "react"
+import { useIsHovered } from "@/hooks/useIsHovered";
+import clsx from "clsx";
+import React, { memo, ReactNode } from "react";
 
 interface PlaylistMenuEntryProps {
-    children: ReactNode
+  children: ReactNode;
 }
 
 const PlaylistMenuEntry = ({ children }: PlaylistMenuEntryProps) => {
-    const { ref, hover } = useIsHovered()
-    return (
-        <li ref={ref} className={clsx({ hover }, "h-[18px]")}>
-            {children}
-        </li>
-    )
-}
+  const { ref, hover } = useIsHovered();
+  return (
+    <li ref={ref} className={clsx({ hover }, "h-[18px]")}>
+      {children}
+    </li>
+  );
+};
 
-export default memo(PlaylistMenuEntry)
+export default memo(PlaylistMenuEntry);

@@ -1,47 +1,43 @@
-import ProfileForm from "@/components/ProfileForm/ProfileForm"
-import TrackListItemSmall from "@/components/TrackListItem/TrackListItemSmall"
-import AccordionFilter from "@/components/ui/AccordionFilter/AccordionFilter"
-import Button from "@/components/ui/Button/Button"
-import { Stats } from "@/components/Stats/Stats"
-import { winamp } from "@/features/media/winamp"
-import { $songs, getSongs } from "@/features/music"
-import { BookOpenIcon, AnnotationIcon, MusicNoteIcon, NewspaperIcon } from "@heroicons/react/solid"
-import { allSettled, fork, serialize } from "effector"
-import { useList, useStore } from "effector-react"
-import { GetServerSideProps, NextPage } from "next"
-import { useCallback, useState } from "react"
-import { TrackSkeletonSmall } from "@/components/ui/Skeletons/TrackSkeleton/TrackSkeletonSmall"
-import { AccordionSkeleton } from "@/components/ui/Skeletons/AccordionSkeleton/AccordionSkeleton"
-import {
-    AccordionFiltersSkeleton,
-    LKFiltersSkeleton,
-    ProfileFormSkeleton,
-    StatsSkeleton,
-} from "@/components/ui/Skeletons"
+// import { useUnit } from "effector-react";
 
-interface LKPageProps {}
+import { getSongs } from "@/features/music";
+// import { winamp } from "@/src/widgets/winamp/model";
+import { allSettled, fork, serialize } from "effector";
+
+import type { GetServerSideProps, NextPage } from "next";
+
+import {
+  AccordionFiltersSkeleton,
+  LKFiltersSkeleton,
+  ProfileFormSkeleton,
+  StatsSkeleton,
+} from "@/components/ui/Skeletons";
+
+interface LKPageProps {
+  foo?: "bar";
+}
 
 const LKPage: NextPage<LKPageProps> = () => {
-    const currentTrack = useStore(winamp.$currentTrack)
-    return (
-        <main className="grow space-y-4 bg-gray-100 px-5 pb-5 pt-1 md:px-20 md:pt-2 ">
-            <h2 className="text-center text-xl font-semibold first-letter:uppercase sm:text-left sm:text-2xl">
-                личный кабинет
-            </h2>
+  //   const currentTrack = useUnit(winamp.$currentTrack);
+  return (
+    <main className="grow space-y-4 bg-gray-100 px-5 pb-5 pt-1 md:px-20 md:pt-2 ">
+      <h2 className="text-center text-xl font-semibold first-letter:uppercase sm:text-left sm:text-2xl">
+        личный кабинет
+      </h2>
 
-            {/* <ProfileForm /> */}
-            <ProfileFormSkeleton />
+      {/* <ProfileForm /> */}
+      <ProfileFormSkeleton />
 
-            {/* <Stats /> */}
-            <StatsSkeleton />
-            <LKFiltersSkeleton />
-            {/* <section className="flex space-x-2 rounded bg-white p-2 text-sm">
+      {/* <Stats /> */}
+      <StatsSkeleton />
+      <LKFiltersSkeleton />
+      {/* <section className="flex space-x-2 rounded bg-white p-2 text-sm">
                 <Button className="text-xs">избранное</Button>
                 <Button className="text-xs">загруженные треки</Button>
             </section> */}
-            <AccordionFiltersSkeleton />
+      <AccordionFiltersSkeleton />
 
-            {/* <section className="grid grid-cols-1  xl:grid xl:grid-cols-3 xl:items-start xl:gap-2">
+      {/* <section className="grid grid-cols-1  xl:grid xl:grid-cols-3 xl:items-start xl:gap-2">
                 <AccordionFilter
                     title={
                         <div className="flex space-x-2">
@@ -93,20 +89,20 @@ const LKPage: NextPage<LKPageProps> = () => {
                     <div>пусто</div>
                 </AccordionFilter>
             </section> */}
-        </main>
-    )
-}
+    </main>
+  );
+};
 
-export default LKPage
+export default LKPage;
 
 export const getServerSideProps: GetServerSideProps = async () => {
-    const scope = fork()
+  const scope = fork();
 
-    await allSettled(getSongs, { scope })
+  await allSettled(getSongs, { scope });
 
-    return {
-        props: {
-            initialState: serialize(scope),
-        },
-    }
-}
+  return {
+    props: {
+      initialState: serialize(scope),
+    },
+  };
+};

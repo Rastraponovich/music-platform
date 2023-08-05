@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic"
+import { useUnit } from "effector-react"
 
 import { $currentSong, $files, changeSong, submitted, uploadFile } from "@/features/music"
-import { useEvent, useStore } from "effector-react"
 import Input from "../ui/Input/Input"
 import InputFile from "../ui/InputFile/InputFile"
 
@@ -10,11 +10,11 @@ const PreviewImage = dynamic(() => import("../PreviewImage/PreviewImage"), { ssr
 const AudioPreview = dynamic(() => import("../AudioPreview/AudioPreview"), { ssr: false })
 
 const UploadForm = () => {
-    const currentSong = useStore($currentSong)
+    const currentSong = useUnit($currentSong)
 
-    const [onUpload, onSubmit, onChange] = useEvent([uploadFile, submitted, changeSong])
+    const [onUpload, onSubmit, onChange] = useUnit([uploadFile, submitted, changeSong])
 
-    const { image, music } = useStore($files)
+    const { image, music } = useUnit($files)
 
     return (
         <form

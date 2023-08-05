@@ -1,4 +1,4 @@
-import { eq } from "@/features/media/winamp"
+import { eq } from "@/src/widgets/winamp/model"
 import { useDraggable } from "@/hooks/useDraggable"
 import clsx from "clsx"
 import { useStore } from "effector-react"

@@ -1,10 +1,12 @@
-import { eq } from "@/features/media/winamp"
+import { eq } from "@/src/widgets/winamp/model"
 import { useEvent, useStore } from "effector-react"
 import { useCallback } from "react"
 import { WinampButton } from "@/src/shared/ui/winamp/winamp-button"
 import { EQGraph } from "./graph"
 
 import { PresetMenu } from "./preset-menu"
+import { selectors, actions } from "../model"
+import { useEnabledEQ } from "../model/selectors"
 
 export const EQButtons = () => {
     return (
@@ -39,17 +41,8 @@ const PresetMenuButton = () => {
 }
 
 const EnableEQToggleButton = () => {
-    const enabledEQ = useStore(eq.$enabled)
-    const handleEnableEQButtonClicked = useEvent(eq.enableClickedEQ)
-    const handleDisableEQButtonClicked = useEvent(eq.disableClickedEQ)
-
-    const handleToggleOnEQButtonClicked = useCallback(() => {
-        if (enabledEQ) {
-            handleDisableEQButtonClicked()
-        } else {
-            handleEnableEQButtonClicked()
-        }
-    }, [enabledEQ])
+    const enabledEQ = selectors.useEnabledEQ()
+    const handleToggleOnEQButtonClicked = useEvent(actions.toggleEnabledEQ)
 
     return (
         <WinampButton
@@ -61,7 +54,9 @@ const EnableEQToggleButton = () => {
     )
 }
 const AutoEQToggleButton = () => {
-    const autoEQ = useStore(eq.$auto)
-    const toggleAutoEQ = useEvent(eq.toggleAutoEQ)
-    return <WinampButton id="auto" className="h-3 w-8" active={autoEQ} onClick={toggleAutoEQ} />
+    const enabledAutoEQ = selectors.useAutoEQ()
+    const handleToggle = useEvent(actions.toggleAutoEQ)
+    return (
+        <WinampButton id="auto" className="h-3 w-8" active={enabledAutoEQ} onClick={handleToggle} />
+    )
 }
