@@ -1,9 +1,11 @@
 import React, { memo, useEffect, useState, MouseEvent, useMemo, useRef } from "react";
 
 import type { Track } from "@/features/music/types";
-import { CharacterStrings } from "@/src/shared/ui/winamp/character-strings";
+
 import { isLong, MARQUEE_MAX_LENGTH, MINUTE, SEPARATOR } from "../lib";
 import { selectors } from "../model";
+
+import { CharacterStrings } from "@/src/shared/ui/winamp/character-strings";
 
 interface MediaInfoTrackProps {
   currentTrack: Track;
@@ -11,7 +13,7 @@ interface MediaInfoTrackProps {
 }
 
 export const Ticker = memo(({ currentTrack, currentId }: MediaInfoTrackProps) => {
-  let timerId = useRef<any>(null);
+  const timerId = useRef<unknown>(null);
   const ref = useRef<Nullable<HTMLDivElement>>(null);
 
   const [pos, setpos] = useState(0);
@@ -54,7 +56,7 @@ export const Ticker = memo(({ currentTrack, currentId }: MediaInfoTrackProps) =>
         setpos(pos - 5);
       }
     }, 220);
-    return () => clearInterval(timerId.current);
+    return () => clearInterval(timerId.current as number);
   }, [pos, currentId, allowDragging, track.length]);
 
   const handleDragStart = (e: MouseEvent<HTMLElement>) => {
@@ -67,9 +69,10 @@ export const Ticker = memo(({ currentTrack, currentId }: MediaInfoTrackProps) =>
       setpos(e.screenX - diff);
     }
   };
-  const handleDragEnd = (e: MouseEvent<HTMLElement>) => {
+  const handleDragEnd = (_: MouseEvent<HTMLElement>) => {
     setAllowDragging(false);
   };
+
   return (
     <div
       id="marquee"

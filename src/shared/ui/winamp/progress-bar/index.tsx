@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useEvent, useStore } from "effector-react";
+import { useUnit } from "effector-react";
 import { memo, InputHTMLAttributes, useState, MouseEvent } from "react";
 
 import { duration, marqueInfo, progress } from "@/src/widgets/winamp/model";
@@ -15,15 +15,19 @@ interface ProgressbarProps {
  * @deprecated
  */
 export const Progressbar = memo(({ className, id }: ProgressbarProps) => {
-  const currentTrackDuration = useStore(duration.$currentTrackDuration);
-  const currentTime = useStore(progress.$currentTime);
-
-  const handleMouseDown = useEvent(marqueInfo.enabledMarqueInfo);
-  const handleMouseUp = useEvent(marqueInfo.disabledMarqueInfo);
-
   const [active, setActive] = useState(false);
 
-  const [handleSeeking, mouseDown, mouseUp] = useEvent([
+  const [currentTrackDuration, currentTime] = useUnit([
+    duration.$currentTrackDuration,
+    progress.$currentTime,
+  ]);
+
+  const [handleMouseDown, handleMouseUp] = useUnit([
+    marqueInfo.enabledMarqueInfo,
+    marqueInfo.disabledMarqueInfo,
+  ]);
+
+  const [handleSeeking, mouseDown, mouseUp] = useUnit([
     progress.seekingCurrentTime,
     progress.onmousedown,
     progress.onmouseup,

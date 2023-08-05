@@ -1,19 +1,19 @@
-import { Nullable } from "@/types"
-import { createEvent, createStore } from "effector"
-import { VISUALIZERS, VISUALIZER_ORDER } from "../music/constants"
-import { DummyVizData, TVISUALIZER } from "../music/types"
+import { createEvent, createStore } from "effector";
+import { VISUALIZERS, VISUALIZER_ORDER } from "../music/constants";
 
-const toggleVisualizerStyle = createEvent()
+import type { Nullable } from "@/types";
+import type { DummyVizData, VisualizerKey } from "../music/types";
 
-const $visualizerStyle = createStore<TVISUALIZER>(VISUALIZERS.BAR).on(
-    toggleVisualizerStyle,
-    (state, _) => {
-        const currentState = VISUALIZER_ORDER.findIndex((item) => item === VISUALIZERS[state])
-        if (currentState === VISUALIZER_ORDER.length - 1) return VISUALIZER_ORDER[0]
-        return VISUALIZER_ORDER[currentState + 1]
-    }
-)
+const toggleVisualizerStyle = createEvent();
 
-const $dummyVizData = createStore<Nullable<DummyVizData>>(null)
+const $visualizerStyle = createStore<VisualizerKey>(VISUALIZERS.BAR);
+const $dummyVizData = createStore<Nullable<DummyVizData>>(null);
 
-export { $visualizerStyle, $dummyVizData, toggleVisualizerStyle }
+$visualizerStyle.on(toggleVisualizerStyle, (currentStyle) => {
+  const currentState = VISUALIZER_ORDER.findIndex((item) => item === VISUALIZERS[currentStyle]);
+
+  if (currentState === VISUALIZER_ORDER.length - 1) return VISUALIZER_ORDER[0];
+  return VISUALIZER_ORDER[currentState + 1];
+});
+
+export { $visualizerStyle, $dummyVizData, toggleVisualizerStyle };

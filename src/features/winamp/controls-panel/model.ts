@@ -1,6 +1,6 @@
-import { MEDIA_STATUS } from "@/features/media/constants";
-import { eq, winamp, winampControls } from "@/src/widgets/winamp";
 import { createEvent, sample } from "effector";
+
+import { eq, winamp, winampControls } from "@/src/widgets/winamp";
 
 export const prevTrackButtonClicked = createEvent();
 export const pauseButtonClicked = createEvent();

@@ -11,10 +11,11 @@ import { useEffect, useRef } from "react";
  * @deprecated
  */
 export const BalanceBar = () => {
+  // eslint-disable-next-line lines-around-comment
   /**
    * текущее положение ползунка баланса
    */
-  const currentStep = selectors.currentBalanceStep();
+  const currentStep = selectors.useCurrentBalanceStep();
 
   /**
    * значение баланса из WebAudioAPI

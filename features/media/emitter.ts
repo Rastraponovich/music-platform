@@ -1,28 +1,31 @@
 export default class Emitter {
-    _listeners: { [event: string]: Array<(...args: any[]) => void> }
+  _listeners: { [event: string]: Array<(...args: unknown[]) => void> };
 
-    constructor() {
-        this._listeners = {}
-    }
+  constructor() {
+    this._listeners = {};
+  }
 
-    on(event: string, callback: (...args: any[]) => void) {
-        const eventListeners = this._listeners[event] || []
-        eventListeners.push(callback)
-        this._listeners[event] = eventListeners
-        const unsubscribe = () => {
-            this._listeners[event] = eventListeners.filter((cb) => cb !== callback)
-        }
-        return unsubscribe
-    }
+  on(event: string, callback: (...args: unknown[]) => void) {
+    const eventListeners = this._listeners[event] || [];
 
-    trigger(event: string, ...args: any[]) {
-        const callbacks = this._listeners[event]
-        if (callbacks) {
-            callbacks.forEach((cb) => cb(...args))
-        }
-    }
+    eventListeners.push(callback);
+    this._listeners[event] = eventListeners;
+    const unsubscribe = () => {
+      this._listeners[event] = eventListeners.filter((callback) => callback !== callback);
+    };
 
-    dispose() {
-        this._listeners = {}
+    return unsubscribe;
+  }
+
+  trigger(event: string, ...args: unknown[]) {
+    const callbacks = this._listeners[event];
+
+    if (callbacks) {
+      callbacks.forEach((callback) => callback(...args));
     }
+  }
+
+  dispose() {
+    this._listeners = {};
+  }
 }

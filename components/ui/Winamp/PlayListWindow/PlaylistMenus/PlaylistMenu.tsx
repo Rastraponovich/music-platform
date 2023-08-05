@@ -32,11 +32,11 @@ const PlaylistMenu = ({ id, children }: PlaylistMenuProps) => {
         selected,
       })}
       ref={setRef}
-      onClick={() => setSelected((selected_) => !selected_)}
+      onClick={() => setSelected((prev) => !prev)}
     >
       <div className="bar" />
       {selected && (
-        <ul className="absolute top-[-34px] left-[1px]  z-50 flex  h-[54px] w-[22px] flex-col">
+        <ul className="absolute top-[-34px] left-px  z-50 flex  h-[54px] w-[22px] flex-col">
           {Children.map(children, (child, i) => (
             <PlaylistMenuEntry key={i}>{child}</PlaylistMenuEntry>
           ))}
