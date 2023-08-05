@@ -1,41 +1,44 @@
 import clsx from "clsx";
-import { useRef } from "react";
-import { useEvent, useStore } from "effector-react/scope";
+import { useMemo, useRef } from "react";
+import dynamic from "next/dynamic";
+
+import { useUnit } from "effector-react/scope";
 
 import { useDraggable } from "@/hooks/useDraggable";
 
 import { duration, playlist, winampStates } from "@/src/widgets/winamp/model";
 
-import MiniTimer from "./MiniTimer";
-import PlaylistHeader from "./PlaylistHeader";
-import { MiniActions } from "@/src/features/winamp/mini-actions";
 import { convertTimeToString } from "@/utils/utils";
-import dynamic from "next/dynamic";
-import Playlist from "./Playlist";
+
+import Playlist from "../Playlist";
+import MiniTimer from "../MiniTimer";
+import PlaylistHeader from "../PlaylistHeader";
+import { MiniActions } from "@/src/features/winamp/controls-panel";
 import { CharacterStrings } from "@/src/shared/ui/winamp/character-strings";
 
-const OptionMenu = dynamic(() => import("./PlaylistMenus/OptionMenu"), { ssr: false });
-const AddMenu = dynamic(() => import("./PlaylistMenus/AddMenu"), { ssr: false });
+const OptionMenu = dynamic(() => import("../PlaylistMenus/OptionMenu"), { ssr: false });
+const AddMenu = dynamic(() => import("../PlaylistMenus/AddMenu"), { ssr: false });
 
 //  const DEFAULT_HEIGHT = 151;
 
 const WINDOW_NAME = "PLAYLIST";
 
 const PlayListWindow = () => {
-  // const handler = useDelPressKeyButton();
   const ref = useRef(null);
 
-  const handleActiveWindow = useEvent(winampStates.changeWindowState);
-  const visible = useStore(playlist.$visiblePlaylist);
-
-  const currentTrackDuration = useStore(duration.$currentTrackDuration);
-  const totalDuration = useStore(duration.$durationTracksInPlaylist);
+  const handleActiveWindow = useUnit(winampStates.changeWindowState);
+  const [visible, currentTrackDuration, totalDuration] = useUnit([
+    playlist.$visiblePlaylist,
+    duration.$currentTrackDuration,
+    duration.$durationTracksInPlaylist,
+  ]);
 
   const [onDragStart, onDragging, onDragEnd] = useDraggable(WINDOW_NAME, ref);
 
-  const trackLength = `${convertTimeToString(currentTrackDuration)}/${convertTimeToString(
-    totalDuration,
-  )}`;
+  const trackLength = useMemo(
+    () => `${convertTimeToString(currentTrackDuration)}/${convertTimeToString(totalDuration)}`,
+    [currentTrackDuration, totalDuration],
+  );
 
   return (
     <aside
@@ -59,9 +62,7 @@ const PlayListWindow = () => {
           }}
           className="w-3 min-w-[12px] bg-repeat-y"
         ></div>
-
         <Playlist />
-
         <div
           className="min-w-5 relative w-5 bg-repeat-y pb-[18px]"
           style={{
@@ -85,7 +86,7 @@ const PlayListWindow = () => {
             </span>
             <div className="flex">
               <MiniActions bottom />
-              <MiniTimer className="ml-[3px] pt-[1px]" />
+              <MiniTimer className="ml-[3px] pt-px" />
             </div>
           </div>
           <OptionMenu />

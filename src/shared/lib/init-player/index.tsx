@@ -1,12 +1,13 @@
-import { useInitPlayer } from "@/hooks/useInitPlayer"
-import { ReactNode } from "react"
+import { useInitPlayer } from "@/hooks/useInitPlayer";
+
+import type { ReactNode } from "react";
 
 interface InitPlayerProps {
-    children: ReactNode
+  children: ReactNode;
 }
 
 export const InitPlayer = ({ children }: InitPlayerProps) => {
-    useInitPlayer()
+  useInitPlayer();
 
-    return <>{children}</>
-}
+  return <>{children}</>;
+};

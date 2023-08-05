@@ -1,62 +1,53 @@
-import { Nullable } from "@/types"
-import { createEvent, createStore } from "effector"
-import { Track } from "./types"
+import { createEvent, createStore } from "effector";
+
+import type { Nullable } from "@/types";
+import type { Track } from "./types";
 
 export const createWinampPlaylistFactory = () => {
-    const addTrackToPlaylist = createEvent<Track>()
-    const $playlist = createStore<Track[]>([]).on(addTrackToPlaylist, (tracks, track) => [
-        ...tracks,
-        track,
-    ])
+  const toggleVisiblePlaylist = createEvent();
+  const addTrackToPlaylist = createEvent<Track>();
+  const selectTrackInPlaylist = createEvent<number>();
+  const setCurrentPlayedTrackIndex = createEvent<number>();
+  const doubleClickedTrackInPlaylist = createEvent<number>();
 
-    const $playlistLength = $playlist.map((state) => state.length)
+  const $playlist = createStore<Track[]>([]);
+  const $visiblePlaylist = createStore<boolean>(true);
+  const $durationTracksInPlaylist = createStore<number>(0);
+  const $removedTrackIndex = createStore<Nullable<number>>(null);
+  const $selectedTrackInPlaylist = createStore<Nullable<number>>(null);
+  const $currentPlayedTrackIndex = createStore<Nullable<number>>(null);
 
-    const selectTrackInPlaylist = createEvent<number>()
-    const $selectedTrackInPlaylist = createStore<Nullable<number>>(null).on(
-        selectTrackInPlaylist,
-        (_, trackIndex) => trackIndex
-    )
+  const $playlistLength = $playlist.map((state) => state.length);
 
-    const doubleClickedTrackInPlaylist = createEvent<number>()
+  $playlist.on(addTrackToPlaylist, (tracks, track) => [...tracks, track]);
 
-    const setCurrentPlayedTrackIndex = createEvent<number>()
+  $selectedTrackInPlaylist.on(selectTrackInPlaylist, (_, trackIndex) => trackIndex);
 
-    const $currentPlayedTrackIndex = createStore<Nullable<number>>(null)
-        .on(doubleClickedTrackInPlaylist, (_, id) => id)
-        .on(setCurrentPlayedTrackIndex, (_, id) => id)
+  $currentPlayedTrackIndex.on(
+    [setCurrentPlayedTrackIndex, doubleClickedTrackInPlaylist],
+    (_, id) => id,
+  );
 
-    const $durationTracksInPlaylist = createStore<number>(0).on($playlist, (_, tracks) => {
-        let initDuration = 0
-        const currentDuration = tracks.reduce(
-            (acc, current) => acc + current.metaData.format.duration,
-            initDuration
-        )
-        return currentDuration
-    })
+  $durationTracksInPlaylist.on($playlist, (_, tracks) =>
+    tracks.reduce((total, current) => total + current.metaData.format.duration, 0),
+  );
 
-    const toggleVisiblePlaylist = createEvent()
-    const $visiblePlaylist = createStore<boolean>(false).on(
-        toggleVisiblePlaylist,
-        (state, _) => !state
-    )
+  $visiblePlaylist.on(toggleVisiblePlaylist, (state, _) => !state);
 
-    const $removedTrackIndex = createStore<Nullable<number>>(null).reset([
-        doubleClickedTrackInPlaylist,
-        setCurrentPlayedTrackIndex,
-    ])
+  $removedTrackIndex.reset([doubleClickedTrackInPlaylist, setCurrentPlayedTrackIndex]);
 
-    return {
-        $playlist,
-        addTrackToPlaylist,
-        $playlistLength,
-        $selectedTrackInPlaylist,
-        selectTrackInPlaylist,
-        doubleClickedTrackInPlaylist,
-        $currentPlayedTrackIndex,
-        setCurrentPlayedTrackIndex,
-        $durationTracksInPlaylist,
-        $visiblePlaylist,
-        toggleVisiblePlaylist,
-        $removedTrackIndex,
-    }
-}
+  return {
+    $playlist,
+    addTrackToPlaylist,
+    $playlistLength,
+    $selectedTrackInPlaylist,
+    selectTrackInPlaylist,
+    doubleClickedTrackInPlaylist,
+    $currentPlayedTrackIndex,
+    setCurrentPlayedTrackIndex,
+    $durationTracksInPlaylist,
+    $visiblePlaylist,
+    toggleVisiblePlaylist,
+    $removedTrackIndex,
+  };
+};

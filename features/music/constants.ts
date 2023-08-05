@@ -1,7 +1,7 @@
 import {
   Band,
-  PRESET,
-  PRESETS_TYPE,
+  TPreset,
+  PresetTypes,
   TMediaStatus,
   TVISUALIZERS,
   TWinampState,
@@ -87,7 +87,7 @@ export const DEFALUT_WINDOW_STATE: Record<TWinampWindow, UseDraggblePosition> = 
   },
 };
 
-const DEFAULT_PRESET: PRESET = {
+const DEFAULT_PRESET: TPreset = {
   name: "DEFAULT",
   value: {
     "60": 50, //0
@@ -103,7 +103,7 @@ const DEFAULT_PRESET: PRESET = {
   },
 };
 
-const ROCK_PRESET: PRESET = {
+const ROCK_PRESET: TPreset = {
   name: "ROCK",
   value: {
     "60": 70, //4.8
@@ -119,7 +119,7 @@ const ROCK_PRESET: PRESET = {
   },
 };
 
-const TECHNO_PRESET: PRESET = {
+const TECHNO_PRESET: TPreset = {
   name: "TECHNO",
   value: {
     "60": 70, //4.8
@@ -135,7 +135,7 @@ const TECHNO_PRESET: PRESET = {
   },
 };
 
-const CLUB_PRESET: PRESET = {
+const CLUB_PRESET: TPreset = {
   name: "CLUB",
   value: {
     "60": 50, //0
@@ -151,7 +151,7 @@ const CLUB_PRESET: PRESET = {
   },
 };
 
-const FULL_BASS_PRESET: PRESET = {
+const FULL_BASS_PRESET: TPreset = {
   name: "FULL BASS",
   value: {
     "60": 75, //5.9
@@ -167,7 +167,7 @@ const FULL_BASS_PRESET: PRESET = {
   },
 };
 
-const FULL_BASS_TREBLE_PRESET: PRESET = {
+const FULL_BASS_TREBLE_PRESET: TPreset = {
   name: "FULL BASS AND TREBBLE",
   value: {
     "60": 68, //4.4
@@ -183,7 +183,7 @@ const FULL_BASS_TREBLE_PRESET: PRESET = {
   },
 };
 
-export const PRESETS: Record<PRESETS_TYPE, PRESET> = {
+export const PRESETS: Record<PresetTypes, TPreset> = {
   DEFAULT: DEFAULT_PRESET,
   ROCK: ROCK_PRESET,
   CLASSIC: DEFAULT_PRESET,
@@ -193,7 +193,7 @@ export const PRESETS: Record<PRESETS_TYPE, PRESET> = {
   "FULL BASS AND TREBBLE": FULL_BASS_TREBLE_PRESET,
 };
 
-export const PRESETS_ARRAY: PRESET[] = [
+export const PRESETS_ARRAY: TPreset[] = [
   DEFAULT_PRESET,
   ROCK_PRESET,
   TECHNO_PRESET,
@@ -201,3 +201,15 @@ export const PRESETS_ARRAY: PRESET[] = [
   FULL_BASS_PRESET,
   FULL_BASS_TREBLE_PRESET,
 ];
+
+export enum ChangeAllBandsEvent {
+  min = "min",
+  max = "max",
+  reset = "reset",
+}
+
+export enum ChangeAllBandsFromEvent {
+  min = 0,
+  max = 100,
+  reset = 50,
+}

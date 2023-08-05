@@ -1,37 +1,45 @@
-import { getClientScope } from "@/hooks/useScope"
-import { Nullable } from "@/types"
-import { _snapBalanceValue } from "@/utils/utils"
-import { Store, createEffect, scopeBind, createEvent, createStore, sample } from "effector"
-import { ChangeEvent } from "react"
-import { MediaElement } from "./types"
+import { Store, createEffect, scopeBind, createEvent, createStore, sample } from "effector";
+
+import { getClientScope } from "@/hooks/useScope";
+import { getSnapBalanceValue } from "@/utils/utils";
+
+import type { MediaElement } from "./types";
+import type { ChangeEvent } from "react";
+import type { Nullable } from "@/types";
 
 export const createWinampBalanceFactory = ($Media: Store<Nullable<MediaElement>>) => {
-    const changeBalanceFx = createEffect<
-        [Nullable<MediaElement>, ChangeEvent<HTMLInputElement>],
-        void
-    >(([media, event]) => {
-        const value = _snapBalanceValue(Number(event.target.value))
-        media!._balance.balance.value = value / 100
-        const callSetBalanceScoped = scopeBind(setBalance, { scope: getClientScope()! })
-        callSetBalanceScoped(value)
-    })
+  const changeBalanceFx = createEffect<
+    { media: Nullable<MediaElement>; event: ChangeEvent<HTMLInputElement> },
+    void
+  >(({ media, event }) => {
+    const value = getSnapBalanceValue(Number(event.target.value));
+    const callSetBalanceScoped = scopeBind(setBalance, { scope: getClientScope()! });
 
-    const setBalance = createEvent<number>()
-    const changeBalance = createEvent<ChangeEvent<HTMLInputElement>>()
-    const $currentBalance = createStore<number>(0).on(setBalance, (_, newBalance) => newBalance)
-    //change balance from ui
-    sample({
-        clock: changeBalance,
-        source: $Media,
-        fn: (media, event) =>
-            [media, event] as [Nullable<MediaElement>, ChangeEvent<HTMLInputElement>],
+    media!._balance.balance.value = value / 100;
 
-        target: changeBalanceFx,
-    })
+    callSetBalanceScoped(value);
+  });
 
-    return {
-        $currentBalance,
-        setBalance,
-        changeBalance,
-    }
-}
+  const setBalance = createEvent<number>();
+  const changeBalance = createEvent<ChangeEvent<HTMLInputElement>>();
+
+  const $currentBalance = createStore<number>(0);
+
+  $currentBalance.on(setBalance, (_, newBalance) => newBalance);
+
+  /**
+   * change balance from ui
+   */
+  sample({
+    clock: changeBalance,
+    source: $Media,
+    fn: (media, event) => ({ media, event }),
+    target: changeBalanceFx,
+  });
+
+  return {
+    $currentBalance,
+    setBalance,
+    changeBalance,
+  };
+};

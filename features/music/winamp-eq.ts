@@ -1,29 +1,29 @@
-import { getClientScope } from "@/hooks/useScope"
-import { Nullable } from "@/types"
-import { _snapBandValue } from "@/utils/utils"
-import { Store, createEffect, scopeBind, createEvent, sample, createStore } from "effector"
-import { debug } from "patronum"
-import { ChangeEvent } from "react"
-import { PRESETS, PRESETS_ARRAY } from "./constants"
-import { MediaElement, _BANDS, Band, PRESETS_TYPE, PRESET } from "./types"
+import { Store, createEffect, scopeBind, createEvent, sample, createStore } from "effector";
+import { reset } from "patronum";
 
-enum ChangeAllBandsEvent {
-    min = "min",
-    max = "max",
-    reset = "reset",
-}
+import { getClientScope } from "@/hooks/useScope";
+import { getSnapBandValue } from "@/utils/utils";
+
+import type { ChangeEvent } from "react";
+import type { Nullable } from "@/types";
+import type { MediaElement, _Bands, Band, TPreset } from "./types";
+
+import { PRESETS, PRESETS_ARRAY } from "./constants";
+
 const CHANGE_ALL_BANDS_EVENT: Record<string, number> = {
-    min: 0,
-    max: 100,
-    reset: 50,
-}
+  min: 0,
+  max: 100,
+  reset: 50,
+};
 
-const calculateGainValueBandEQ = (value: number) => {
-    const db = (value / 100) * 24 - 12
-    const gainValue = Math.pow(10, db / 20)
+const toggle = (state: boolean): boolean => !state;
 
-    return gainValue
-}
+// const calculateGainValueBandEQ = (value: number) => {
+//   const db = (value / 100) * 24 - 12;
+//   const gainValue = Math.pow(10, db / 20);
+
+//   return gainValue;
+// };
 
 // const calculatePercentFromBandEQ = (gain:number = 4.8) => {
 //     gain = (value / 100) * 24 - 12
@@ -33,250 +33,265 @@ const calculateGainValueBandEQ = (value: number) => {
 // }
 
 export const createWinampEQFactory = ($Media: Store<Nullable<MediaElement>>) => {
-    const loadPresetFx = createEffect<[MediaElement, PRESET], void>(([media, preset]) => {
-        const callSetBandScoped = scopeBind(setBand, { scope: getClientScope()! })
+  const loadPresetFx = createEffect<{ media: Nullable<MediaElement>; preset: TPreset }, void>(
+    ({ media, preset }) => {
+      const callSetBandScoped = scopeBind(setBand, { scope: getClientScope()! });
 
-        Object.entries(preset.value).forEach(([key, value]) => {
-            const bandName = Number(key) as keyof _BANDS
-            const db = (value / 100) * 24 - 12
-            media!._bands[bandName].gain.value = db
+      Object.entries(preset.value).forEach(([key, value]) => {
+        const bandName = Number(key) as keyof _Bands;
+        const db = (value / 100) * 24 - 12;
 
-            callSetBandScoped({ [bandName]: value } as Record<Band, number>)
-        })
-    })
+        media!._bands[bandName].gain.value = db;
 
-    const enableEQFx = createEffect<MediaElement, void>((media) => {
-        media._staticSource.disconnect()
-        media._staticSource.connect(media._preamp)
+        callSetBandScoped({ [bandName]: value } as Record<Band, number>);
+      });
+    },
+  );
 
-        const callEnabledEQScoped = scopeBind(toggleEnabledEQ, { scope: getClientScope()! })
-        callEnabledEQScoped()
-    })
+  const enableEQFx = createEffect<MediaElement, void>((media) => {
+    media._staticSource.disconnect();
+    media._staticSource.connect(media._preamp);
 
-    const disableEQFx = createEffect<MediaElement, void>((media) => {
-        media._staticSource.disconnect()
-        media._staticSource.connect(media._balance)
-        const callEnabledEQScoped = scopeBind(toggleEnabledEQ, { scope: getClientScope()! })
-        callEnabledEQScoped()
-    })
+    const callEnabledEQScoped = scopeBind(toggleEnabledEQ, { scope: getClientScope()! });
 
-    const resetEqBandFx = createEffect<[MediaElement, string], void>(([media, name]) => {
-        const bandName = Number(name) as keyof _BANDS
-        media._bands[bandName].gain.value = 0
-        const callResetBandScoped = scopeBind(setBand, { scope: getClientScope()! })
-        callResetBandScoped({ [bandName]: 50 } as Record<Band, number>)
-    })
+    callEnabledEQScoped();
+  });
 
-    const setEQbandFx = createEffect<[MediaElement, ChangeEvent<HTMLInputElement>], void>(
-        ([media, { target }]) => {
-            const { value, name } = target
+  const disableEQFx = createEffect<MediaElement, void>((media) => {
+    media._staticSource.disconnect();
+    media._staticSource.connect(media._balance);
+    const callEnabledEQScoped = scopeBind(toggleEnabledEQ, { scope: getClientScope()! });
 
-            const snapBandValue = _snapBandValue(Number(value))
+    callEnabledEQScoped();
+  });
 
-            const bandName = Number(name) as keyof _BANDS
-            const db = (snapBandValue / 100) * 24 - 12
-            media!._bands[bandName].gain.value = db
+  const resetEqBandFx = createEffect<{ media: Nullable<MediaElement>; name: string }, void>(
+    ({ media, name }) => {
+      const bandName = Number(name) as keyof _Bands;
 
-            const callSetBandScoped = scopeBind(setBand, { scope: getClientScope()! })
-            callSetBandScoped({ [bandName]: snapBandValue } as Record<Band, number>)
-        }
-    )
+      media!._bands[bandName].gain.value = 0;
+      const callResetBandScoped = scopeBind(setBand, { scope: getClientScope()! });
 
-    const changePreampValueFx = createEffect<[MediaElement, ChangeEvent<HTMLInputElement>], void>(
-        ([media, event]) => {
-            const value = _snapBandValue(Number(event.target.value))
+      callResetBandScoped({ [bandName]: 50 } as Record<Band, number>);
+    },
+  );
 
-            const db = (value / 100) * 24 - 12
-            media._preamp.gain.value = Math.pow(10, db / 20)
+  const setEQbandFx = createEffect<
+    { media: Nullable<MediaElement>; event: ChangeEvent<HTMLInputElement> },
+    void
+  >(({ media, event }) => {
+    const { value, name } = event.target;
 
-            const callChangePreampScoped = scopeBind(setPreamp, { scope: getClientScope()! })
-            callChangePreampScoped(value)
-        }
-    )
+    const snapBandValue = getSnapBandValue(Number(value));
 
-    const setAllBandsEqFx = createEffect<[MediaElement, string], void>(([media, event]) => {
-        let db = 0
-        switch (event) {
-            case "max":
-                db = 12
-                break
-            case "min":
-                db = -12
-                break
-            case "reset":
-                db = 0
-                break
-            default:
-                break
-        }
-        Object.entries(media._bands).forEach(([key, band]) => {
-            band.gain.value = db
-        })
-        const callChangeAllBandsScoped = scopeBind(changeAllBands, { scope: getClientScope()! })
-        callChangeAllBandsScoped(event)
-    })
+    const bandName = Number(name) as keyof _Bands;
+    const db = (snapBandValue / 100) * 24 - 12;
 
-    //turn off EQ in UI
-    const disableClickedEQ = createEvent()
+    media!._bands[bandName].gain.value = db;
 
-    sample({
-        clock: disableClickedEQ,
-        source: $Media,
-        filter: (media, _): media is MediaElement => media?._audio instanceof HTMLAudioElement,
-        target: disableEQFx,
-    })
+    const callSetBandScoped = scopeBind(setBand, { scope: getClientScope()! });
 
-    // turn on EQ in UI
-    const enableClickedEQ = createEvent()
-    sample({
-        clock: enableClickedEQ,
-        source: $Media,
-        filter: (media, _): media is MediaElement => media?._audio instanceof HTMLAudioElement,
-        target: enableEQFx,
-    })
+    callSetBandScoped({ [bandName]: snapBandValue } as Record<Band, number>);
+  });
 
-    //ui change EQ Band
-    const changeEQBand = createEvent<ChangeEvent<HTMLInputElement>>()
-    sample({
-        clock: changeEQBand,
-        source: $Media,
-        fn: (media, event) => [media, event] as [MediaElement, ChangeEvent<HTMLInputElement>],
-        target: setEQbandFx,
-    })
+  const changePreampValueFx = createEffect<
+    { media: Nullable<MediaElement>; event: ChangeEvent<HTMLInputElement> },
+    void
+  >(({ media, event }) => {
+    const value = getSnapBandValue(Number(event.target.value));
+    const db = (value / 100) * 24 - 12;
 
-    //ui doubleclick in eqband
-    const resetEqBand = createEvent<string>()
-    sample({
-        clock: resetEqBand,
-        source: $Media,
-        fn: (media, name) => [media, name] as [MediaElement, string],
-        target: resetEqBandFx,
-    })
+    media!._preamp.gain.value = Math.pow(10, db / 20);
 
-    //set MAX/MIN/RESET all BANDS in UI
-    const changeAllBandsValues = createEvent<string>()
-    sample({
-        clock: changeAllBandsValues,
-        source: $Media,
-        fn: (media, event) => [media, event] as [MediaElement, string],
-        target: setAllBandsEqFx,
-    })
-    //ui change preamp slider value
-    const changePreampValue = createEvent<ChangeEvent<HTMLInputElement>>()
-    sample({
-        clock: changePreampValue,
-        source: $Media,
-        fn: (media, event) => [media, event] as [MediaElement, ChangeEvent<HTMLInputElement>],
-        target: changePreampValueFx,
-    })
+    const callChangePreampScoped = scopeBind(setPreamp, { scope: getClientScope()! });
 
-    const toggleVisibleEQ = createEvent()
-    const $visibleEQ = createStore<boolean>(false).on(toggleVisibleEQ, (state, _) => !state)
+    callChangePreampScoped(value);
+  });
 
-    const toggleMinimizeEQ = createEvent()
-    const $minimizedEQ = createStore<boolean>(false).on(toggleMinimizeEQ, (state, _) => !state)
+  const setAllBandsEqFx = createEffect<{ media: Nullable<MediaElement>; event: string }, void>(
+    ({ media, event }) => {
+      let db = 0;
 
-    const toggleEnabledEQ = createEvent()
+      switch (event) {
+        case "max":
+          db = 12;
+          break;
 
-    const $enabledEQ = createStore<boolean>(true).on(toggleEnabledEQ, (state, _) => !state)
+        case "min":
+          db = -12;
+          break;
 
-    const toggleAutoEQ = createEvent()
-    const $autoEQ = createStore<boolean>(false).on(toggleAutoEQ, (state, _) => !state)
+        case "reset":
+          db = 0;
+          break;
 
-    const setBand = createEvent<Record<Band, number>>()
-    const resetAllBands = createEvent()
+        default:
+          break;
+      }
+      Object.entries(media!._bands).forEach(([_, band]) => {
+        band.gain.value = db;
+      });
+      const callChangeAllBandsScoped = scopeBind(changeAllBands, { scope: getClientScope()! });
 
-    const changeAllBands = createEvent<string>()
+      callChangeAllBandsScoped(event);
+    },
+  );
 
-    const $bands = createStore<Record<Band, number>>(PRESETS.DEFAULT.value)
-        .on(setBand, (bands, band) => ({ ...bands, ...band }))
-        .reset(resetAllBands)
-        .on(changeAllBands, (state, event) => {
-            let newValue = 0
-            switch (event) {
-                case ChangeAllBandsEvent.min:
-                    newValue = CHANGE_ALL_BANDS_EVENT[event]
-                    break
-                case ChangeAllBandsEvent.max:
-                    newValue = CHANGE_ALL_BANDS_EVENT[event]
-                    break
-                case ChangeAllBandsEvent.reset:
-                    newValue = CHANGE_ALL_BANDS_EVENT[event]
-                    break
-                default:
-                    break
-            }
-            let result: any = {}
-            Object.entries(state).forEach(([key, band]) => {
-                result = { ...result, [key]: newValue }
-            })
+  //turn off EQ in UI
+  const disableClickedEQ = createEvent();
+  const loadPreset = createEvent();
+  const resetPreamp = createEvent();
+  const toggleAutoEQ = createEvent();
+  const resetAllBands = createEvent();
+  const toggleVisibleEQ = createEvent();
+  const toggleEnabledEQ = createEvent();
+  const toggleMinimizeEQ = createEvent();
+  const setPreamp = createEvent<number>();
+  const selectPreset = createEvent<TPreset>();
+  const changeAllBands = createEvent<string>();
+  const toggleVisiblePresetWindow = createEvent();
+  const setBand = createEvent<Record<Band, number>>();
 
-            return result
-        })
+  // turn on EQ in UI
+  const enableClickedEQ = createEvent();
 
-    const resetPreamp = createEvent()
+  //ui change EQ Band
+  const changeEQBand = createEvent<ChangeEvent<HTMLInputElement>>();
 
-    const setPreamp = createEvent<number>()
+  //ui doubleclick in eqband
+  const resetEqBand = createEvent<string>();
 
-    const $preamp = createStore<number>(50)
-        .on(setPreamp, (_, value) => value)
-        .reset(resetPreamp)
+  //set MAX/MIN/RESET all BANDS in UI
+  const changeAllBandsValues = createEvent<string>();
 
-    const loadPreset = createEvent()
+  //ui change preamp slider value
+  const changePreampValue = createEvent<ChangeEvent<HTMLInputElement>>();
 
-    const $currentPreset = createStore<PRESET>(PRESETS.DEFAULT)
+  //------------STORES--------------//
 
-    sample({
-        clock: $currentPreset,
-        source: $Media,
-        fn: (media, preset) => [media, preset] as [MediaElement, PRESET],
-        target: loadPresetFx,
-    })
+  const $preamp = createStore(50);
+  const $autoEQ = createStore(false);
+  const $enabledEQ = createStore(true);
+  const $visibleEQ = createStore(false);
+  const $minimizedEQ = createStore(false);
+  const $visiblePresetWindow = createStore(false);
+  const $presets = createStore<TPreset[]>(PRESETS_ARRAY);
+  const $selectedPreset = createStore<Nullable<TPreset>>(null);
+  const $currentPreset = createStore<TPreset>(PRESETS.DEFAULT);
+  const $bands = createStore<Record<Band, number>>(PRESETS.DEFAULT.value);
 
-    const $presets = createStore<PRESET[]>(PRESETS_ARRAY)
+  $autoEQ.on(toggleAutoEQ, toggle);
+  $enabledEQ.on(toggleEnabledEQ, toggle);
+  $visibleEQ.on(toggleVisibleEQ, toggle);
+  $minimizedEQ.on(toggleMinimizeEQ, toggle);
+  $visiblePresetWindow.on(toggleVisiblePresetWindow, toggle);
 
-    const toggleVisiblePresetWindow = createEvent()
-    const $visiblePresetWindow = createStore<boolean>(false)
-        .on(toggleVisiblePresetWindow, (state, _) => !state)
-        .reset($currentPreset)
+  $bands.on(setBand, (bands, band) => ({ ...bands, ...band }));
+  $bands.reset(resetAllBands);
 
-    const selectPreset = createEvent<PRESET>()
-    const $selectedPreset = createStore<Nullable<PRESET>>(null)
-        .on(selectPreset, (_, preset) => preset)
-        .reset($currentPreset)
+  $bands.on(changeAllBands, (bands, event) => {
+    const bandValue = Object.hasOwn(CHANGE_ALL_BANDS_EVENT, event)
+      ? CHANGE_ALL_BANDS_EVENT[event]
+      : 0;
 
-    sample({
-        clock: loadPreset,
-        source: $selectedPreset,
-        filter: (preset, _) => !!preset,
-        fn: (preset, _) => preset!,
-        target: $currentPreset,
-    })
+    let copyBands: Record<Band, number> = { ...bands };
 
-    debug(loadPreset, $selectedPreset, selectPreset)
+    Object.entries(bands).forEach(([key, _]) => {
+      copyBands = { ...copyBands, [key]: bandValue };
+    });
 
-    return {
-        $bands,
-        $autoEQ,
-        $preamp,
-        $presets,
-        $enabledEQ,
-        $visibleEQ,
-        $minimizedEQ,
-        $currentPreset,
-        loadPreset,
-        resetEqBand,
-        toggleAutoEQ,
-        changeEQBand,
-        enableClickedEQ,
-        toggleVisibleEQ,
-        disableClickedEQ,
-        toggleMinimizeEQ,
-        changePreampValue,
-        changeAllBandsValues,
-        selectPreset,
-        $selectedPreset,
-        toggleVisiblePresetWindow,
-        $visiblePresetWindow,
-    }
-}
+    return copyBands;
+  });
+
+  $preamp.on(setPreamp, (_, newPreamp) => newPreamp);
+  $preamp.reset(resetPreamp);
+
+  $selectedPreset.on(selectPreset, (_, preset) => preset);
+
+  sample({
+    clock: disableClickedEQ,
+    source: $Media,
+    filter: (media): media is MediaElement => media?._audio instanceof HTMLAudioElement,
+    target: disableEQFx,
+  });
+
+  sample({
+    clock: enableClickedEQ,
+    source: $Media,
+    filter: (media): media is MediaElement => media?._audio instanceof HTMLAudioElement,
+    target: enableEQFx,
+  });
+
+  sample({
+    clock: changeEQBand,
+    source: $Media,
+    fn: (media, event) => ({ media, event }),
+    target: setEQbandFx,
+  });
+
+  sample({
+    clock: resetEqBand,
+    source: $Media,
+    fn: (media, name) => ({ media, name }),
+    target: resetEqBandFx,
+  });
+
+  sample({
+    clock: changeAllBandsValues,
+    source: $Media,
+    fn: (media, event) => ({ media, event }),
+    target: setAllBandsEqFx,
+  });
+
+  sample({
+    clock: changePreampValue,
+    source: $Media,
+    fn: (media, event) => ({ media, event }),
+    target: changePreampValueFx,
+  });
+
+  sample({
+    clock: $currentPreset,
+    source: $Media,
+    fn: (media, preset) => ({ media, preset }),
+    target: loadPresetFx,
+  });
+
+  sample({
+    clock: loadPreset,
+    source: $selectedPreset,
+    filter: (preset) => !!preset,
+    fn: (preset) => preset!,
+    target: $currentPreset,
+  });
+
+  reset({
+    clock: $currentPreset,
+    target: [$visiblePresetWindow, $selectedPreset],
+  });
+
+  return {
+    $bands,
+    $autoEQ,
+    $preamp,
+    $presets,
+    $enabledEQ,
+    $visibleEQ,
+    $minimizedEQ,
+    $currentPreset,
+    loadPreset,
+    resetEqBand,
+    toggleAutoEQ,
+    changeEQBand,
+    enableClickedEQ,
+    toggleVisibleEQ,
+    disableClickedEQ,
+    toggleMinimizeEQ,
+    changePreampValue,
+    changeAllBandsValues,
+    selectPreset,
+    $selectedPreset,
+    toggleVisiblePresetWindow,
+    $visiblePresetWindow,
+  };
+};
