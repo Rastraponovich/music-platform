@@ -16,12 +16,9 @@ import { TimeMode } from "@/features/music/types";
 
 import { PLAYER_STATES } from "./constants";
 
-const Visualizer = dynamic(
-  () => import("../main-window/ui/visualizer").then((mod) => mod.Visualizer),
-  {
-    ssr: false,
-  },
-);
+const Visualizer = dynamic(() => import("../visualizer/view").then((mod) => mod.Visualizer), {
+  ssr: false,
+});
 
 export const StatusBar = () => {
   const playerState = useUnit($playerState);
