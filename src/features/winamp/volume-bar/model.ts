@@ -1,17 +1,26 @@
 import { createEvent, sample } from "effector";
 
-import { marqueInfo, volume } from "@/src/widgets/winamp";
+import { changeVolumeFx, marqueInfo, volume } from "@/src/widgets/winamp";
 
 import type { ChangeEvent } from "react";
 
 import { VOLUME_STEP } from "./constants";
+import { getMarqueInfoText } from "./utils";
 
+// events //
 export const volumeChanged = createEvent<ChangeEvent<HTMLInputElement>>();
 export const volumebarLifted = createEvent();
 export const volumebarUplifted = createEvent();
 
+// stores //
 export const $volume = volume.$volume.map((volume) => volume);
+
+const $marqueText = $volume.map((volume) => getMarqueInfoText(volume));
+
 export const $currentVolumePosition = $volume.map((volume) => Math.floor(volume / VOLUME_STEP));
+
+// runtime //
+marqueInfo.$winampMarqueInfo.on($marqueText, (_, text) => text);
 
 /**
  * when volume changed
@@ -19,7 +28,8 @@ export const $currentVolumePosition = $volume.map((volume) => Math.floor(volume 
  */
 sample({
   clock: volumeChanged,
-  target: volume.changeVolume,
+  fn: (event) => event.target.value,
+  target: changeVolumeFx,
 });
 
 /**
@@ -28,6 +38,15 @@ sample({
 sample({
   clock: volumebarLifted,
   target: marqueInfo.enabledMarqueInfo,
+});
+
+/**
+ * when volume bar is pressed set marque info text
+ */
+sample({
+  clock: volumebarLifted,
+  source: $marqueText,
+  target: marqueInfo.$winampMarqueInfo,
 });
 
 /**

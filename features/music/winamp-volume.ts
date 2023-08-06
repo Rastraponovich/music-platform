@@ -21,7 +21,7 @@ const createWinampVolumeFactory = ($Media: Store<Nullable<MediaElement>>) => {
     audio.volume = Number(event.target.value) / 100;
   });
 
-  const VolumeChanged = createEvent<ChangeEvent<HTMLInputElement>>();
+  const volumeChanged = createEvent<ChangeEvent<HTMLInputElement>>();
   const keyboardVolumeChanged = createEvent<string>();
   const setVolume = createEvent<number>();
 
@@ -43,7 +43,7 @@ const createWinampVolumeFactory = ($Media: Store<Nullable<MediaElement>>) => {
    * when volume changed by mouse
    */
   sample({
-    clock: VolumeChanged,
+    clock: volumeChanged,
     source: $Media,
     filter: (media) => media?._audio instanceof HTMLAudioElement,
     fn: (media, event) => ({ audio: media!._audio, event }),
@@ -53,7 +53,7 @@ const createWinampVolumeFactory = ($Media: Store<Nullable<MediaElement>>) => {
   return {
     $volume,
     setVolumeFromKeys: keyboardVolumeChanged,
-    changeVolume: VolumeChanged,
+    changeVolume: volumeChanged,
     setVolume,
   };
 };

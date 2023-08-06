@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useEvent, useUnit } from "effector-react";
+import { useUnit } from "effector-react";
 import { memo, InputHTMLAttributes } from "react";
 
 import {
@@ -27,7 +27,7 @@ export const Progressbar = memo(({ className, id }: ProgressbarProps) => {
     $isPressed,
   ]);
 
-  const [handleMouseDown, handleMouseUp, handleSeeking] = useEvent([
+  const [handleMouseDown, handleMouseUp, handleSeeking] = useUnit([
     progressBarLifted,
     progressBarUplifted,
     sought,

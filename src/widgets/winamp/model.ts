@@ -1,5 +1,5 @@
 import { not } from "patronum";
-import { sample, createEffect, createEvent, createStore, scopeBind } from "effector";
+import { sample, createEffect, createEvent, createStore, scopeBind, attach } from "effector";
 
 import { StereoBalanceNode } from "~/shared/lib/audio/stereo-balance-node";
 
@@ -849,8 +849,6 @@ $enabledMaruqeInfo.on(disabledMarqueInfo, () => false);
 $winampMarqueInfo.on(setMarqueInfo, (_, payload) => String(payload));
 $winampMarqueInfo.reset([disabledMarqueInfo, $enabledMaruqeInfo]);
 
-$winampMarqueInfo.on($volume, (_, volume) => `Volume: ${Math.floor(volume)}%`);
-
 //show in TrackListInfo seeking progress
 sample({
   clock: $seekingProgress,
@@ -996,3 +994,64 @@ export const eq = {
 };
 
 export { loadUrl, selectTrackFromList, $Media, $clutterBar, changeClutterBar };
+
+/**
+ * @todo for feature
+ */
+export const keyboardChangedVolumeFx = attach({
+  source: $Media,
+  async effect(media: Nullable<MediaElement>, key: "up" | "down") {
+    if (media) {
+      media._audio.volume = key === "up" ? media._audio.volume + 0.01 : media._audio.volume - 0.01;
+    }
+  },
+});
+
+/**
+ * @todo for feature
+ * change volume from feature
+ */
+export const changeVolumeFx = attach({
+  source: $Media,
+  async effect(media: Nullable<MediaElement>, value: number | string) {
+    if (media) {
+      media._audio.volume = Number(value) / 100;
+    }
+  },
+});
+
+/**
+ * @todo for feature
+ */
+export const changeCurrentTimeFx = attach({
+  source: $Media,
+  async effect(
+    media: Nullable<MediaElement>,
+    { newTime, allowSeeking }: { newTime: number; allowSeeking: boolean },
+  ) {
+    if (media && allowSeeking) {
+      media._audio.currentTime = newTime;
+    }
+  },
+});
+
+/**
+ * @todo for feature
+ */
+export const keyChangeCurrentTimeFx = attach({
+  source: $Media,
+  async effect(
+    media: Nullable<MediaElement>,
+    { direction }: { direction: "forward" | "backward" },
+  ) {
+    if (media) {
+      if (direction === "forward") {
+        media._audio.currentTime = media._audio.currentTime + 5;
+      }
+
+      if (direction === "backward") {
+        media._audio.currentTime = media._audio.currentTime - 5;
+      }
+    }
+  },
+});
