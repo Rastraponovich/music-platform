@@ -2,8 +2,8 @@ import clsx from "clsx";
 import { useUnit } from "effector-react/scope";
 import { useState, useMemo, useCallback, useEffect } from "react";
 
-import { usePaintBar, usePaintBarFrame } from "@/hooks/useBarVisualizer";
-import { usePaintOscilloscopeFrame } from "@/hooks/useOscilloscopeVisualizer";
+import { usePaintBar, usePaintBarFrame } from "@/src/shared/hooks/use-bar-visualizer";
+import { usePaintOscilloscopeFrame } from "@/src/shared/hooks/useOscilloscopeVisualizer";
 
 import { $baseSkinColors, $Media, winamp, winampStates } from "@/src/widgets/winamp/model";
 import { $dummyVizData, $visualizerStyle, toggleVisualizerStyle } from "./model";

@@ -1,7 +1,7 @@
 import { Store, createEffect, scopeBind, createEvent, sample, createStore } from "effector";
 import { reset } from "patronum";
 
-import { getClientScope } from "@/hooks/useScope";
+import { getClientScope } from "@/src/shared/hooks/use-scope";
 import { getSnapBandValue } from "@/utils/utils";
 
 import type { ChangeEvent } from "react";
