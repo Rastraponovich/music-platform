@@ -13,7 +13,7 @@ const PresetMenuButton = memo(({ onClick, children }: PresetMenuButtonProps) => 
     return (
         <button
             onClick={onClick}
-            className="w-16 border-[0.5px] border-[#adadad] bg-[#e1e1e1] py-1 text-center font-[Arial] text-[10px]  leading-[8px] tracking-wide first-letter:uppercase  hover:border-[#0078d7] hover:bg-[#eeeeee]  active:border-[#0078d7]"
+            className="w-16 border-[0.5px] border-[#adadad] bg-[#e1e1e1] py-1 text-center font-[Arial] text-[10px]   leading-[8px] tracking-wide first-letter:uppercase  hover:border-[#0078d7] hover:bg-[#eeeeee]  active:border-[#0078d7]"
         >
             {children}
         </button>
@@ -23,6 +23,7 @@ PresetMenuButton.displayName = "PresetMenuButton"
 
 export const LoadPresetButton = () => {
     const setPresetButtonClicked = useEvent(eq.loadPreset)
+
     return <PresetMenuButton onClick={setPresetButtonClicked}>загрузить</PresetMenuButton>
 }
 export const ClosePresetMenuButton = () => {

@@ -1,15 +1,7 @@
 import { getClientScope } from "@/hooks/useScope";
 import { Nullable } from "@/types";
 import { baseSkinColors } from "@/types/ui.types";
-import {
-  sample,
-  createEffect,
-  createEvent,
-  createStore,
-  guard,
-  scopeBind,
-  forward,
-} from "effector";
+import { sample, createEffect, createEvent, createStore, scopeBind } from "effector";
 
 import { $songs } from "../../../features/music";
 import {
@@ -25,7 +17,6 @@ import {
   TWinampWindow,
   MediaElement,
   StereoBalanceNodeType,
-  _Bands,
   TMediaStatus,
 } from "../../../features/music/types";
 import StereoBalanceNode from "../../../features/media/StereoBalanceNode";
@@ -35,8 +26,8 @@ import { createWinampEQFactory } from "../../../features/music/winamp-eq";
 import { createWinampProgressFactory } from "../../../features/music/winamp-progress";
 
 import { createWinampBalanceFactory } from "../../../features/music/winamp-balance";
-import { debug } from "patronum";
 import { convertTimeToString, getSnapBandValue } from "@/utils/utils";
+import { not } from "patronum";
 declare global {
   interface Window {
     webkitAudioContext: {
@@ -46,67 +37,147 @@ declare global {
   }
 }
 
-const startPlayFromBegginingFx = createEffect<MediaElement, void>((media) => {
-  media._audio.currentTime = 0;
+const toggle = (state: boolean): boolean => !state;
+
+/**
+ * Generates a random number within a specified range, excluding a given number.
+ *
+ * @param {number} max - The upper bound of the range.
+ * @param {number} exp - The number to be excluded from the range.
+ * @return {number} A random number within the specified range, excluding the given number.
+ */
+const generateRandom = (max: number, exp: number): number => {
+  let number;
+
+  do {
+    number = Math.floor(Math.random() * max);
+  } while (number === exp);
+
+  return number;
+};
+
+const startPlayFromBegginingFx = createEffect<{ media: Nullable<MediaElement> }, void>(
+  ({ media }) => {
+    if (media) {
+      media._audio.currentTime = 0;
+    }
+  },
+);
+
+const startPlayingFx = createEffect<{ media: Nullable<MediaElement> }, void>(({ media }) => {
+  if (media) {
+    media._audio.play();
+  }
 });
 
-const startPlayingFx = createEffect<MediaElement, void>((media) => {
-  media._audio.play();
+const pausePlayingFx = createEffect<{ media: Nullable<MediaElement> }, void>(({ media }) => {
+  if (media) {
+    media._audio.pause();
+  }
 });
 
-const pausePlayingFx = createEffect<MediaElement, void>(({ _audio }) => _audio.pause());
-
-const stopPlayingFx = createEffect<MediaElement, void>(({ _audio }) => {
-  _audio.pause();
-  _audio.currentTime = 0;
+const stopPlayingFx = createEffect<{ media: Nullable<MediaElement> }, void>(({ media }) => {
+  if (media) {
+    media._audio.pause();
+    media._audio.currentTime = 0;
+  }
 });
+
+const loadUrlFx = createEffect<{ media: Nullable<MediaElement>; track: Track }, Track>(
+  ({ media, track }) => {
+    if (media) {
+      media._audio.src = `${process.env.NEXT_PUBLIC_BACKEND}/music/${track!.path}`;
+    }
+
+    return track;
+  },
+);
+
+const toggleLoopFx = createEffect<{ media: Nullable<MediaElement>; loop: boolean }, void>(
+  ({ media, loop }) => {
+    if (media) {
+      media._audio.loop = loop;
+    }
+  },
+);
+
+const toggleShuffleFx = createEffect<{ media: Nullable<MediaElement> }, void>(({ media }) => {
+  if (media) {
+    media._audio.loop = false;
+  }
+});
+
+const playNextTrackIsOneInPlayListFx = createEffect<{ audio: HTMLAudioElement }, void>(
+  ({ audio }) => {
+    audio.currentTime = 0;
+    audio.play();
+  },
+);
 
 const Emitter = {
-  onAbort: (e: Event) => {},
-  onCanPlay: (e: Event) => {},
-  onCanPlayThrough: (e: Event) => {},
+  onAbort: (_: Event) => {},
+  onCanPlay: (_: Event) => {},
+  onCanPlayThrough: (_: Event) => {},
   onDurationChange: (event: Event) => {
     const audioElement = event.currentTarget as HTMLAudioElement;
     const callSetDuration = scopeBind(setDuration, { scope: getClientScope()! });
+
     callSetDuration(audioElement.duration);
   },
-  onEmptied: (e: Event) => {},
-  onEnded: (e: Event) => {
+  onEmptied: (_: Event) => {},
+
+  onEnded: (_: Event) => {
     const callPlayNextTrack = scopeBind(playNextTrack, { scope: getClientScope()! });
+
     callPlayNextTrack();
   },
-  onError: (e: Event) => {},
-  onLoadedData: (e: Event) => {},
+
+  onError: (_: Event) => {},
+
+  onLoadedData: (_: Event) => {},
+
   onLoadedMetadata: (event: Event) => {
     const audioElement = event.currentTarget as HTMLAudioElement;
     const callSetVolume = scopeBind(setVolume, { scope: getClientScope()! });
+
     callSetVolume(audioElement.volume * 100);
   },
-  onLoadStart: (event: Event) => {},
-  onPause: (event: Event) => {
+  onLoadStart: (_: Event) => {},
+
+  onPause: (_: Event) => {
     const callSetIsPlaying = scopeBind(setMediaStatus, {
       scope: getClientScope()!,
     });
+
     callSetIsPlaying(MEDIA_STATUS.PAUSED);
   },
-  onPlay: (event: Event) => {
+
+  onPlay: (_: Event) => {
     const callSetIsPlaying = scopeBind(setMediaStatus, {
       scope: getClientScope()!,
     });
+
     callSetIsPlaying(MEDIA_STATUS.PLAYING);
   },
-  onPlaying: (event: Event) => {
+  onPlaying: (_: Event) => {
     const callSetIsPlaying = scopeBind(setMediaStatus, {
       scope: getClientScope()!,
     });
+
     callSetIsPlaying(MEDIA_STATUS.PLAYING);
   },
-  onProgress: (e: Event) => {},
-  onRateChange: (e: Event) => {},
-  onSeeked: (e: Event) => {},
-  onSeeking: (e: Event) => {},
-  onStalled: (e: Event) => {},
-  onSuspend: (e: Event) => {},
+  onProgress: (_: Event) => {},
+
+  onRateChange: (_: Event) => {},
+
+  onSeeked: (_: Event) => {},
+
+  onSeeking: (_: Event) => {},
+
+  onStalled: (_: Event) => {},
+
+  onSuspend: (_: Event) => {},
+
   onTimeUpdate: (event: Event) => {
     const audio = event.currentTarget as HTMLAudioElement;
 
@@ -119,63 +190,88 @@ const Emitter = {
   onVolumeChange: (event: Event) => {
     const audioElement = event.currentTarget as HTMLAudioElement;
     const callSetVolume = scopeBind(setVolume, { scope: getClientScope()! });
+
     callSetVolume(audioElement.volume * 100);
   },
-  onWaiting: (e: Event) => {},
+
+  onWaiting: (_: Event) => {},
 };
 
 const createAudioElement = (context: AudioContext, destination: GainNode, track: Track) => {
   const audio = new Audio();
+
   audio.src = `${process.env.NEXT_PUBLIC_BACKEND}/music/${track!.path}`;
   audio.autoplay = true;
   audio.controls = false;
 
   // abort Событие вызывается , когда ресурс не был полностью загружен, но не в результате ошибки.
   audio.addEventListener("abort", Emitter.onAbort);
+
   // canplay Событие вызывается , когда агент пользователя может играть средства массовой информации, но, по оценкам, что не достаточно данных были загружены, чтобы играть средства массовой информации до его конца без остановки для дальнейшей буферизации контента.
   audio.addEventListener("canplay", Emitter.onCanPlay);
+
   // canplaythrough Событие вызывается , когда агент пользователя может играть средства массовой информации, и оценки , которые были загружены достаточно данных для воспроизведения медиа до его конца без остановки для дальнейшей буферизации контента.
   audio.addEventListener("canplaythrough", Emitter.onCanPlayThrough);
+
   // durationchange Событие вызывается , когда duration атрибут был обновлен.
   audio.addEventListener("durationchange", Emitter.onDurationChange);
+
   // emptied Событие вызывается , когда среда становится пустой; например, это событие отправляется, если носитель уже был загружен (или частично загружен) и load()вызывается метод для его перезагрузки.
   audio.addEventListener("emptied", Emitter.onEmptied);
+
   // ended Событие вызывается , когда воспроизведение или потоковое остановилось , потому что достигнут конец массовой информации или потому , что нет дополнительных данных не имеется.
   audio.addEventListener("ended", Emitter.onEnded);
+
   // error Событие вызывается , когда ресурс не может быть загружен из - за ошибки (например, проблемы подключения к сети).
   audio.addEventListener("error", Emitter.onError);
+
   // loadeddata Событие вызывается , когда кадр в текущей позиции воспроизведения средств массовой информации по окончанию загрузки; часто первый кадр.
   audio.addEventListener("loadeddata", Emitter.onLoadedData);
+
   // loadedmetadata Событие вызывается , когда метаданные были загружены.
   audio.addEventListener("loadedmetadata", Emitter.onLoadedMetadata);
+
   // loadstart Событие вызывается , когда браузер начал загружать ресурс.
   audio.addEventListener("loadstart", Emitter.onLoadStart);
+
   // pause Событие отправляется , когда запрос приостановить деятельность осуществляется и деятельность вошла в приостановленное состояние, чаще всего после того, как в средствах массовой информации было приостановлено через вызов элемента pause()метода.
   audio.addEventListener("pause", Emitter.onPause);
+
   // play Событие вызывается , когда paused свойство изменяется от true до false, в результате play метода, или autoplay атрибута.
   audio.addEventListener("play", Emitter.onPlay);
+
   // playing Событие вызывается после того, как воспроизведение первым начало, и всякий раз , когда он будет перезапущен. Например, он срабатывает, когда воспроизведение возобновляется после паузы или задержки из-за отсутствия данных.
   audio.addEventListener("playing", Emitter.onPlaying);
+
   // progress Событие вызывается периодически как браузер загружает ресурс.
   audio.addEventListener("progress", Emitter.onProgress);
+
   // ratechange Событие вызывается , когда скорость воспроизведения изменилась.
   audio.addEventListener("ratechange", Emitter.onRateChange);
+
   // seeked Событие вызывается , когда операция поиска завершена, текущая позиция воспроизведения изменилась, и булево seekingатрибут изменено false.
   audio.addEventListener("seeked", Emitter.onSeeked);
+
   // seeking Событие вызывается , когда начинаются искать операции, то есть булева seekingатрибут изменен trueи СМИ ищут новую позицию.
   audio.addEventListener("seeking", Emitter.onSeeking);
+
   // stalled Событие вызывается , когда агент пользователя пытается получать мультимедийные данные, но данные неожиданно не последовало.
   audio.addEventListener("stalled", Emitter.onStalled);
+
   // suspend Событие вызывается при загрузке мультимедийных данных было приостановлено.
   audio.addEventListener("suspend", Emitter.onSuspend);
+
   // timeupdate Событие вызывается , когда время , указанное в currentTimeатрибуте было обновлено.
   audio.addEventListener("timeupdate", Emitter.onTimeUpdate);
+
   // volumechange Событие вызывается , когда объем изменился.
   audio.addEventListener("volumechange", Emitter.onVolumeChange);
+
   // waiting Событие вызывается , когда воспроизведение остановлено из - за временного отсутствия данных.
   audio.addEventListener("waiting", Emitter.onWaiting);
 
   const _source = context.createMediaElementSource(audio);
+
   _source.connect(destination);
   return {
     _audio: audio,
@@ -183,14 +279,7 @@ const createAudioElement = (context: AudioContext, destination: GainNode, track:
   };
 };
 
-const initWinamp = createEvent();
-const destroyWinamp = createEvent();
-
-const closeWinamp = createEvent();
-
-const $Media = createStore<Nullable<MediaElement>>(null);
-
-const createWinampFx = createEffect<Track, any, any>((track) => {
+const createWinampFx = createEffect<Track, Nullable<MediaElement>, Error>((track) => {
   const _context = new (window.AudioContext || window.webkitAudioContext)();
   const _staticSource = _context.createGain();
   const _balance = StereoBalanceNode(_context) as GainNode & StereoBalanceNodeType;
@@ -200,6 +289,7 @@ const createWinampFx = createEffect<Track, any, any>((track) => {
   const _preamp = _context.createGain();
 
   const _analyser = _context.createAnalyser();
+
   _analyser.fftSize = 2048;
   _analyser.smoothingTimeConstant = 0.0;
   const _gainNode = _context.createGain();
@@ -210,17 +300,19 @@ const createWinampFx = createEffect<Track, any, any>((track) => {
 
   let output = _preamp;
 
-  let _bands: { [key in Band]: BiquadFilterNode } = {} as { [key in Band]: BiquadFilterNode };
+  const _bands: { [key in Band]: BiquadFilterNode } = {} as { [key in Band]: BiquadFilterNode };
+
   BANDS.forEach((band, i) => {
     const filter = _context.createBiquadFilter();
 
     _bands[band] = filter;
 
+    // The first filter, includes all lower frequencies
     if (i === 0) {
-      // The first filter, includes all lower frequencies
       filter.type = "lowshelf";
-    } else if (i === BANDS.length - 1) {
+
       // The last filter, includes all higher frequencies
+    } else if (i === BANDS.length - 1) {
       filter.type = "highshelf";
     } else {
       filter.type = "peaking";
@@ -251,13 +343,78 @@ const createWinampFx = createEffect<Track, any, any>((track) => {
   };
 });
 
+const initWinamp = createEvent();
+const destroyWinamp = createEvent();
+const closeWinamp = createEvent();
+
+//function has load track in Media._audio
+const loadUrl = createEvent<Track>();
+
+const changeWindowState = createEvent<TWinampWindow>();
+const toggleShadePlayer = createEvent();
+const minimizedWinamp = createEvent();
+const showWinamp = createEvent();
+
+const setMediaStatus = createEvent<TMediaStatus>();
+
+const selectTrackFromList = createEvent<Track>();
+const removeTrackFromPlaylist = createEvent<number>();
+const playAllTracksFromList = createEvent();
+
+const playNextTrack = createEvent();
+const onPlayClicked = createEvent();
+const onPauseClicked = createEvent();
+const onStopButtonClicked = createEvent();
+const nextTrackClicked = createEvent();
+const prevTrackClicked = createEvent();
+
+const toggleLoop = createEvent();
+const toggleShuffle = createEvent();
+
+const changeClutterBar = createEvent<string>();
+
+const toggleEnabledMarqueInfo = createEvent();
+const enabledMarqueInfo = createEvent();
+const disabledMarqueInfo = createEvent();
+const setMarqueInfo = createEvent<string | number>();
+
+const $Media = createStore<Nullable<MediaElement>>(null);
+const $currentTrack = createStore<Nullable<Track>>(null);
+const $activeWindow = createStore<TWinampWindow>(WINAMP_WINDOW_STATE.NONE);
+
+const $clutterBar = createStore<Record<string, boolean>>({
+  o: false,
+  a: false,
+  i: false,
+  d: false,
+  v: false,
+});
+
+const $enabledMaruqeInfo = createStore<boolean>(false);
+const $winampMarqueInfo = createStore<Nullable<string>>("");
+
+const $loop = createStore<boolean>(false);
+const $shuffled = createStore<boolean>(false);
+
+const $winampState = createStore<TWinampState>(WINAMP_STATE.DESTROYED);
+const $mediaStatus = createStore<TMediaStatus>(MEDIA_STATUS.STOPPED);
+
+const $visiblePlayer = createStore<boolean>(false);
+const $shadePlayer = createStore<boolean>(false);
+
+export const $baseSkinColors = createStore<string[]>(baseSkinColors);
+
+export const $isPlaying = $mediaStatus.map((status) => status === MEDIA_STATUS.PLAYING);
+export const $isStopped = $mediaStatus.map((status) => status === MEDIA_STATUS.STOPPED);
+export const $isPaused = $mediaStatus.map((status) => status === MEDIA_STATUS.PAUSED);
+
 sample({
   clock: destroyWinamp,
   source: $Media,
   filter: (mediaSource, _): mediaSource is MediaElement =>
     mediaSource!._audio instanceof HTMLAudioElement,
 
-  target: createEffect<MediaElement, any>((media) => {
+  target: createEffect<MediaElement, void>((media) => {
     const { _audio: audio } = media;
 
     audio.removeEventListener("abort", Emitter.onAbort);
@@ -290,72 +447,41 @@ sample({
 
 //initial $Media source
 
-sample({
-  clock: createWinampFx.doneData,
-  fn: (media) => media,
-  target: $Media,
-});
+$Media.on(createWinampFx.doneData, (_, media) => media);
 
-const $winampState = createStore<TWinampState>(WINAMP_STATE.DESTROYED).on(
-  initWinamp,
-  () => WINAMP_STATE.INIT,
-);
+$shadePlayer.on(toggleShadePlayer, toggle);
 
-const $visiblePlayer = createStore<boolean>(false);
+$winampState.on(initWinamp, () => WINAMP_STATE.INIT);
 
-const toggleShadePlayer = createEvent();
+$mediaStatus.on(setMediaStatus, (_, status) => status);
 
-const $shadePlayer = createStore<boolean>(false).on(toggleShadePlayer, (state, _) => !state);
+$loop.on(toggleLoop, toggle);
 
-//function has load track in Media._audio
-const loadUrl = createEvent<Track>();
-const loadUrlFx = createEffect<[MediaElement, Track], Track, Error>(([media, track]) => {
-  media._audio.src = `${process.env.NEXT_PUBLIC_BACKEND}/music/${track!.path}`;
-  return track;
-});
 sample({
   clock: loadUrl,
   source: $Media,
-  fn: (media, track) => [media, track] as [MediaElement, Track],
+  fn: (media, track) => ({ media, track }),
   target: loadUrlFx,
 });
 
-const setMediaStatus = createEvent<TMediaStatus>();
-//@ts-ignore
-//TODO:fix them
-const $mediaStatus = createStore<TMediaStatus>(MEDIA_STATUS.STOPPED).on(
-  setMediaStatus,
-  (_, status) => status,
-);
-
-const toggleLoop = createEvent();
-const $loop = createStore<boolean>(false).on(toggleLoop, (state, _) => !state);
-
 //toggle loop from ui
-guard({
+sample({
   clock: $loop,
-  source: [$Media, $loop],
-  filter: (params): params is [MediaElement, boolean] =>
-    params[0]?._audio instanceof HTMLAudioElement,
-  target: createEffect<[MediaElement, boolean], void>(([media, loop]) => {
-    media._audio.loop = loop;
-  }),
+  source: $Media,
+  filter: (media) => media?._audio instanceof HTMLAudioElement,
+  fn: (media, loop) => ({ media, loop }),
+  target: toggleLoopFx,
 });
 
-const toggleShuffle = createEvent();
-const $shuffle = createStore<boolean>(false).on(toggleShuffle, (state, _) => !state);
+$shuffled.on(toggleShuffle, toggle);
 
 sample({
-  clock: $shuffle,
+  clock: $shuffled,
   source: $Media,
-  filter: (media, shuffled) => shuffled,
-  fn: (media, shuffled) => media as MediaElement,
-  target: createEffect<MediaElement, void>((media) => {
-    media._audio.loop = false;
-  }),
+  filter: $shuffled,
+  fn: (media) => ({ media }),
+  target: toggleShuffleFx,
 });
-
-const selectTrackFromList = createEvent<Track>();
 
 sample({
   clock: selectTrackFromList,
@@ -367,20 +493,20 @@ $winampState.on(selectTrackFromList, () => WINAMP_STATE.TRACKLOADED);
 sample({
   clock: selectTrackFromList,
   source: $winampState,
-  filter: (state, _) => state === WINAMP_STATE.INIT,
+  filter: (state) => state === WINAMP_STATE.INIT,
   fn: () => WINAMP_STATE.TRACKLOADED,
   target: $winampState,
 });
 
-const $currentTrack = createStore<Nullable<Track>>(null).on(loadUrlFx.doneData, (_, track) => ({
+$currentTrack.on(loadUrlFx.doneData, (_, track) => ({
   ...track,
 }));
 
 sample({
   clock: initWinamp,
   source: $currentTrack,
-  filter: (track, _) => track !== null,
-  fn: (track, _) => track!,
+  filter: (track) => !!track,
+  fn: (track) => track!,
   target: createWinampFx,
 });
 
@@ -445,14 +571,13 @@ const { setBalance, changeBalance, $currentBalance } = createWinampBalanceFactor
 
 const initbalace = (value: number) => {
   const callSetBalance = scopeBind(setBalance, { scope: getClientScope()! });
+
   callSetBalance(value * 100);
 };
 
-const removeTrackFromPlaylist = createEvent<number>();
+$playlist.on(selectTrackFromList, (_, track) => [track]);
 
-$playlist
-  .on(selectTrackFromList, (_, track) => [track])
-  .on(removeTrackFromPlaylist, (tracks, id) => tracks.filter((track, index) => index !== id));
+$playlist.on(removeTrackFromPlaylist, (tracks, id) => tracks.filter((_, index) => index !== id));
 
 $selectedTrackInPlaylist.reset(removeTrackFromPlaylist);
 
@@ -462,49 +587,47 @@ sample({
   clock: removeTrackFromPlaylist,
   source: $currentPlayedTrackIndex,
   filter: (currentIndex, removedIndex) => {
-    if (currentIndex === removedIndex) return false;
-    if (currentIndex !== null) {
-      if (currentIndex > removedIndex) return true;
-    }
+    if (currentIndex && currentIndex > removedIndex) return true;
     return false;
   },
-  fn: (currentIndex, _) => currentIndex! - 1,
+  fn: (currentIndex) => currentIndex! - 1,
   target: $currentPlayedTrackIndex,
 });
 
 sample({
   clock: $currentPlayedTrackIndex,
   source: $playlist,
-  filter: (playlist, id) => id !== null,
+  filter: (_, id) => id !== null,
   fn: (playlist, id) => playlist[id!],
   target: $currentTrack,
 });
 
 //when track ended check next track in playlist exists
-const playNextTrack = createEvent();
 // checking playlist is emtpy state
-
-const checkPlayNextTrack = guard({
+const checkPlayNextTrack = sample({
   clock: playNextTrack,
   source: $playlistLength,
-  filter: (playlistLength, _) => playlistLength > 0,
+  filter: (playlistLength) => playlistLength > 0,
 });
 
-const checkPlayNextTrackNoShuffle = guard({
+const checkPlayNextTrackNoShuffle = sample({
   clock: checkPlayNextTrack,
-  source: $shuffle,
-  filter: (shuffle, _) => !shuffle,
+  source: $shuffled,
+
+  //experemental
+  filter: not($shuffled),
 });
 
 //when playlist is not empty check currentTrackIndex in playlist if not last put next, otherwise put first
 const playNextTrackNoShuffle = sample({
   clock: checkPlayNextTrackNoShuffle,
-  source: [$currentPlayedTrackIndex, $playlistLength],
+  source: { currentPlayedTrackIndex: $currentPlayedTrackIndex, playlistLength: $playlistLength },
 
-  fn: ([currentIndex, playListLength], _) => {
-    const lastTrack = currentIndex === playListLength! - 1;
+  fn: ({ currentPlayedTrackIndex, playlistLength }) => {
+    const lastTrack = currentPlayedTrackIndex === playlistLength! - 1;
+
     if (lastTrack) return 0;
-    return currentIndex! + 1;
+    return currentPlayedTrackIndex! + 1;
   },
 });
 
@@ -516,51 +639,42 @@ sample({
 });
 
 // when Shuffle is ON
-const checkPlayNextTrackShuffled = guard({
+const checkPlayNextTrackShuffled = sample({
   clock: checkPlayNextTrack,
-  source: $shuffle,
-  filter: (shuffle, _) => shuffle,
+  source: $shuffled,
+
+  //experemental
+  filter: $shuffled,
 });
 
-const isOneTrackInPlayList = guard({
+const isOneTrackInPlayList = sample({
   clock: checkPlayNextTrackShuffled,
   source: $playlistLength,
-  filter: (playListLength, _) => playListLength === 1,
+  filter: (playListLength) => playListLength === 1,
 });
-const isBiggerOneTrackInPlayList = guard({
+
+const isBiggerOneTrackInPlayList = sample({
   clock: checkPlayNextTrackShuffled,
   source: $playlistLength,
-  filter: (playListLength, _) => playListLength > 1,
+  filter: (playListLength) => playListLength > 1,
 });
 
 sample({
   clock: isOneTrackInPlayList,
   source: $Media,
-  fn: (media, _) => media!._audio as HTMLAudioElement,
-  target: createEffect<HTMLAudioElement, void>((_audio) => {
-    _audio.currentTime = 0;
-    _audio.play();
-  }),
+  fn: (media) => ({ audio: media!._audio }),
+  target: playNextTrackIsOneInPlayListFx,
 });
 
 sample({
   clock: isBiggerOneTrackInPlayList,
-  source: [$playlistLength, $currentPlayedTrackIndex],
-  fn: ([playListLength, currentTrack], _) => {
-    const max = playListLength!;
-    const generateRandom = (max: number, exp: number) => {
-      let number;
-      while (true) {
-        number = Math.floor(Math.random() * max);
+  source: { playlistLength: $playlistLength, currentPlayedTrackIndex: $currentPlayedTrackIndex },
+  fn: ({ playlistLength, currentPlayedTrackIndex }) => {
+    if (currentPlayedTrackIndex) {
+      return generateRandom(playlistLength, currentPlayedTrackIndex);
+    }
 
-        if (number != exp) {
-          return number;
-        }
-      }
-    };
-    const result = generateRandom(max, currentTrack!);
-
-    return result;
+    return 0;
   },
   target: $currentPlayedTrackIndex,
 });
@@ -569,55 +683,43 @@ sample({
 sample({
   clock: $currentPlayedTrackIndex,
   source: $playlist,
-  fn: (playlist, newTrackIndex) => playlist[newTrackIndex!],
+  filter: (_, newTrackIndex) => newTrackIndex !== null,
+  fn: (playlist, newTrackIndex) => playlist[newTrackIndex as number],
   target: loadUrl,
 });
 
 //Controls
 
-const onPlayClicked = createEvent();
 //when press playbutton when status playing
 sample({
   clock: onPlayClicked,
-  source: [$Media, $mediaStatus],
-  filter: ([media, status], _) => status === MEDIA_STATUS.PLAYING,
-  fn: ([media, status], _) => media as MediaElement,
+  source: { media: $Media },
+  filter: $isPlaying,
   target: startPlayFromBegginingFx,
 });
 
 //when press playbutton and status not playing
 sample({
   clock: onPlayClicked,
-  source: [$Media, $mediaStatus],
-  filter: ([media, status], _) => status !== MEDIA_STATUS.PLAYING,
-  fn: ([media, status], _) => media as MediaElement,
+  source: { media: $Media },
+  filter: not($isPlaying),
   target: startPlayingFx,
 });
 
-const onPauseClicked = createEvent();
-
 sample({
   clock: onPauseClicked,
-  source: $Media,
-  filter: (Media): Media is MediaElement => Media?._audio instanceof HTMLAudioElement,
-  fn: (Media) => Media as MediaElement,
+  source: { media: $Media },
+  filter: ({ media }) => !!media,
   target: pausePlayingFx,
 });
 
-const onStopButtonClicked = createEvent();
-
 sample({
   clock: onStopButtonClicked,
-  source: $Media,
-  fn: (media, _) => media as MediaElement,
+  source: { media: $Media },
   target: stopPlayingFx,
 });
 
-sample({
-  clock: stopPlayingFx.done,
-  fn: () => MEDIA_STATUS.STOPPED,
-  target: $mediaStatus,
-});
+$mediaStatus.on([stopPlayingFx.done, doubleClickedTrackInPlaylist], () => MEDIA_STATUS.STOPPED);
 
 // const delayedStopButtonClicked = delay({
 //     source: onStopButtonClicked,
@@ -627,74 +729,54 @@ sample({
 
 sample({
   clock: doubleClickedTrackInPlaylist,
-  fn: () => MEDIA_STATUS.STOPPED,
-  target: $mediaStatus,
-});
-
-sample({
-  clock: doubleClickedTrackInPlaylist,
-  source: $Media,
-  fn: (media, event) => media as MediaElement,
+  source: { media: $Media },
   target: startPlayingFx,
 });
 
-const nextTrackClicked = createEvent();
-
-forward({
-  from: nextTrackClicked,
-  to: playNextTrack,
+sample({
+  clock: nextTrackClicked,
+  target: playNextTrack,
 });
 
-const prevTrackClicked = createEvent();
-const checkPrevTrackClicked = guard({
+const checkPrevTrackClicked = sample({
   clock: prevTrackClicked,
   source: $playlistLength,
-  filter: (playListLength, _) => playListLength > 0,
+  filter: (playListLength) => playListLength > 0,
 });
 
-const playPrevTrackNoShuffle = guard({
+const playPrevTrackNoShuffle = sample({
   clock: checkPrevTrackClicked,
-  source: $shuffle,
-  filter: (shuffle, _) => !shuffle,
+  source: $shuffled,
+
+  //experemental
+  filter: not($shuffled),
 });
 
+/**
+ * somthing in logic wrong. need to deep testing
+ */
 sample({
   clock: playPrevTrackNoShuffle,
-  source: [$playlist, $currentPlayedTrackIndex],
-  fn: ([playList, currentTrackId], _) => {
-    // @ts-ignore: types error
-    if (currentTrackId === 0) return playList.length - 1;
-    // @ts-ignore: types error
-    return currentTrackId - 1;
+  source: { playlist: $playlist, currentPlayedTrackIndex: $currentPlayedTrackIndex },
+  fn: ({ playlist, currentPlayedTrackIndex }) => {
+    if (currentPlayedTrackIndex === 0) return playlist.length - 1;
+
+    return currentPlayedTrackIndex! - 1;
   },
   target: setCurrentPlayedTrackIndex,
 });
 
-const checkPlayPrevTrackShuffled = guard({
+const checkPlayPrevTrackShuffled = sample({
   clock: checkPrevTrackClicked,
-  source: $shuffle,
-  filter: (shuffle, _) => shuffle,
+  source: $shuffled,
+  filter: (shuffle) => shuffle,
 });
 
 sample({
   clock: checkPlayPrevTrackShuffled,
-  source: [$playlistLength, $currentPlayedTrackIndex],
-  fn: ([playListLength, currentTrack], _) => {
-    const max = playListLength!;
-
-    const generateRandom = (max: number, exp: number) => {
-      let number;
-      while (true) {
-        number = Math.floor(Math.random() * max);
-
-        if (number != exp) {
-          return number;
-        }
-      }
-    };
-    const result = generateRandom(max, currentTrack!);
-
-    return result;
+  source: { playlistLength: $playlistLength, currentPlayedTrackIndex: $currentPlayedTrackIndex },
+  fn: ({ playlistLength, currentPlayedTrackIndex }) => {
+    return generateRandom(playlistLength, currentPlayedTrackIndex!);
   },
   target: setCurrentPlayedTrackIndex,
 });
@@ -710,11 +792,7 @@ sample({
   target: onStopButtonClicked,
 });
 
-sample({
-  clock: closeWinamp,
-  fn: () => WINAMP_STATE.CLOSED,
-  target: $winampState,
-});
+$winampState.on(closeWinamp, () => WINAMP_STATE.CLOSED);
 
 sample({
   clock: $winampState,
@@ -733,8 +811,6 @@ sample({
   target: [$visibleEQ, $visiblePlayer, $visiblePlaylist],
 });
 
-const minimizedWinamp = createEvent();
-
 sample({
   clock: minimizedWinamp,
   fn: () => WINAMP_STATE.MINIMIZED,
@@ -743,17 +819,13 @@ sample({
 
 //winamp window active state
 
-const changeWindowState = createEvent<TWinampWindow>();
-const $activeWindow = createStore<TWinampWindow>(WINAMP_WINDOW_STATE.NONE)
-  .on(changeWindowState, (_, currentWindow) => currentWindow)
-  .reset([closeWinamp, selectTrackFromList]);
-
-const showWinamp = createEvent();
+$activeWindow.on(changeWindowState, (_, currentWindow) => currentWindow);
+$activeWindow.reset([closeWinamp, selectTrackFromList]);
 
 sample({
   clock: showWinamp,
   source: $currentTrack,
-  filter: (currentTrack, _) => currentTrack === null,
+  filter: (currentTrack) => currentTrack === null,
   fn: () => WINAMP_STATE.OPENED,
   target: $winampState,
 });
@@ -761,17 +833,15 @@ sample({
 sample({
   clock: showWinamp,
   source: $currentTrack,
-  filter: (currentTrack, _) => currentTrack !== null,
+  filter: (currentTrack) => currentTrack !== null,
   fn: () => WINAMP_STATE.TRACKLOADED,
   target: $winampState,
 });
 
-const playAllTracksFromList = createEvent();
-
 sample({
   clock: playAllTracksFromList,
   source: $songs,
-  fn: (songs, _) => songs,
+  fn: (songs) => [...songs],
   target: $playlist,
 });
 
@@ -788,43 +858,29 @@ sample({
 
 sample({
   clock: playAllTracksFromList,
-  source: $mediaStatus,
-  filter: (state, _) => state !== MEDIA_STATUS.PLAYING,
+  filter: not($isPlaying),
   target: onPlayClicked,
 });
 
-const changeClutterBar = createEvent<string>();
-const $clutterBar = createStore<Record<string, boolean>>({
-  o: false,
-  a: false,
-  i: false,
-  d: false,
-  v: false,
-}).on(changeClutterBar, (state, name) => {
-  const currrentName = state[name];
-  return { ...state, [name]: !currrentName };
+$clutterBar.on(changeClutterBar, (keys, key) => {
+  return { ...keys, [key]: !keys[key] };
 });
 
-const toggleEnabledMarqueInfo = createEvent();
-const enabledMarqueInfo = createEvent();
-const disabledMarqueInfo = createEvent();
+$enabledMaruqeInfo.on(toggleEnabledMarqueInfo, toggle);
+$enabledMaruqeInfo.on(enabledMarqueInfo, () => true);
+$enabledMaruqeInfo.on(disabledMarqueInfo, () => false);
 
-const $enabledMaruqeInfo = createStore<boolean>(false)
-  .on(toggleEnabledMarqueInfo, (state, _) => !state)
-  .on(enabledMarqueInfo, () => true)
-  .on(disabledMarqueInfo, () => false);
+$winampMarqueInfo.on(setMarqueInfo, (_, payload) => String(payload));
+$winampMarqueInfo.reset([disabledMarqueInfo, $enabledMaruqeInfo]);
+$winampMarqueInfo.on($currentBalance, (_, balance) => {
+  if (balance < -5) return `Balance: ${balance * -1}% left`;
 
-const setMarqueInfo = createEvent<string | number>();
+  if (balance > 5) return `Balance: ${balance}% right`;
 
-const $winampMarqueInfo = createStore<Nullable<string>>("")
-  .on(setMarqueInfo, (_, payload) => String(payload))
-  .reset([disabledMarqueInfo, $enabledMaruqeInfo])
-  .on($currentBalance, (_, balance) => {
-    if (balance < -5) return `Balance: ${balance * -1}% left`;
-    if (balance > 5) return `Balance: ${balance}% right`;
-    return "Balance: center";
-  })
-  .on($volume, (_, volume) => `Volume: ${Math.floor(volume)}%`);
+  return "Balance: center";
+});
+
+$winampMarqueInfo.on($volume, (_, volume) => `Volume: ${Math.floor(volume)}%`);
 
 //show in TrackListInfo seeking progress
 sample({
@@ -844,19 +900,21 @@ sample({
 
 sample({
   clock: changeEQBand,
-  fn: (val) => {
-    const snapBandValue = getSnapBandValue(Number(val.target.value));
+  fn: (event) => {
+    const snapBandValue = getSnapBandValue(Number(event.target.value));
     const db = (snapBandValue / 100) * 24 - 12;
-    return `EQ: ${val.target.name}HZ ${db.toFixed(1)} DB`;
+
+    return `EQ: ${event.target.name}HZ ${db.toFixed(1)} DB`;
   },
   target: setMarqueInfo,
 });
 
 sample({
   clock: changePreampValue,
-  fn: (val) => {
-    const snapBandValue = getSnapBandValue(Number(val.target.value));
+  fn: (event) => {
+    const snapBandValue = getSnapBandValue(Number(event.target.value));
     const db = (snapBandValue / 100) * 24 - 12;
+
     return `EQ: PREAMP ${db.toFixed(1)} DB`;
   },
   target: setMarqueInfo,
@@ -936,7 +994,7 @@ export const winamp = {
   toggleTimeMode,
   toggleShadePlayer,
   $loop,
-  $shuffle,
+  $shuffle: $shuffled,
 };
 
 export const winampStates = {
@@ -972,7 +1030,5 @@ export const eq = {
   $minimized: $minimizedEQ,
   toggleMinimized: toggleMinimizeEQ,
 };
-
-export const $baseSkinColors = createStore<string[]>(baseSkinColors);
 
 export { loadUrl, selectTrackFromList, $Media, $clutterBar, changeClutterBar };

@@ -8,6 +8,7 @@ import {
   $isPlaying,
   $loopIsOn,
   $shuffled,
+  $visiblePlaylist,
   eqVisibilityToggled,
   loopToggled,
   nextTrackButtonClicked,
@@ -16,6 +17,7 @@ import {
   prevTrackButtonClicked,
   shuffleToggled,
   stopButtonClicked,
+  toggleVisiblePlaylist,
 } from "./model";
 
 import { WinampButton } from "@/src/shared/ui/winamp/winamp-button";
@@ -161,5 +163,27 @@ export const ToggleEQButton = () => {
       onClick={handleToggleEqualizer}
       title="Toggle Graphical Equalizer"
     />
+  );
+};
+
+export const TogglePlaylistButton = () => {
+  const [isVisible, toggle] = useUnit([$visiblePlaylist, toggleVisiblePlaylist]);
+
+  return (
+    <WinampButton
+      id="playlist-button"
+      title="Toggle Playlist Editor"
+      active={isVisible}
+      onClick={toggle}
+    />
+  );
+};
+
+export const WindowControls = () => {
+  return (
+    <div className="windows">
+      <ToggleEQButton />
+      <TogglePlaylistButton />
+    </div>
   );
 };

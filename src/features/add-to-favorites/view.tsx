@@ -1,6 +1,6 @@
 import { useUnit } from "effector-react";
 
-import { addTofavoritesButtonClicked } from "../model";
+import { addTofavoritesButtonClicked } from "./model";
 
 import { HeartIcon } from "@heroicons/react/outline";
 import { HeartIcon as Fav } from "@heroicons/react/solid";

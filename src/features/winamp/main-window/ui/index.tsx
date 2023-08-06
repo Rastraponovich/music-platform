@@ -6,8 +6,7 @@ import { $clutterBar, winampStates } from "@/src/widgets/winamp/model";
 
 import { useDraggable } from "@/hooks/useDraggable";
 
-import { WindowControls } from "./controls-buttons";
-import { ControlsPanel } from "~/features/winamp/controls-panel";
+import { ControlsPanel, WindowControls } from "~/features/winamp/controls-panel";
 import { Progressbar } from "~/features/winamp/progress-bar";
 import { BalanceBar } from "~/features/winamp/balance-bar";
 import { VolumeBar } from "~/features/winamp/volume-bar";

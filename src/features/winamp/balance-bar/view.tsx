@@ -9,7 +9,7 @@ import {
   balancebarUplifted,
 } from "./model";
 
-import { CURRENT_BALANCE_BG_OFFSET } from "../main-window/lib";
+import { CURRENT_BALANCE_BG_OFFSET } from "./constants";
 
 /**
  * Компонент управляющий балансом трека в главном окне
