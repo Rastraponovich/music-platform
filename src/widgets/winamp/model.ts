@@ -1,8 +1,13 @@
-import { getClientScope } from "@/hooks/useScope";
-import { Nullable } from "@/types";
-import { baseSkinColors } from "@/types/ui.types";
+import { not } from "patronum";
 import { sample, createEffect, createEvent, createStore, scopeBind } from "effector";
 
+import { StereoBalanceNode } from "~/shared/lib/audio/stereo-balance-node";
+
+import { getClientScope } from "@/hooks/useScope";
+
+import type { Nullable } from "@/types";
+
+import { baseSkinColors } from "@/types/ui.types";
 import { $songs } from "../../../features/music";
 import {
   BANDS,
@@ -19,15 +24,14 @@ import {
   StereoBalanceNodeType,
   TMediaStatus,
 } from "../../../features/music/types";
-import StereoBalanceNode from "../../../features/media/StereoBalanceNode";
 import { createWinampVolumeFactory } from "../../../features/music/winamp-volume";
 import { createWinampPlaylistFactory } from "../../../features/music/winamp-playlist";
 import { createWinampEQFactory } from "../../../features/music/winamp-eq";
 import { createWinampProgressFactory } from "../../../features/music/winamp-progress";
 
-import { createWinampBalanceFactory } from "../../../features/music/winamp-balance";
-import { convertTimeToString, getSnapBandValue } from "@/utils/utils";
-import { not } from "patronum";
+import { convertTimeToString, getSnapBandValue, toggle } from "@/utils/utils";
+
+import { generateRandomId } from "./utils";
 declare global {
   interface Window {
     webkitAudioContext: {
@@ -36,25 +40,6 @@ declare global {
     };
   }
 }
-
-const toggle = (state: boolean): boolean => !state;
-
-/**
- * Generates a random number within a specified range, excluding a given number.
- *
- * @param {number} max - The upper bound of the range.
- * @param {number} exp - The number to be excluded from the range.
- * @return {number} A random number within the specified range, excluding the given number.
- */
-const generateRandom = (max: number, exp: number): number => {
-  let number;
-
-  do {
-    number = Math.floor(Math.random() * max);
-  } while (number === exp);
-
-  return number;
-};
 
 const startPlayFromBegginingFx = createEffect<{ media: Nullable<MediaElement> }, void>(
   ({ media }) => {
@@ -115,26 +100,18 @@ const playNextTrackIsOneInPlayListFx = createEffect<{ audio: HTMLAudioElement },
 );
 
 const Emitter = {
-  onAbort: (_: Event) => {},
-  onCanPlay: (_: Event) => {},
-  onCanPlayThrough: (_: Event) => {},
   onDurationChange: (event: Event) => {
     const audioElement = event.currentTarget as HTMLAudioElement;
     const callSetDuration = scopeBind(setDuration, { scope: getClientScope()! });
 
     callSetDuration(audioElement.duration);
   },
-  onEmptied: (_: Event) => {},
 
-  onEnded: (_: Event) => {
+  onEnded: () => {
     const callPlayNextTrack = scopeBind(playNextTrack, { scope: getClientScope()! });
 
     callPlayNextTrack();
   },
-
-  onError: (_: Event) => {},
-
-  onLoadedData: (_: Event) => {},
 
   onLoadedMetadata: (event: Event) => {
     const audioElement = event.currentTarget as HTMLAudioElement;
@@ -142,41 +119,30 @@ const Emitter = {
 
     callSetVolume(audioElement.volume * 100);
   },
-  onLoadStart: (_: Event) => {},
 
-  onPause: (_: Event) => {
+  onPlay: () => {
+    const callSetIsPlaying = scopeBind(setMediaStatus, {
+      scope: getClientScope()!,
+    });
+
+    callSetIsPlaying(MEDIA_STATUS.PLAYING);
+  },
+
+  onPlaying: () => {
+    const callSetIsPlaying = scopeBind(setMediaStatus, {
+      scope: getClientScope()!,
+    });
+
+    callSetIsPlaying(MEDIA_STATUS.PLAYING);
+  },
+
+  onPause: () => {
     const callSetIsPlaying = scopeBind(setMediaStatus, {
       scope: getClientScope()!,
     });
 
     callSetIsPlaying(MEDIA_STATUS.PAUSED);
   },
-
-  onPlay: (_: Event) => {
-    const callSetIsPlaying = scopeBind(setMediaStatus, {
-      scope: getClientScope()!,
-    });
-
-    callSetIsPlaying(MEDIA_STATUS.PLAYING);
-  },
-  onPlaying: (_: Event) => {
-    const callSetIsPlaying = scopeBind(setMediaStatus, {
-      scope: getClientScope()!,
-    });
-
-    callSetIsPlaying(MEDIA_STATUS.PLAYING);
-  },
-  onProgress: (_: Event) => {},
-
-  onRateChange: (_: Event) => {},
-
-  onSeeked: (_: Event) => {},
-
-  onSeeking: (_: Event) => {},
-
-  onStalled: (_: Event) => {},
-
-  onSuspend: (_: Event) => {},
 
   onTimeUpdate: (event: Event) => {
     const audio = event.currentTarget as HTMLAudioElement;
@@ -187,6 +153,7 @@ const Emitter = {
 
     callSetCurrentTime(audio.currentTime);
   },
+
   onVolumeChange: (event: Event) => {
     const audioElement = event.currentTarget as HTMLAudioElement;
     const callSetVolume = scopeBind(setVolume, { scope: getClientScope()! });
@@ -194,7 +161,21 @@ const Emitter = {
     callSetVolume(audioElement.volume * 100);
   },
 
-  onWaiting: (_: Event) => {},
+  //-- furure section --/
+  // onError: (_: Event) => {},
+  // onAbort: (_: Event) => {},
+  // onSeeked: (_: Event) => {},
+  // onCanPlay: (_: Event) => {},
+  // onSeeking: (_: Event) => {},
+  // onStalled: (_: Event) => {},
+  // onEmptied: (_: Event) => {},
+  // onSuspend: (_: Event) => {},
+  // onWaiting: (_: Event) => {},
+  // onProgress: (_: Event) => {},
+  // onLoadStart: (_: Event) => {},
+  // onLoadedData: (_: Event) => {},
+  // onRateChange: (_: Event) => {},
+  // onCanPlayThrough: (_: Event) => {},
 };
 
 const createAudioElement = (context: AudioContext, destination: GainNode, track: Track) => {
@@ -205,34 +186,34 @@ const createAudioElement = (context: AudioContext, destination: GainNode, track:
   audio.controls = false;
 
   // abort Событие вызывается , когда ресурс не был полностью загружен, но не в результате ошибки.
-  audio.addEventListener("abort", Emitter.onAbort);
+  // audio.addEventListener("abort", Emitter.onAbort);
 
   // canplay Событие вызывается , когда агент пользователя может играть средства массовой информации, но, по оценкам, что не достаточно данных были загружены, чтобы играть средства массовой информации до его конца без остановки для дальнейшей буферизации контента.
-  audio.addEventListener("canplay", Emitter.onCanPlay);
+  // audio.addEventListener("canplay", Emitter.onCanPlay);
 
   // canplaythrough Событие вызывается , когда агент пользователя может играть средства массовой информации, и оценки , которые были загружены достаточно данных для воспроизведения медиа до его конца без остановки для дальнейшей буферизации контента.
-  audio.addEventListener("canplaythrough", Emitter.onCanPlayThrough);
+  // audio.addEventListener("canplaythrough", Emitter.onCanPlayThrough);
 
   // durationchange Событие вызывается , когда duration атрибут был обновлен.
   audio.addEventListener("durationchange", Emitter.onDurationChange);
 
   // emptied Событие вызывается , когда среда становится пустой; например, это событие отправляется, если носитель уже был загружен (или частично загружен) и load()вызывается метод для его перезагрузки.
-  audio.addEventListener("emptied", Emitter.onEmptied);
+  // audio.addEventListener("emptied", Emitter.onEmptied);
 
   // ended Событие вызывается , когда воспроизведение или потоковое остановилось , потому что достигнут конец массовой информации или потому , что нет дополнительных данных не имеется.
   audio.addEventListener("ended", Emitter.onEnded);
 
   // error Событие вызывается , когда ресурс не может быть загружен из - за ошибки (например, проблемы подключения к сети).
-  audio.addEventListener("error", Emitter.onError);
+  // audio.addEventListener("error", Emitter.onError);
 
   // loadeddata Событие вызывается , когда кадр в текущей позиции воспроизведения средств массовой информации по окончанию загрузки; часто первый кадр.
-  audio.addEventListener("loadeddata", Emitter.onLoadedData);
+  // audio.addEventListener("loadeddata", Emitter.onLoadedData);
 
   // loadedmetadata Событие вызывается , когда метаданные были загружены.
   audio.addEventListener("loadedmetadata", Emitter.onLoadedMetadata);
 
   // loadstart Событие вызывается , когда браузер начал загружать ресурс.
-  audio.addEventListener("loadstart", Emitter.onLoadStart);
+  // audio.addEventListener("loadstart", Emitter.onLoadStart);
 
   // pause Событие отправляется , когда запрос приостановить деятельность осуществляется и деятельность вошла в приостановленное состояние, чаще всего после того, как в средствах массовой информации было приостановлено через вызов элемента pause()метода.
   audio.addEventListener("pause", Emitter.onPause);
@@ -244,22 +225,22 @@ const createAudioElement = (context: AudioContext, destination: GainNode, track:
   audio.addEventListener("playing", Emitter.onPlaying);
 
   // progress Событие вызывается периодически как браузер загружает ресурс.
-  audio.addEventListener("progress", Emitter.onProgress);
+  // audio.addEventListener("progress", Emitter.onProgress);
 
   // ratechange Событие вызывается , когда скорость воспроизведения изменилась.
-  audio.addEventListener("ratechange", Emitter.onRateChange);
+  // audio.addEventListener("ratechange", Emitter.onRateChange);
 
   // seeked Событие вызывается , когда операция поиска завершена, текущая позиция воспроизведения изменилась, и булево seekingатрибут изменено false.
-  audio.addEventListener("seeked", Emitter.onSeeked);
+  // audio.addEventListener("seeked", Emitter.onSeeked);
 
   // seeking Событие вызывается , когда начинаются искать операции, то есть булева seekingатрибут изменен trueи СМИ ищут новую позицию.
-  audio.addEventListener("seeking", Emitter.onSeeking);
+  // audio.addEventListener("seeking", Emitter.onSeeking);
 
   // stalled Событие вызывается , когда агент пользователя пытается получать мультимедийные данные, но данные неожиданно не последовало.
-  audio.addEventListener("stalled", Emitter.onStalled);
+  // audio.addEventListener("stalled", Emitter.onStalled);
 
   // suspend Событие вызывается при загрузке мультимедийных данных было приостановлено.
-  audio.addEventListener("suspend", Emitter.onSuspend);
+  // audio.addEventListener("suspend", Emitter.onSuspend);
 
   // timeupdate Событие вызывается , когда время , указанное в currentTimeатрибуте было обновлено.
   audio.addEventListener("timeupdate", Emitter.onTimeUpdate);
@@ -268,7 +249,7 @@ const createAudioElement = (context: AudioContext, destination: GainNode, track:
   audio.addEventListener("volumechange", Emitter.onVolumeChange);
 
   // waiting Событие вызывается , когда воспроизведение остановлено из - за временного отсутствия данных.
-  audio.addEventListener("waiting", Emitter.onWaiting);
+  // audio.addEventListener("waiting", Emitter.onWaiting);
 
   const _source = context.createMediaElementSource(audio);
 
@@ -283,8 +264,6 @@ const createWinampFx = createEffect<Track, Nullable<MediaElement>, Error>((track
   const _context = new (window.AudioContext || window.webkitAudioContext)();
   const _staticSource = _context.createGain();
   const _balance = StereoBalanceNode(_context) as GainNode & StereoBalanceNodeType;
-
-  initbalace(_balance.balance.value);
 
   const _preamp = _context.createGain();
 
@@ -417,28 +396,33 @@ sample({
   target: createEffect<MediaElement, void>((media) => {
     const { _audio: audio } = media;
 
-    audio.removeEventListener("abort", Emitter.onAbort);
-    audio.removeEventListener("canplay", Emitter.onCanPlay);
-    audio.removeEventListener("canplaythrough", Emitter.onCanPlayThrough);
+    // audio.removeEventListener("abort", Emitter.onAbort);
+    // audio.removeEventListener("canplay", Emitter.onCanPlay);
+    // audio.removeEventListener("canplaythrough", Emitter.onCanPlayThrough);
     audio.removeEventListener("durationchange", Emitter.onDurationChange);
-    audio.removeEventListener("emptied", Emitter.onEmptied);
+
+    // audio.removeEventListener("emptied", Emitter.onEmptied);
     audio.removeEventListener("ended", Emitter.onEnded);
-    audio.removeEventListener("error", Emitter.onError);
-    audio.removeEventListener("loadeddata", Emitter.onLoadedData);
+
+    // audio.removeEventListener("error", Emitter.onError);
+    // audio.removeEventListener("loadeddata", Emitter.onLoadedData);
     audio.removeEventListener("loadedmetadata", Emitter.onLoadedMetadata);
-    audio.removeEventListener("loadstart", Emitter.onLoadStart);
+
+    // audio.removeEventListener("loadstart", Emitter.onLoadStart);
     audio.removeEventListener("pause", Emitter.onPause);
     audio.removeEventListener("play", Emitter.onPlay);
     audio.removeEventListener("playing", Emitter.onPlaying);
-    audio.removeEventListener("progress", Emitter.onProgress);
-    audio.removeEventListener("ratechange", Emitter.onRateChange);
-    audio.removeEventListener("seeked", Emitter.onSeeked);
-    audio.removeEventListener("seeking", Emitter.onSeeking);
-    audio.removeEventListener("stalled", Emitter.onStalled);
-    audio.removeEventListener("suspend", Emitter.onSuspend);
+
+    // audio.removeEventListener("progress", Emitter.onProgress);
+    // audio.removeEventListener("ratechange", Emitter.onRateChange);
+    // audio.removeEventListener("seeked", Emitter.onSeeked);
+    // audio.removeEventListener("seeking", Emitter.onSeeking);
+    // audio.removeEventListener("stalled", Emitter.onStalled);
+    // audio.removeEventListener("suspend", Emitter.onSuspend);
     audio.removeEventListener("timeupdate", Emitter.onTimeUpdate);
     audio.removeEventListener("volumechange", Emitter.onVolumeChange);
-    audio.removeEventListener("waiting", Emitter.onWaiting);
+
+    // audio.removeEventListener("waiting", Emitter.onWaiting);
     audio.pause();
 
     media._source.disconnect();
@@ -567,14 +551,6 @@ const {
   toggleVisiblePlaylist,
 } = createWinampPlaylistFactory();
 
-const { setBalance, changeBalance, $currentBalance } = createWinampBalanceFactory($Media);
-
-const initbalace = (value: number) => {
-  const callSetBalance = scopeBind(setBalance, { scope: getClientScope()! });
-
-  callSetBalance(value * 100);
-};
-
 $playlist.on(selectTrackFromList, (_, track) => [track]);
 
 $playlist.on(removeTrackFromPlaylist, (tracks, id) => tracks.filter((_, index) => index !== id));
@@ -671,7 +647,7 @@ sample({
   source: { playlistLength: $playlistLength, currentPlayedTrackIndex: $currentPlayedTrackIndex },
   fn: ({ playlistLength, currentPlayedTrackIndex }) => {
     if (currentPlayedTrackIndex) {
-      return generateRandom(playlistLength, currentPlayedTrackIndex);
+      return generateRandomId(playlistLength, currentPlayedTrackIndex);
     }
 
     return 0;
@@ -776,7 +752,7 @@ sample({
   clock: checkPlayPrevTrackShuffled,
   source: { playlistLength: $playlistLength, currentPlayedTrackIndex: $currentPlayedTrackIndex },
   fn: ({ playlistLength, currentPlayedTrackIndex }) => {
-    return generateRandom(playlistLength, currentPlayedTrackIndex!);
+    return generateRandomId(playlistLength, currentPlayedTrackIndex!);
   },
   target: setCurrentPlayedTrackIndex,
 });
@@ -872,13 +848,6 @@ $enabledMaruqeInfo.on(disabledMarqueInfo, () => false);
 
 $winampMarqueInfo.on(setMarqueInfo, (_, payload) => String(payload));
 $winampMarqueInfo.reset([disabledMarqueInfo, $enabledMaruqeInfo]);
-$winampMarqueInfo.on($currentBalance, (_, balance) => {
-  if (balance < -5) return `Balance: ${balance * -1}% left`;
-
-  if (balance > 5) return `Balance: ${balance}% right`;
-
-  return "Balance: center";
-});
 
 $winampMarqueInfo.on($volume, (_, volume) => `Volume: ${Math.floor(volume)}%`);
 
@@ -926,11 +895,6 @@ export const marqueInfo = {
   enabledMarqueInfo,
   disabledMarqueInfo,
   toggleEnabledMarqueInfo,
-};
-
-export const balance = {
-  $currentBalance,
-  changeBalance,
 };
 
 export const winampControls = {

@@ -6,11 +6,7 @@ import { usePaintBar, usePaintBarFrame } from "@/hooks/useBarVisualizer";
 import { usePaintOscilloscopeFrame } from "@/hooks/useOscilloscopeVisualizer";
 
 import { $baseSkinColors, $Media, winamp, winampStates } from "@/src/widgets/winamp/model";
-import {
-  $dummyVizData,
-  $visualizerStyle,
-  toggleVisualizerStyle,
-} from "@/features/media/visualizer";
+import { $dummyVizData, $visualizerStyle, toggleVisualizerStyle } from "./model";
 
 import { VISUALIZERS } from "@/features/music/constants";
 

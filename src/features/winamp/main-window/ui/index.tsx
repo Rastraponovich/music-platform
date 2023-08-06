@@ -1,6 +1,6 @@
 import clsx from "clsx";
-import { useUnit } from "effector-react";
 import { useRef } from "react";
+import { useUnit } from "effector-react";
 
 import { $clutterBar, winampStates } from "@/src/widgets/winamp/model";
 

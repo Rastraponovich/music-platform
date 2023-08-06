@@ -1,7 +1,16 @@
-// The Web Audio API does not offer an easy way to make a stereo balance
-// control. This is an attempt to fill that void, using an API similar to
-// [StereoPannerNode](https://developer.mozilla.org/en-US/docs/Web/API/StereoPannerNode)
-export default function StereoBalanceNode(context: AudioContext, options = { balance: 0 }) {
+/**
+ * Creates a stereo balance node in the audio context.
+ *
+ * @param {AudioContext} context - The audio context in which to create the node.
+ * @param {Object} options - Optional parameters for the balance node.
+ * @param {number} options.balance - The initial balance value, ranging from -1 (full left) to 1 (full right). Defaults to 0 (center).
+ * @return {AudioNode} The created stereo balance node.
+ */
+
+export function StereoBalanceNode(
+  context: AudioContext,
+  options: { balance: number } = { balance: 0 },
+): AudioNode {
   let balance = 0;
 
   // ChannelSplitterNode cannot be told to use a `channelInterperatation` of

@@ -76,3 +76,11 @@ export const convertTimeToObj = (duration: number) => {
     lastSecond,
   };
 };
+
+/**
+ * Toggles the given state.
+ *
+ * @param {boolean} state - The state to toggle.
+ * @return {boolean} The toggled state.
+ */
+export const toggle = (state: boolean): boolean => !state;
