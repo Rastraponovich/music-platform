@@ -17,7 +17,7 @@ export const createWinampPlaylistFactory = () => {
   const $selectedTrackInPlaylist = createStore<Nullable<number>>(null);
   const $currentPlayedTrackIndex = createStore<Nullable<number>>(null);
 
-  const $playlistLength = $playlist.map((state) => state.length);
+  const $playlistLength = $playlist.map((tracks) => tracks.length);
 
   $playlist.on(addTrackToPlaylist, (tracks, track) => [...tracks, track]);
 

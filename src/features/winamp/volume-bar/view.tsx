@@ -7,7 +7,8 @@ import {
   volumebarLifted,
   volumebarUplifted,
 } from "./model";
-import { VOLUME_BG_OFFSET } from "../main-window/lib";
+
+import { VOLUME_BG_OFFSET } from "./constants";
 
 export const VolumeBar = () => {
   const [volume, currentVolumePosition] = useUnit([$volume, $currentVolumePosition]);

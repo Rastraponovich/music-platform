@@ -1,46 +1,59 @@
-import { Nullable } from "@/types";
-import { createEffect, createEvent, createStore, guard, sample, Store } from "effector";
 import { ChangeEvent } from "react";
-import { MediaElement, _Bands } from "./types";
+import { createEffect, createEvent, createStore, sample, Store } from "effector";
+
+import type { Nullable } from "@/types";
+import type { MediaElement } from "./types";
 
 const createWinampVolumeFactory = ($Media: Store<Nullable<MediaElement>>) => {
-  const setVolumeFx = createEffect<[MediaElement, string], void>(([media, type]) => {
-    media._audio.volume = type === "up" ? media._audio.volume + 0.01 : media._audio.volume - 0.01;
+  const keyboardChangedVolumeFx = createEffect<
+    { media: Nullable<MediaElement>; key: string },
+    void
+  >(({ media, key }) => {
+    if (media) {
+      media._audio.volume = key === "up" ? media._audio.volume + 0.01 : media._audio.volume - 0.01;
+    }
   });
 
-  //change volume from UI
-  const changeVolume = createEvent<ChangeEvent<HTMLInputElement>>();
+  const changeVolumeFx = createEffect<
+    { audio: HTMLAudioElement; event: ChangeEvent<HTMLInputElement> },
+    void
+  >(({ audio, event }) => {
+    audio.volume = Number(event.target.value) / 100;
+  });
 
+  const VolumeChanged = createEvent<ChangeEvent<HTMLInputElement>>();
+  const keyboardVolumeChanged = createEvent<string>();
   const setVolume = createEvent<number>();
-  const $volume = createStore<number>(50).on(setVolume, (_, volume) => volume);
 
-  const setVolumeFromKeys = createEvent<string>();
+  const $volume = createStore<number>(50);
 
+  $volume.on(setVolume, (_, volume) => volume);
+
+  /**
+   * when volume changed by keyboard
+   */
   sample({
-    clock: setVolumeFromKeys,
+    clock: keyboardVolumeChanged,
     source: $Media,
-    fn: (media, value) => [media, value] as [MediaElement, string],
-    target: setVolumeFx,
+    fn: (media, key) => ({ media, key }),
+    target: keyboardChangedVolumeFx,
   });
-  guard({
-    source: sample({
-      clock: changeVolume,
-      source: $Media,
-      fn: (media, event) => [media?._audio, event],
-    }),
-    filter: (sourceTuple): sourceTuple is [HTMLAudioElement, ChangeEvent<HTMLInputElement>] =>
-      sourceTuple[0] instanceof HTMLAudioElement,
-    target: createEffect<[HTMLAudioElement, ChangeEvent<HTMLInputElement>], void>(
-      ([audio, event]) => {
-        audio.volume = Number(event.target.value) / 100;
-      },
-    ),
+
+  /**
+   * when volume changed by mouse
+   */
+  sample({
+    clock: VolumeChanged,
+    source: $Media,
+    filter: (media) => media?._audio instanceof HTMLAudioElement,
+    fn: (media, event) => ({ audio: media!._audio, event }),
+    target: changeVolumeFx,
   });
 
   return {
     $volume,
-    setVolumeFromKeys,
-    changeVolume,
+    setVolumeFromKeys: keyboardVolumeChanged,
+    changeVolume: VolumeChanged,
     setVolume,
   };
 };

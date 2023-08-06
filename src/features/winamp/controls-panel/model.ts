@@ -1,15 +1,16 @@
 import { createEvent, sample } from "effector";
 
-import { eq, winamp, winampControls } from "@/src/widgets/winamp";
+import { eq, playlist, winamp, winampControls } from "@/src/widgets/winamp";
 
-export const prevTrackButtonClicked = createEvent();
-export const pauseButtonClicked = createEvent();
-export const playButtonClicked = createEvent();
-export const stopButtonClicked = createEvent();
 export const loopToggled = createEvent();
 export const shuffleToggled = createEvent();
-export const nextTrackButtonClicked = createEvent();
+export const playButtonClicked = createEvent();
+export const stopButtonClicked = createEvent();
+export const pauseButtonClicked = createEvent();
 export const eqVisibilityToggled = createEvent();
+export const toggleVisiblePlaylist = createEvent();
+export const nextTrackButtonClicked = createEvent();
+export const prevTrackButtonClicked = createEvent();
 
 /**
  * @todo Fix names of variables in this function. move reducer
@@ -21,6 +22,13 @@ export const $loopIsOn = winamp.$loop.map((loop) => loop);
 export const $shuffled = winamp.$shuffle.map((shuffled) => shuffled);
 
 export const $eqVisible = eq.$visibleEQ.map((visible) => visible);
+
+export const $visiblePlaylist = playlist.$visiblePlaylist.map((visible) => visible);
+
+sample({
+  clock: toggleVisiblePlaylist,
+  target: playlist.toggleVisiblePlaylist,
+});
 
 /**
  * on play button clicked

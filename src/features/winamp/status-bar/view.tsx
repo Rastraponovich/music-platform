@@ -14,7 +14,7 @@ import {
 
 import { TimeMode } from "@/features/music/types";
 
-import { PLAYER_STATES } from "../main-window/lib";
+import { PLAYER_STATES } from "./constants";
 
 const Visualizer = dynamic(
   () => import("../main-window/ui/visualizer").then((mod) => mod.Visualizer),

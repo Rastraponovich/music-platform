@@ -1,15 +1,17 @@
 import { createEvent, sample } from "effector";
-import { ChangeEvent } from "react";
-import { $currentVolume, $currentVolumeStep } from "../main-window/model";
+
 import { marqueInfo, volume } from "@/src/widgets/winamp";
+
+import type { ChangeEvent } from "react";
+
+import { VOLUME_STEP } from "./constants";
 
 export const volumeChanged = createEvent<ChangeEvent<HTMLInputElement>>();
 export const volumebarLifted = createEvent();
 export const volumebarUplifted = createEvent();
 
-export const $volume = $currentVolume.map((volume) => volume);
-
-export const $currentVolumePosition = $currentVolumeStep.map((position) => position);
+export const $volume = volume.$volume.map((volume) => volume);
+export const $currentVolumePosition = $volume.map((volume) => Math.floor(volume / VOLUME_STEP));
 
 /**
  * when volume changed
