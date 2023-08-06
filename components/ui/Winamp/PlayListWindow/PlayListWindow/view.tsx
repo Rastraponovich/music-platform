@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 
 import { useUnit } from "effector-react/scope";
 
-import { useDraggable } from "@/hooks/useDraggable";
+import { useDraggable } from "@/src/shared/hooks/use-draggable";
 
 import { duration, playlist, winampStates } from "@/src/widgets/winamp/model";
 

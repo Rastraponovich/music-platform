@@ -3,7 +3,7 @@ import { sample, createEffect, createEvent, createStore, scopeBind, attach } fro
 
 import { StereoBalanceNode } from "~/shared/lib/audio/stereo-balance-node";
 
-import { getClientScope } from "@/hooks/useScope";
+import { getClientScope } from "@/src/shared/hooks/use-scope";
 
 import type { Nullable } from "@/types";
 

@@ -4,7 +4,7 @@ import { useUnit } from "effector-react";
 
 import { $clutterBar, winampStates } from "@/src/widgets/winamp/model";
 
-import { useDraggable } from "@/hooks/useDraggable";
+import { useDraggable } from "@/src/shared/hooks/use-draggable";
 
 import { ControlsPanel, WindowControls } from "~/features/winamp/controls-panel";
 import { Progressbar } from "~/features/winamp/progress-bar";

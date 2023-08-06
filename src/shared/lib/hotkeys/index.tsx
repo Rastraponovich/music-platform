@@ -1,4 +1,4 @@
-import { useChangeCurentTime } from "@/hooks/useChangeCurrentTime";
+import { useChangeCurentTime } from "@/src/shared/hooks/use-change-current-time";
 
 import type { ReactNode } from "react";
 

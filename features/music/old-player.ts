@@ -11,7 +11,7 @@ import {
 import { createGate } from "effector-react";
 import { ChangeEvent, MouseEvent } from "react";
 import { PlayerState, Song, TimeMode } from "./types";
-import { getClientScope } from "@/hooks/useScope";
+import { getClientScope } from "@/src/shared/hooks/use-scope";
 import { Nullable } from "@/types";
 
 export const initPlayer = createEvent();

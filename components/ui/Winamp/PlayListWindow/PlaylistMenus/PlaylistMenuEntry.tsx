@@ -1,4 +1,4 @@
-import { useIsHovered } from "@/hooks/useIsHovered";
+import { useIsHovered } from "@/src/shared/hooks/useIsHovered";
 import clsx from "clsx";
 import React, { memo, ReactNode } from "react";
 
