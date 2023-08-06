@@ -1,18 +1,18 @@
-import { createEvent, createEffect, restore, attach, forward } from "effector"
-import { Router } from "next/router"
+import { Router } from "next/router";
+import { createEvent, createEffect, restore, attach, sample } from "effector";
 
-export const attachRouter = createEvent<Router>()
-const $router = restore<Router>(attachRouter, null)
+const fxFetchFx = createEffect(() => Promise.resolve(1));
+
+export const attachRouter = createEvent<Router>();
+export const callFetch = createEvent();
+
+const $router = restore<Router>(attachRouter, null);
 
 const pushFx = attach({
-    source: $router,
-    effect: (router, param) => router!.push(param),
-})
+  source: $router,
+  effect: (router, param) => router!.push(param),
+});
 
-export const callFetch = createEvent()
+sample({ clock: callFetch, target: fxFetchFx });
 
-const fxFetch = createEffect(() => Promise.resolve(1))
-
-forward({ from: callFetch, to: fxFetch })
-
-forward({ from: fxFetch.done, to: pushFx.prepend(() => "/") })
+sample({ clock: fxFetchFx.done, fn: () => "/", target: pushFx });

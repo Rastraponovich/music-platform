@@ -14,6 +14,7 @@ import { Winamp } from "@/src/entity/winamp";
 
 const App: NextPage<AppProps> = ({ Component, pageProps, router }) => {
   const scope = useScope(pageProps.initialState);
+
   return (
     <Provider value={scope}>
       <Layout>
