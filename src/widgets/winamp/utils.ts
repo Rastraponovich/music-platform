@@ -1,3 +1,5 @@
+import { EffectCallback } from "./model";
+
 /**
  * Generates a random number within a specified range, excluding a given number.
  *
@@ -14,4 +16,21 @@ export const generateRandomId = (max: number, exp: number): number => {
   } while (number === exp);
 
   return number;
+};
+
+export const stopPlayingCb: EffectCallback = (media) => {
+  media._audio.pause();
+  media._audio.currentTime = 0;
+};
+
+export const startPlayFromBegginingCb: EffectCallback = (media) => {
+  media._audio.currentTime = 0;
+};
+
+export const startPlayingCb: EffectCallback = (media) => {
+  media._audio.play();
+};
+
+export const pausePlayingCb: EffectCallback = (media) => {
+  media._audio.pause();
 };
