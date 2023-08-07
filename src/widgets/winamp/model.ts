@@ -33,6 +33,7 @@ import { getMMssFromNumber, getSnapBandValue, toggle } from "@/utils/utils";
 import {
   generateRandomId,
   pausePlayingCb,
+  playNextTrackIsOneInPlayListCb,
   startPlayFromBegginingCb,
   startPlayingCb,
   stopPlayingCb,
@@ -349,6 +350,8 @@ export const setCurrentTime_ = createEvent<number>();
 
 const $mediaElement = createStore<Nullable<MediaElement>>(null);
 const $currentTrack = createStore<Nullable<Track>>(null);
+
+const $currentTrackIsEmpty = $currentTrack.map((track) => track === null);
 const $activeWindow = createStore<TWinampWindow>(WINAMP_WINDOW_STATE.NONE);
 
 const $clutterBar = createStore<Record<string, boolean>>({
@@ -443,16 +446,6 @@ export const keyChangeCurrentTimeFx = attach({
   },
 });
 
-export const playNextTrackIsOneInPlayListFx = attach({
-  source: $mediaElement,
-  async effect(media) {
-    if (media) {
-      media._audio.currentTime = 0;
-      media._audio.play();
-    }
-  },
-});
-
 const baseFx = attach({
   source: $mediaElement,
   async effect(media, callback: EffectCallback) {
@@ -491,9 +484,15 @@ const startPlayingFx = attach({
   mapParams: () => startPlayingCb,
 });
 
+/* normalize naming please */
 const pausePlayingFx = attach({
   effect: baseFx,
   mapParams: () => pausePlayingCb,
+});
+
+export const playNextTrackIsOneInPlayListFx = attach({
+  effect: baseFx,
+  mapParams: () => playNextTrackIsOneInPlayListCb,
 });
 
 // runtime //
@@ -581,9 +580,7 @@ sample({
 //toggle loop from ui
 sample({
   clock: $loop,
-  source: $mediaElement,
-  filter: (media) => !!media,
-  fn: (_, loop) => ({ loop }),
+  fn: (loop) => ({ loop }),
   target: toggleLoopFx,
 });
 
@@ -591,9 +588,7 @@ $shuffled.on(toggleShuffle, toggle);
 
 sample({
   clock: $shuffled,
-  source: $mediaElement,
   filter: $shuffled,
-  fn: (media) => ({ media }),
   target: toggleShuffleFx,
 });
 
@@ -619,7 +614,7 @@ $currentTrack.on(loadUrlFx.doneData, (_, track) => ({
 sample({
   clock: initWinamp,
   source: $currentTrack,
-  filter: (track) => !!track,
+  filter: not($currentTrackIsEmpty),
   fn: (track) => track!,
   target: createWinampFx,
 });
@@ -779,7 +774,6 @@ sample({
 //when press playbutton when status playing
 sample({
   clock: onPlayClicked,
-  source: { media: $mediaElement },
   filter: $isPlaying,
   target: startPlayFromBegginingFx,
 });
@@ -787,21 +781,17 @@ sample({
 //when press playbutton and status not playing
 sample({
   clock: onPlayClicked,
-  source: { media: $mediaElement },
   filter: not($isPlaying),
   target: startPlayingFx,
 });
 
 sample({
   clock: onPauseClicked,
-  source: { media: $mediaElement },
-  filter: ({ media }) => !!media,
   target: pausePlayingFx,
 });
 
 sample({
   clock: onStopButtonClicked,
-  source: { media: $mediaElement },
   target: stopPlayingFx,
 });
 
@@ -815,7 +805,6 @@ $mediaStatus.on([stopPlayingFx.done, doubleClickedTrackInPlaylist], () => MEDIA_
 
 sample({
   clock: doubleClickedTrackInPlaylist,
-  source: { media: $mediaElement },
   target: startPlayingFx,
 });
 
@@ -908,21 +897,24 @@ sample({
 $activeWindow.on(changeWindowState, (_, currentWindow) => currentWindow);
 $activeWindow.reset([closeWinamp, selectTrackFromList]);
 
+/**
+ * @todo refactor is a dich from here ==>
+ */
 sample({
   clock: showWinamp,
-  source: $currentTrack,
-  filter: (currentTrack) => currentTrack === null,
+  filter: $currentTrackIsEmpty,
   fn: () => WINAMP_STATE.OPENED,
   target: $winampState,
 });
 
 sample({
   clock: showWinamp,
-  source: $currentTrack,
-  filter: (currentTrack) => currentTrack !== null,
+  filter: not($currentTrackIsEmpty),
   fn: () => WINAMP_STATE.TRACKLOADED,
   target: $winampState,
 });
+
+// <== to here
 
 sample({
   clock: playAllTracksFromList,
@@ -931,11 +923,8 @@ sample({
   target: $playlist,
 });
 
-sample({
-  clock: playAllTracksFromList,
-  fn: () => 0,
-  target: $currentPlayedTrackIndex,
-});
+/* inline sample */
+$currentPlayedTrackIndex.on(playAllTracksFromList, () => 0);
 
 sample({
   clock: playAllTracksFromList,

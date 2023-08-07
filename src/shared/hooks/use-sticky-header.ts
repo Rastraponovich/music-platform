@@ -4,8 +4,6 @@ const useStickyHeader = (defaultSticky = false) => {
   const ref = useRef<HTMLElement>(null);
   const toggleSticky = useCallback(
     ({ top, bottom }) => {
-      console.log(top, bottom);
-
       if (top <= 0 && bottom !== 82) {
         !isSticky && setIsSticky(true);
       } else {
