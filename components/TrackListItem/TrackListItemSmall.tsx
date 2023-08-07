@@ -20,7 +20,6 @@ interface TrackListItemProps {
 }
 
 const TrackListItemSmall = ({ track, isCurrentTrack }: TrackListItemProps) => {
-  // console.log("render track", track.name)
   const mediaStatus = useUnit(winamp.$mediaStatus);
 
   const { firstMinute, lastSecond, lastMinute, firstSecond } = useMemo(
@@ -36,6 +35,7 @@ const TrackListItemSmall = ({ track, isCurrentTrack }: TrackListItemProps) => {
 
   const play = () => {
     if (!isCurrentTrack) return handleSelectTrack(track);
+
     if (mediaStatus === "PLAYING") return handlePause();
     return handlePlay();
   };
@@ -72,7 +72,6 @@ const TrackListItemSmall = ({ track, isCurrentTrack }: TrackListItemProps) => {
         >
           {isCurrentTrack ? (
             mediaStatus === "PLAYING" ? (
-              // <PauseIcon size="small" />
               <PauseIcon className="h-6 w-6 md:h-10 md:w-10" />
             ) : (
               <PlayIcon className="h-6 w-6 md:h-10 md:w-10" />

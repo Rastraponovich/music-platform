@@ -1,4 +1,4 @@
-import { useInitPlayer } from "@/src/shared/hooks/useInitPlayer";
+import { useInitPlayer } from "@/src/shared/hooks/use-init-player";
 
 import type { ReactNode } from "react";
 

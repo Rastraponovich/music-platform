@@ -42,6 +42,7 @@ const SearchDialog = ({ open, onClose, value, onChangeValue, data }: SearchDialo
     >
       <Combobox
         value={value}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         onChange={(track: Song) => {
           handlePlayTrack(track);

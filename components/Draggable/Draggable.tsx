@@ -8,15 +8,17 @@ interface DraggableProps {
 }
 
 const Draggable = ({ children, WINDOW_NAME }: DraggableProps) => {
-  const ref = useRef<any>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   const [onDragStart, onDragging, onDragEnd] = useDraggable(WINDOW_NAME, ref);
+
   return (
     <div
       ref={ref}
       onMouseDown={onDragStart}
       onMouseMove={onDragging}
       onMouseUp={onDragEnd}
+
       //   style={{
       //     position: "absolute",
       //     top: 0,

@@ -1,7 +1,6 @@
 // import { useUnit } from "effector-react";
 
 import { getSongs } from "@/features/music";
-// import { winamp } from "@/src/widgets/winamp/model";
 import { allSettled, fork, serialize } from "effector";
 
 import type { GetServerSideProps, NextPage } from "next";
@@ -18,7 +17,6 @@ interface LKPageProps {
 }
 
 const LKPage: NextPage<LKPageProps> = () => {
-  //   const currentTrack = useUnit(winamp.$currentTrack);
   return (
     <main className="grow space-y-4 bg-gray-100 px-5 pb-5 pt-1 md:px-20 md:pt-2 ">
       <h2 className="text-center text-xl font-semibold first-letter:uppercase sm:text-left sm:text-2xl">
