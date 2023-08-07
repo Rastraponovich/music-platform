@@ -1,11 +1,12 @@
-import { playlist, progress, winampStates } from "@/src/widgets/winamp/model";
+import { playlist, winampStates } from "@/src/widgets/winamp/model";
 import { WINAMP_WINDOW_STATE } from "@/features/music/constants";
 import { useUnit } from "effector-react";
 import { useEffect } from "react";
 import { keyboardVolumeChanged } from "@/src/features/winamp/volume-bar/model";
+import { keyChangeCurrentTime } from "@/src/features/winamp/progress-bar/model";
 
 const useChangeCurentTime = () => {
-  const changeCurrentTime = useUnit(progress.keyChangeCurrentTime);
+  const changeCurrentTime = useUnit(keyChangeCurrentTime);
 
   useEffect(() => {
     const handler = (event: globalThis.KeyboardEvent) => {

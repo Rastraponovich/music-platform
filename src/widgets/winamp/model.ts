@@ -1,4 +1,4 @@
-import { debug, not } from "patronum";
+import { debug, not, reset } from "patronum";
 import { sample, createEffect, createEvent, createStore, scopeBind, attach } from "effector";
 
 import { StereoBalanceNode } from "~/shared/lib/audio/stereo-balance-node";
@@ -23,12 +23,12 @@ import {
   MediaElement,
   StereoBalanceNodeType,
   TMediaStatus,
+  TimeMode,
 } from "../../../features/music/types";
 import { createWinampPlaylistFactory } from "../../../features/music/winamp-playlist";
 import { createWinampEQFactory } from "../../../features/music/winamp-eq";
-import { createWinampProgressFactory } from "../../../features/music/winamp-progress";
 
-import { convertTimeToString, getSnapBandValue, toggle } from "@/utils/utils";
+import { getMMssFromNumber, getSnapBandValue, toggle } from "@/utils/utils";
 
 import { generateRandomId } from "./utils";
 declare global {
@@ -39,6 +39,16 @@ declare global {
     };
   }
 }
+
+/**
+ * @todo export
+ */
+type TrackTimer = {
+  firstSecond: number;
+  lastSecond: number;
+  lastMinute: number;
+  firstMinute: number;
+};
 
 const startPlayFromBegginingFx = createEffect<{ media: Nullable<MediaElement> }, void>(
   ({ media }) => {
@@ -146,7 +156,7 @@ const Emitter = {
   onTimeUpdate: (event: Event) => {
     const audio = event.currentTarget as HTMLAudioElement;
 
-    const callSetCurrentTime = scopeBind(setCurrentTime, {
+    const callSetCurrentTime = scopeBind(setCurrentTime_, {
       scope: getClientScope()!,
     });
 
@@ -354,11 +364,25 @@ const changeClutterBar = createEvent<string>();
 const toggleEnabledMarqueInfo = createEvent();
 const enabledMarqueInfo = createEvent();
 const disabledMarqueInfo = createEvent();
-const setMarqueInfo = createEvent<string | number>();
+
+export const setMarqueInfo = createEvent<string | number>();
 
 // volume segment //
-
 export const setVolume = createEvent<number>();
+
+// end volume segment //
+
+// progress segment //
+
+export const toggleTimeMode = createEvent();
+export const setDuration = createEvent<number>();
+
+/**
+ * set current time from emitter
+ */
+export const setCurrentTime_ = createEvent<number>();
+
+// end segment //
 
 const $Media = createStore<Nullable<MediaElement>>(null);
 const $currentTrack = createStore<Nullable<Track>>(null);
@@ -389,6 +413,26 @@ export const $baseSkinColors = createStore<string[]>(baseSkinColors);
 // volume segment //
 export const $volume = createStore<number>(50);
 
+// end volume segment //
+
+// progress segment //
+export const $timeMode = createStore<TimeMode>(TimeMode.ELAPSED);
+export const $currentTrackDuration = createStore<number>(0);
+export const $currentTrackTime = createStore<number>(0);
+export const $timer = createStore<TrackTimer>({
+  firstSecond: 0,
+  lastSecond: 0,
+  firstMinute: 0,
+  lastMinute: 0,
+});
+
+/**
+ * remaining time in current Track
+ */
+export const $currentTrackTimeRemaining = createStore<number>(0);
+
+// end progress segment //
+
 /**
  * when volume changed from key pressed
  */
@@ -396,7 +440,9 @@ export const keyboardChangedVolumeFx = attach({
   source: $Media,
   effect(media: Nullable<MediaElement>, key: "up" | "down") {
     if (media) {
-      media._audio.volume = key === "up" ? media._audio.volume + 0.01 : media._audio.volume - 0.01;
+      const volumeChange = key === "up" ? 0.01 : -0.01;
+
+      media._audio.volume += volumeChange;
     }
   },
 });
@@ -413,6 +459,42 @@ export const changeVolumeFx = attach({
   },
 });
 
+/**
+ * @todo for feature
+ */
+export const changeCurrentTimeFx = attach({
+  source: $Media,
+  async effect(
+    media: Nullable<MediaElement>,
+    { newTime, allowSeeking }: { newTime: number; allowSeeking: boolean },
+  ) {
+    if (media && allowSeeking) {
+      media._audio.currentTime = newTime;
+    }
+  },
+});
+
+/**
+ * @todo for feature
+ */
+export const keyChangeCurrentTimeFx = attach({
+  source: $Media,
+  async effect(
+    media: Nullable<MediaElement>,
+    { direction }: { direction: "forward" | "backward" | string },
+  ) {
+    if (media) {
+      if (direction === "forward") {
+        media._audio.currentTime = media._audio.currentTime + 5;
+      }
+
+      if (direction === "backward") {
+        media._audio.currentTime = media._audio.currentTime - 5;
+      }
+    }
+  },
+});
+
 // runtime //
 
 export const $isPlaying = $mediaStatus.map((status) => status === MEDIA_STATUS.PLAYING);
@@ -421,6 +503,17 @@ export const $isPaused = $mediaStatus.map((status) => status === MEDIA_STATUS.PA
 
 // runtime volume segment //
 $volume.on(setVolume, (_, volume) => volume);
+
+// end segment //
+
+// runtime progress segment //
+
+$timeMode.on(toggleTimeMode, (timeMode) =>
+  timeMode === TimeMode.ELAPSED ? TimeMode.REMAINING : TimeMode.ELAPSED,
+);
+$currentTrackDuration.on(setDuration, (_, duration) => duration);
+
+// end segment //
 
 sample({
   clock: destroyWinamp,
@@ -528,23 +621,6 @@ sample({
   fn: (track) => track!,
   target: createWinampFx,
 });
-
-const {
-  toggleTimeMode,
-  setDuration,
-  setCurrentTime,
-  seekingCurrentTime,
-  onmouseup,
-  onmousedown,
-  keyChangeCurrentTime,
-  $timer,
-  $timeMode,
-  $seekingProgress,
-  $currentTrackTimeRemaining,
-  $currentTrackDuration,
-  $currentTime,
-  $allowSeeking,
-} = createWinampProgressFactory($Media, $currentTrack);
 
 const {
   toggleVisibleEQ,
@@ -883,22 +959,6 @@ $enabledMaruqeInfo.on(disabledMarqueInfo, () => false);
 $winampMarqueInfo.on(setMarqueInfo, (_, payload) => String(payload));
 $winampMarqueInfo.reset([disabledMarqueInfo, $enabledMaruqeInfo]);
 
-//show in TrackListInfo seeking progress
-sample({
-  clock: $seekingProgress,
-  source: $currentTrackDuration,
-  fn: (duration, seekingValue) => {
-    const percent = Math.floor((seekingValue / duration) * 100);
-
-    const currentTime = convertTimeToString(seekingValue);
-    const currentDuration = convertTimeToString(duration);
-
-    return `Seek To: ${currentTime}/${currentDuration} (${percent}%)`;
-  },
-
-  target: setMarqueInfo,
-});
-
 sample({
   clock: changeEQBand,
   fn: (event) => {
@@ -919,6 +979,34 @@ sample({
     return `EQ: PREAMP ${db.toFixed(1)} DB`;
   },
   target: setMarqueInfo,
+});
+
+sample({
+  clock: $currentTrackTime,
+  source: $currentTrackDuration,
+  fn: (duration, currentTime) => duration - currentTime,
+  target: $currentTrackTimeRemaining,
+});
+
+sample({
+  clock: $currentTrackTime,
+  source: $timeMode,
+  filter: (timeMode) => timeMode === TimeMode.ELAPSED,
+  fn: (_, currentTime) => getMMssFromNumber(currentTime),
+  target: $timer,
+});
+
+sample({
+  clock: $currentTrackTimeRemaining,
+  source: $timeMode,
+  filter: (timeMode) => timeMode === TimeMode.REMAINING,
+  fn: (_, currentTime) => getMMssFromNumber(currentTime),
+  target: $timer,
+});
+
+reset({
+  clock: $currentTrack,
+  target: [$timer, $currentTrackTimeRemaining, $currentTrackTime],
 });
 
 export const marqueInfo = {
@@ -952,21 +1040,8 @@ export const playlist = {
   removeTrackFromPlaylist,
 };
 
-export const progress = {
-  $currentTime,
-  seekingCurrentTime,
-  $seekingProgress,
-  $currentTrackTimeRemaining,
-  keyChangeCurrentTime,
-  $allowSeeking,
-  onmousedown,
-  onmouseup,
-  $timer,
-};
-
 export const duration = {
   $durationTracksInPlaylist,
-  $currentTrackDuration,
 };
 
 export const winamp = {
@@ -980,8 +1055,6 @@ export const winamp = {
   $currentTrack,
   selectTrackFromList,
   playAllTracksFromList,
-  $timeMode,
-  toggleTimeMode,
   toggleShadePlayer,
   $loop,
   $shuffle: $shuffled,
@@ -1022,39 +1095,3 @@ export const eq = {
 };
 
 export { loadUrl, selectTrackFromList, $Media, $clutterBar, changeClutterBar };
-
-/**
- * @todo for feature
- */
-export const changeCurrentTimeFx = attach({
-  source: $Media,
-  async effect(
-    media: Nullable<MediaElement>,
-    { newTime, allowSeeking }: { newTime: number; allowSeeking: boolean },
-  ) {
-    if (media && allowSeeking) {
-      media._audio.currentTime = newTime;
-    }
-  },
-});
-
-/**
- * @todo for feature
- */
-export const keyChangeCurrentTimeFx = attach({
-  source: $Media,
-  async effect(
-    media: Nullable<MediaElement>,
-    { direction }: { direction: "forward" | "backward" },
-  ) {
-    if (media) {
-      if (direction === "forward") {
-        media._audio.currentTime = media._audio.currentTime + 5;
-      }
-
-      if (direction === "backward") {
-        media._audio.currentTime = media._audio.currentTime - 5;
-      }
-    }
-  },
-});

@@ -1,11 +1,9 @@
 import { useUnit } from "effector-react";
 import { TIME_MODE } from "@/features/media/constants";
-import { progress, winamp } from "@/src/widgets/winamp/model";
+import { $timeMode, $timer } from "@/src/widgets/winamp/model";
 
 const TrackTimer = () => {
-  const timeMode = useUnit(winamp.$timeMode);
-
-  const timer = useUnit(progress.$timer);
+  const [timeMode, timer] = useUnit([$timeMode, $timer]);
 
   const { firstSecond, lastSecond, firstMinute, lastMinute } = timer;
 

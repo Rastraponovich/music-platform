@@ -1,18 +1,16 @@
 {
-    "presets": ["next/babel"],
-    "plugins": [
-        [
-            "effector/babel-plugin",
-            {
-                "reactSsr": true,
-                "factories": [
-                    "/models/factories",
-                    "/features/music/winamp-volume",
-                    "/features/music/winamp-playlist",
-                    "/features/music/winamp-eq",
-                    "/features/music/winamp-progress"
-                ]
-            }
+  "presets": ["next/babel"],
+  "plugins": [
+    [
+      "effector/babel-plugin",
+      {
+        "reactSsr": true,
+        "factories": [
+          "/models/factories",
+          "/features/music/winamp-playlist",
+          "/features/music/winamp-eq"
         ]
+      }
     ]
+  ]
 }

@@ -6,7 +6,12 @@ import { useUnit } from "effector-react/scope";
 
 import { useDraggable } from "@/src/shared/hooks/use-draggable";
 
-import { duration, playlist, winampStates } from "@/src/widgets/winamp/model";
+import {
+  $currentTrackDuration,
+  duration,
+  playlist,
+  winampStates,
+} from "@/src/widgets/winamp/model";
 
 import { convertTimeToString } from "@/utils/utils";
 
@@ -29,7 +34,7 @@ const PlayListWindow = () => {
   const handleActiveWindow = useUnit(winampStates.changeWindowState);
   const [visible, currentTrackDuration, totalDuration] = useUnit([
     playlist.$visiblePlaylist,
-    duration.$currentTrackDuration,
+    $currentTrackDuration,
     duration.$durationTracksInPlaylist,
   ]);
 
