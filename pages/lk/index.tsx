@@ -10,7 +10,7 @@ import {
   LKFiltersSkeleton,
   ProfileFormSkeleton,
   StatsSkeleton,
-} from "@/components/ui/Skeletons";
+} from "~/shared/ui/skeleton";
 
 interface LKPageProps {
   foo?: "bar";

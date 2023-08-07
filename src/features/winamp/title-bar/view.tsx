@@ -12,7 +12,7 @@ import {
 } from "./model";
 
 import { MiniActions } from "../controls-panel";
-import MiniTimer from "@/components/ui/Winamp/PlayListWindow/MiniTimer";
+import MiniTimer from "@/components/ui/Winamp/PlayListWindow/mini-timer";
 
 interface TitleBarProps {
   onMouseDown: MouseEventHandler;

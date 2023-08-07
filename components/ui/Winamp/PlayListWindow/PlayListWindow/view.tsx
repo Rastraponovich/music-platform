@@ -16,7 +16,7 @@ import {
 import { convertTimeToString } from "@/utils/utils";
 
 import Playlist from "../Playlist";
-import MiniTimer from "../MiniTimer";
+import { MiniTimer } from "../mini-timer";
 import PlaylistHeader from "../PlaylistHeader";
 import { MiniActions } from "@/src/features/winamp/controls-panel";
 import { CharacterStrings } from "@/src/shared/ui/winamp/character-strings";

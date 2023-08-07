@@ -5,14 +5,14 @@ import { fork, serialize } from "effector";
 import { $songs } from "@/features/music";
 
 import type { Album } from "@/types";
-import { TrackListItem } from "@/src/entity/songs";
 import type { GetServerSideProps, NextPage } from "next";
 
 import { albums } from "@/utils/__mock__";
 
-import AlbumInfo from "@/components/Albums/Album/AlbumInfo";
-import PlaylistFormModal from "@/components/ui/PlaylistForm/PlaylistFormModal";
-import Rating from "@/components/ui/Rating/Rating";
+import PlaylistFormModal from "@/components/playlist-form/playlist-form-modal";
+import { TrackListItem } from "~/entity/songs";
+import { Rating } from "~/shared/ui/rating";
+import { AlbumInfo } from "@/components/album";
 
 interface PlaylistPageProps {
   playlist: Album;
