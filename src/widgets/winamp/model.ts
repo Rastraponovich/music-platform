@@ -1,5 +1,5 @@
-import { debug, not, reset } from "patronum";
 import { sample, createEffect, createEvent, createStore, scopeBind, attach } from "effector";
+import { not, reset } from "patronum";
 
 import { StereoBalanceNode } from "~/shared/lib/audio/stereo-balance-node";
 
@@ -30,7 +30,13 @@ import { createWinampEQFactory } from "../../../features/music/winamp-eq";
 
 import { getMMssFromNumber, getSnapBandValue, toggle } from "@/utils/utils";
 
-import { generateRandomId } from "./utils";
+import {
+  generateRandomId,
+  pausePlayingCb,
+  startPlayFromBegginingCb,
+  startPlayingCb,
+  stopPlayingCb,
+} from "./utils";
 declare global {
   interface Window {
     webkitAudioContext: {
@@ -39,6 +45,10 @@ declare global {
     };
   }
 }
+
+type TimeDirection = "forward" | "backward" | string;
+
+export type EffectCallback = (media: MediaElement) => void;
 
 /**
  * @todo export
@@ -50,33 +60,7 @@ type TrackTimer = {
   firstMinute: number;
 };
 
-const startPlayFromBegginingFx = createEffect<{ media: Nullable<MediaElement> }, void>(
-  ({ media }) => {
-    if (media) {
-      media._audio.currentTime = 0;
-    }
-  },
-);
-
-const startPlayingFx = createEffect<{ media: Nullable<MediaElement> }, void>(({ media }) => {
-  if (media) {
-    media._audio.play();
-  }
-});
-
-const pausePlayingFx = createEffect<{ media: Nullable<MediaElement> }, void>(({ media }) => {
-  if (media) {
-    media._audio.pause();
-  }
-});
-
-const stopPlayingFx = createEffect<{ media: Nullable<MediaElement> }, void>(({ media }) => {
-  if (media) {
-    media._audio.pause();
-    media._audio.currentTime = 0;
-  }
-});
-
+/* todo export */
 const loadUrlFx = createEffect<{ media: Nullable<MediaElement>; track: Track }, Track>(
   ({ media, track }) => {
     if (media) {
@@ -84,27 +68,6 @@ const loadUrlFx = createEffect<{ media: Nullable<MediaElement>; track: Track }, 
     }
 
     return track;
-  },
-);
-
-const toggleLoopFx = createEffect<{ media: Nullable<MediaElement>; loop: boolean }, void>(
-  ({ media, loop }) => {
-    if (media) {
-      media._audio.loop = loop;
-    }
-  },
-);
-
-const toggleShuffleFx = createEffect<{ media: Nullable<MediaElement> }, void>(({ media }) => {
-  if (media) {
-    media._audio.loop = false;
-  }
-});
-
-const playNextTrackIsOneInPlayListFx = createEffect<{ audio: HTMLAudioElement }, void>(
-  ({ audio }) => {
-    audio.currentTime = 0;
-    audio.play();
   },
 );
 
@@ -384,7 +347,7 @@ export const setCurrentTime_ = createEvent<number>();
 
 // end segment //
 
-const $Media = createStore<Nullable<MediaElement>>(null);
+const $mediaElement = createStore<Nullable<MediaElement>>(null);
 const $currentTrack = createStore<Nullable<Track>>(null);
 const $activeWindow = createStore<TWinampWindow>(WINAMP_WINDOW_STATE.NONE);
 
@@ -426,18 +389,14 @@ export const $timer = createStore<TrackTimer>({
   lastMinute: 0,
 });
 
-/**
- * remaining time in current Track
- */
+/* remaining time in current Track */
 export const $currentTrackTimeRemaining = createStore<number>(0);
 
 // end progress segment //
 
-/**
- * when volume changed from key pressed
- */
+/* effect changed volume from key pressed */
 export const keyboardChangedVolumeFx = attach({
-  source: $Media,
+  source: $mediaElement,
   effect(media: Nullable<MediaElement>, key: "up" | "down") {
     if (media) {
       const volumeChange = key === "up" ? 0.01 : -0.01;
@@ -447,11 +406,9 @@ export const keyboardChangedVolumeFx = attach({
   },
 });
 
-/**
- * change volume
- */
+/* effect changed volume in MediaElement */
 export const changeVolumeFx = attach({
-  source: $Media,
+  source: $mediaElement,
   async effect(media: Nullable<MediaElement>, value: number | string) {
     if (media) {
       media._audio.volume = Number(value) / 100;
@@ -459,11 +416,9 @@ export const changeVolumeFx = attach({
   },
 });
 
-/**
- * @todo for feature
- */
+/* effect changed current time in MediaElement */
 export const changeCurrentTimeFx = attach({
-  source: $Media,
+  source: $mediaElement,
   async effect(
     media: Nullable<MediaElement>,
     { newTime, allowSeeking }: { newTime: number; allowSeeking: boolean },
@@ -474,25 +429,71 @@ export const changeCurrentTimeFx = attach({
   },
 });
 
-/**
- * @todo for feature
- */
+/* effect changed current time in MediaElement when key pressed */
 export const keyChangeCurrentTimeFx = attach({
-  source: $Media,
-  async effect(
-    media: Nullable<MediaElement>,
-    { direction }: { direction: "forward" | "backward" | string },
-  ) {
-    if (media) {
-      if (direction === "forward") {
-        media._audio.currentTime = media._audio.currentTime + 5;
-      }
+  source: $mediaElement,
+  async effect(media: Nullable<MediaElement>, { direction }: { direction: TimeDirection }) {
+    if (media && direction === "forward") {
+      media._audio.currentTime += 5;
+    }
 
-      if (direction === "backward") {
-        media._audio.currentTime = media._audio.currentTime - 5;
-      }
+    if (media && direction === "backward") {
+      media._audio.currentTime -= 5;
     }
   },
+});
+
+export const playNextTrackIsOneInPlayListFx = attach({
+  source: $mediaElement,
+  async effect(media) {
+    if (media) {
+      media._audio.currentTime = 0;
+      media._audio.play();
+    }
+  },
+});
+
+const baseFx = attach({
+  source: $mediaElement,
+  async effect(media, callback: EffectCallback) {
+    if (media) {
+      callback(media);
+    }
+  },
+});
+
+const stopPlayingFx = attach({
+  effect: baseFx,
+  mapParams: () => stopPlayingCb,
+});
+
+const toggleLoopFx = attach({
+  source: $mediaElement,
+  async effect(media, { loop }) {
+    if (media) {
+      media._audio.loop = loop;
+    }
+  },
+});
+
+const toggleShuffleFx = attach({
+  effect: toggleLoopFx,
+  mapParams: () => ({ loop: false }),
+});
+
+const startPlayFromBegginingFx = attach({
+  effect: baseFx,
+  mapParams: () => startPlayFromBegginingCb,
+});
+
+const startPlayingFx = attach({
+  effect: baseFx,
+  mapParams: () => startPlayingCb,
+});
+
+const pausePlayingFx = attach({
+  effect: baseFx,
+  mapParams: () => pausePlayingCb,
 });
 
 // runtime //
@@ -515,9 +516,10 @@ $currentTrackDuration.on(setDuration, (_, duration) => duration);
 
 // end segment //
 
+/* ebat' kakoy sample */
 sample({
   clock: destroyWinamp,
-  source: $Media,
+  source: $mediaElement,
   filter: (mediaSource, _): mediaSource is MediaElement =>
     mediaSource!._audio instanceof HTMLAudioElement,
 
@@ -559,7 +561,7 @@ sample({
 
 //initial $Media source
 
-$Media.on(createWinampFx.doneData, (_, media) => media);
+$mediaElement.on(createWinampFx.doneData, (_, media) => media);
 
 $shadePlayer.on(toggleShadePlayer, toggle);
 
@@ -571,7 +573,7 @@ $loop.on(toggleLoop, toggle);
 
 sample({
   clock: loadUrl,
-  source: $Media,
+  source: $mediaElement,
   fn: (media, track) => ({ media, track }),
   target: loadUrlFx,
 });
@@ -579,9 +581,9 @@ sample({
 //toggle loop from ui
 sample({
   clock: $loop,
-  source: $Media,
-  filter: (media) => media?._audio instanceof HTMLAudioElement,
-  fn: (media, loop) => ({ media, loop }),
+  source: $mediaElement,
+  filter: (media) => !!media,
+  fn: (_, loop) => ({ loop }),
   target: toggleLoopFx,
 });
 
@@ -589,7 +591,7 @@ $shuffled.on(toggleShuffle, toggle);
 
 sample({
   clock: $shuffled,
-  source: $Media,
+  source: $mediaElement,
   filter: $shuffled,
   fn: (media) => ({ media }),
   target: toggleShuffleFx,
@@ -645,7 +647,7 @@ const {
   $visiblePresetWindow,
   selectPreset,
   toggleVisiblePresetWindow,
-} = createWinampEQFactory($Media);
+} = createWinampEQFactory($mediaElement);
 
 const {
   $playlist,
@@ -747,8 +749,6 @@ const isBiggerOneTrackInPlayList = sample({
 
 sample({
   clock: isOneTrackInPlayList,
-  source: $Media,
-  fn: (media) => ({ audio: media!._audio }),
   target: playNextTrackIsOneInPlayListFx,
 });
 
@@ -779,7 +779,7 @@ sample({
 //when press playbutton when status playing
 sample({
   clock: onPlayClicked,
-  source: { media: $Media },
+  source: { media: $mediaElement },
   filter: $isPlaying,
   target: startPlayFromBegginingFx,
 });
@@ -787,21 +787,21 @@ sample({
 //when press playbutton and status not playing
 sample({
   clock: onPlayClicked,
-  source: { media: $Media },
+  source: { media: $mediaElement },
   filter: not($isPlaying),
   target: startPlayingFx,
 });
 
 sample({
   clock: onPauseClicked,
-  source: { media: $Media },
+  source: { media: $mediaElement },
   filter: ({ media }) => !!media,
   target: pausePlayingFx,
 });
 
 sample({
   clock: onStopButtonClicked,
-  source: { media: $Media },
+  source: { media: $mediaElement },
   target: stopPlayingFx,
 });
 
@@ -815,7 +815,7 @@ $mediaStatus.on([stopPlayingFx.done, doubleClickedTrackInPlaylist], () => MEDIA_
 
 sample({
   clock: doubleClickedTrackInPlaylist,
-  source: { media: $Media },
+  source: { media: $mediaElement },
   target: startPlayingFx,
 });
 
@@ -1094,4 +1094,4 @@ export const eq = {
   toggleMinimized: toggleMinimizeEQ,
 };
 
-export { loadUrl, selectTrackFromList, $Media, $clutterBar, changeClutterBar };
+export { loadUrl, selectTrackFromList, $mediaElement as $Media, $clutterBar, changeClutterBar };
