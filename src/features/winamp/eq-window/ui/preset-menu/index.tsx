@@ -14,9 +14,8 @@ export const PresetMenu = () => {
 
   const ref = useRef(null);
 
-  console.log("render presets");
-
   const [onDragStart, onDragging, onDragEnd] = useDraggable(WINDOW_NAME, ref);
+
   return (
     <div
       className={clsx(

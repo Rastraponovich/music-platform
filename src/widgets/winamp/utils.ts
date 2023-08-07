@@ -34,3 +34,8 @@ export const startPlayingCb: EffectCallback = (media) => {
 export const pausePlayingCb: EffectCallback = (media) => {
   media._audio.pause();
 };
+
+export const playNextTrackIsOneInPlayListCb: EffectCallback = (media) => {
+  media._audio.currentTime = 0;
+  media._audio.play();
+};

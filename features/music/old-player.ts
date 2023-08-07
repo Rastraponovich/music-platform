@@ -243,11 +243,11 @@ const $loop = createStore<boolean>(false).on(onSetLoopEnabled, (state, _) => !st
 
 export const PlayListGate = createGate<any>();
 
-PlayListGate.open.watch((args) => console.log(args));
 //------------------------------------------------------//
 
 const createPlayerFx = createEffect<boolean, HTMLAudioElement>((loop) => {
   const audio = new Audio();
+
   audio.autoplay = false;
   audio.controls = false;
   audio.loop = loop;
@@ -388,8 +388,6 @@ guard({
   target: createEffect<[HTMLAudioElement, number, boolean], void>(
     ([audio, newcurrentTime, allowSeeking]) => {
       if (allowSeeking) {
-        console.log(allowSeeking);
-
         audio.currentTime = newcurrentTime;
       }
     },
@@ -471,7 +469,6 @@ const onEnded = (event: Event) => {
   const callCheckNextTrack = scopeBind(checkNextTrack, { scope: getClientScope()! });
 
   callCheckNextTrack();
-  console.log("ended", { el: event });
 };
 
 const onError = (event: Event) => {
@@ -490,13 +487,11 @@ const onLoadStart = (event: Event) => {
   // console.log("loadstart", { el: event.currentTarget });
 };
 const onPause = (_event: Event) => {
-  console.log("pause");
   const callSetPause = scopeBind(setPause, { scope: getClientScope()! });
   callSetPause();
 };
 
 const onPlay = (_event: Event) => {
-  console.log("play");
   const callSetPlaying = scopeBind(setPlaying, { scope: getClientScope()! });
   callSetPlaying();
 };
