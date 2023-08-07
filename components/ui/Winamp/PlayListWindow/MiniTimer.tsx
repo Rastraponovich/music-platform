@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useUnit } from "effector-react";
-import { progress, winamp } from "@/src/widgets/winamp/model";
+import { $timeMode, $timer, toggleTimeMode, winamp } from "@/src/widgets/winamp/model";
 
 import { TimeMode } from "@/features/music/types";
 import { CharacterString } from "@/src/shared/ui/winamp/character-strings";
@@ -11,12 +11,12 @@ interface MiniTimerProps {
 
 const MiniTimer = ({ className }: MiniTimerProps) => {
   const playerState = useUnit(winamp.$mediaStatus);
-  const timeMode = useUnit(winamp.$timeMode);
+  const timeMode = useUnit($timeMode);
 
-  const timer = useUnit(progress.$timer);
+  const timer = useUnit($timer);
 
   const { firstSecond, lastSecond, firstMinute, lastMinute } = timer;
-  const handleSwitchTimeMode = useUnit(winamp.toggleTimeMode);
+  const handleSwitchTimeMode = useUnit(toggleTimeMode);
 
   return (
     <div

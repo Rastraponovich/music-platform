@@ -4,8 +4,8 @@ import dynamic from "next/dynamic";
 import { useUnit } from "effector-react";
 
 import {
-  $timer,
-  $timeMode,
+  $timerValue,
+  $currentTimeMode,
   $clutterbar,
   $playerState,
   changedClutterBar,
@@ -42,7 +42,7 @@ export const StatusBar = () => {
 };
 
 const TimerDisplay = () => {
-  const [playerState, timer, timeMode] = useUnit([$playerState, $timer, $timeMode]);
+  const [playerState, timer, timeMode] = useUnit([$playerState, $timerValue, $currentTimeMode]);
 
   const handleSwitchTimeModeClicked = useUnit(toggleTimeModeButtonClicked);
 

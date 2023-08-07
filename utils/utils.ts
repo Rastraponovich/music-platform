@@ -84,3 +84,26 @@ export const convertTimeToObj = (duration: number) => {
  * @return {boolean} The toggled state.
  */
 export const toggle = (state: boolean): boolean => !state;
+
+/**
+ * Converts a number representing seconds into a TrackTimer object with separate digits for minutes and seconds.
+ *
+ * @param {number} currentTime - The number of seconds.
+ * @return {TrackTimer} An object containing the first and last digits for minutes and seconds.
+ */
+export const getMMssFromNumber = (currentTime: number) => {
+  const seconds = currentTime % 60;
+  const minutes = Math.floor(currentTime / 60);
+
+  const firstSecond = Math.floor(seconds / 10);
+  const lastSecond = Math.floor(seconds % 10);
+  const firstMinute = Math.floor(minutes / 10);
+  const lastMinute = Math.floor(minutes % 10);
+
+  return {
+    firstSecond,
+    lastSecond,
+    firstMinute,
+    lastMinute,
+  };
+};

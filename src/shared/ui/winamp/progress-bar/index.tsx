@@ -2,7 +2,12 @@ import clsx from "clsx";
 import { useUnit } from "effector-react";
 import { memo, InputHTMLAttributes, useState, MouseEvent } from "react";
 
-import { duration, marqueInfo, progress } from "@/src/widgets/winamp/model";
+import { $currentTrackDuration, $currentTrackTime, marqueInfo } from "@/src/widgets/winamp/model";
+import {
+  sought,
+  progressBarLifted,
+  progressBarUplifted,
+} from "@/src/features/winamp/progress-bar/model";
 
 interface ProgressbarProps {
   className?: InputHTMLAttributes<HTMLInputElement>["className"];
@@ -17,10 +22,7 @@ interface ProgressbarProps {
 export const Progressbar = memo(({ className, id }: ProgressbarProps) => {
   const [active, setActive] = useState(false);
 
-  const [currentTrackDuration, currentTime] = useUnit([
-    duration.$currentTrackDuration,
-    progress.$currentTime,
-  ]);
+  const [currentTrackDuration, currentTime] = useUnit([$currentTrackDuration, $currentTrackTime]);
 
   const [handleMouseDown, handleMouseUp] = useUnit([
     marqueInfo.enabledMarqueInfo,
@@ -28,9 +30,9 @@ export const Progressbar = memo(({ className, id }: ProgressbarProps) => {
   ]);
 
   const [handleSeeking, mouseDown, mouseUp] = useUnit([
-    progress.seekingCurrentTime,
-    progress.onmousedown,
-    progress.onmouseup,
+    sought,
+    progressBarLifted,
+    progressBarUplifted,
   ]);
 
   const onMouseDown = (e: MouseEvent<HTMLInputElement>) => {
