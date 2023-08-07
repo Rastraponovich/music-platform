@@ -10,11 +10,12 @@ import { songModel, Tracklist } from "@/src/entity/songs";
 import { winamp } from "@/src/widgets/winamp/model";
 
 import { MusicNoteIcon, PlayIcon } from "@heroicons/react/solid";
-import MusicFilter from "@/components/MusicFilter/MusicFilter";
-import SearchInput from "@/components/ui/SearchInput/SearchInput";
-import WinampIcon from "@/components/ui/icons/WinampIcon/WinampIcon";
-import UploadFormModal from "@/components/UploadForm/UploadFormModal";
-import PlaylistFormModal from "@/components/ui/PlaylistForm/PlaylistFormModal";
+import { MusicFilter } from "@/components/music-filter";
+import { SearchInput } from "@/components/search-input";
+
+import { WinampIcon } from "~/shared/ui/winamp-icon";
+import { UploadFormModal } from "@/components/upload-form";
+import { PlaylistFormModal } from "@/components/playlist-form";
 
 const MusicPage: NextPage = () => {
   const hanldePlayAll = useUnit(winamp.playAllTracksFromList);

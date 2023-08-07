@@ -1,14 +1,24 @@
-import { memo, ReactNode } from "react";
-import deburr from "lodash/deburr";
 import clsx from "clsx";
-
+import deburr from "lodash.deburr";
+import { memo, ReactNode } from "react";
 interface Props extends React.HTMLAttributes<HTMLSpanElement> {
   children: string | number;
   className?: string;
 }
 
-export const characterClassName = (char: string | number): string =>
-  `character-${deburr(char.toString()).toLowerCase().charCodeAt(0)}`;
+/**
+ * Generates a character class name based on the given character.
+ *
+ * @param {string | number} char - The character to generate the class name for.
+ * @return {string} The generated character class name.
+ */
+export const characterClassName = (char: string | number): string => {
+  const deburredChar = deburr(char.toString());
+  const lowerCaseChar = deburredChar.toLowerCase();
+  const charCode = lowerCaseChar.charCodeAt(0);
+
+  return `character-${charCode}`;
+};
 
 export const CharacterString = memo(({ children: char, className, ...passThrough }: Props) => {
   return (

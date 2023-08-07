@@ -8,7 +8,7 @@ import "@/styles/globals.css";
 import "tailwindcss/tailwind.css";
 
 import { useScope } from "../src/shared/hooks/use-scope";
-import Layout from "@/components/ui/Layout/Layout";
+import { Layout } from "@/src/widgets/layout";
 
 import { Winamp } from "@/src/entity/winamp";
 
