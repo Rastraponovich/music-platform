@@ -19,6 +19,7 @@ const PlaylistHeader = ({
   onMouseLeave,
 }: PlaylistHeaderProps) => {
   const windowState = useUnit(winampStates.$activeWindow);
+
   return (
     <div
       className={clsx(

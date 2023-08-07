@@ -1,7 +1,8 @@
-import { playlist, progress, volume, winampStates } from "@/src/widgets/winamp/model";
+import { playlist, progress, winampStates } from "@/src/widgets/winamp/model";
 import { WINAMP_WINDOW_STATE } from "@/features/music/constants";
 import { useUnit } from "effector-react";
 import { useEffect } from "react";
+import { keyboardVolumeChanged } from "@/src/features/winamp/volume-bar/model";
 
 const useChangeCurentTime = () => {
   const changeCurrentTime = useUnit(progress.keyChangeCurrentTime);
@@ -31,7 +32,7 @@ const useDelPressKeyButton = () => {
   const playTrack = useUnit(playlist.doubleClick);
   const playlistLength = useUnit(playlist.$playlistLength);
 
-  const handleSetVolume = useUnit(volume.setVolumeFromKeys);
+  const handleSetVolume = useUnit(keyboardVolumeChanged);
 
   useEffect(() => {
     const handler = (event: globalThis.KeyboardEvent) => {
@@ -92,7 +93,15 @@ const useDelPressKeyButton = () => {
       window.removeEventListener("keydown", handler);
       window.removeEventListener("keypress", handler);
     };
-  }, [activeWindow, selectedTrackInPlayList]);
+  }, [
+    activeWindow,
+    handleDeleteTrackFormPlaylist,
+    handleSelectTrackInPlaylist,
+    handleSetVolume,
+    playTrack,
+    playlistLength,
+    selectedTrackInPlayList,
+  ]);
 };
 
 export { useChangeCurentTime, useDelPressKeyButton };

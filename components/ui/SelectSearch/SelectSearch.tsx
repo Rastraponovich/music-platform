@@ -3,8 +3,8 @@ import clsx from "clsx";
 import { ChangeEventHandler, memo, ReactNode } from "react";
 
 interface SelectSearchProps {
-  value: any;
-  onChange: any;
+  value: unknown;
+  onChange: unknown;
   Icon?: ReactNode;
   onChangeValue: ChangeEventHandler<HTMLInputElement>;
   children: ReactNode;
@@ -24,6 +24,7 @@ const SelectSearch = ({
   return (
     <Combobox
       value={value}
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       onChange={onChange}
       onClick={onClick}

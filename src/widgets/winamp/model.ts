@@ -1,4 +1,4 @@
-import { not } from "patronum";
+import { debug, not } from "patronum";
 import { sample, createEffect, createEvent, createStore, scopeBind, attach } from "effector";
 
 import { StereoBalanceNode } from "~/shared/lib/audio/stereo-balance-node";
@@ -24,7 +24,6 @@ import {
   StereoBalanceNodeType,
   TMediaStatus,
 } from "../../../features/music/types";
-import { createWinampVolumeFactory } from "../../../features/music/winamp-volume";
 import { createWinampPlaylistFactory } from "../../../features/music/winamp-playlist";
 import { createWinampEQFactory } from "../../../features/music/winamp-eq";
 import { createWinampProgressFactory } from "../../../features/music/winamp-progress";
@@ -357,6 +356,10 @@ const enabledMarqueInfo = createEvent();
 const disabledMarqueInfo = createEvent();
 const setMarqueInfo = createEvent<string | number>();
 
+// volume segment //
+
+export const setVolume = createEvent<number>();
+
 const $Media = createStore<Nullable<MediaElement>>(null);
 const $currentTrack = createStore<Nullable<Track>>(null);
 const $activeWindow = createStore<TWinampWindow>(WINAMP_WINDOW_STATE.NONE);
@@ -383,9 +386,41 @@ const $shadePlayer = createStore<boolean>(false);
 
 export const $baseSkinColors = createStore<string[]>(baseSkinColors);
 
+// volume segment //
+export const $volume = createStore<number>(50);
+
+/**
+ * when volume changed from key pressed
+ */
+export const keyboardChangedVolumeFx = attach({
+  source: $Media,
+  effect(media: Nullable<MediaElement>, key: "up" | "down") {
+    if (media) {
+      media._audio.volume = key === "up" ? media._audio.volume + 0.01 : media._audio.volume - 0.01;
+    }
+  },
+});
+
+/**
+ * change volume
+ */
+export const changeVolumeFx = attach({
+  source: $Media,
+  async effect(media: Nullable<MediaElement>, value: number | string) {
+    if (media) {
+      media._audio.volume = Number(value) / 100;
+    }
+  },
+});
+
+// runtime //
+
 export const $isPlaying = $mediaStatus.map((status) => status === MEDIA_STATUS.PLAYING);
 export const $isStopped = $mediaStatus.map((status) => status === MEDIA_STATUS.STOPPED);
 export const $isPaused = $mediaStatus.map((status) => status === MEDIA_STATUS.PAUSED);
+
+// runtime volume segment //
+$volume.on(setVolume, (_, volume) => volume);
 
 sample({
   clock: destroyWinamp,
@@ -511,7 +546,6 @@ const {
   $allowSeeking,
 } = createWinampProgressFactory($Media, $currentTrack);
 
-const { setVolume, changeVolume, $volume, setVolumeFromKeys } = createWinampVolumeFactory($Media);
 const {
   toggleVisibleEQ,
   toggleAutoEQ,
@@ -930,12 +964,6 @@ export const progress = {
   $timer,
 };
 
-export const volume = {
-  $volume,
-  changeVolume,
-  setVolumeFromKeys,
-};
-
 export const duration = {
   $durationTracksInPlaylist,
   $currentTrackDuration,
@@ -994,31 +1022,6 @@ export const eq = {
 };
 
 export { loadUrl, selectTrackFromList, $Media, $clutterBar, changeClutterBar };
-
-/**
- * @todo for feature
- */
-export const keyboardChangedVolumeFx = attach({
-  source: $Media,
-  async effect(media: Nullable<MediaElement>, key: "up" | "down") {
-    if (media) {
-      media._audio.volume = key === "up" ? media._audio.volume + 0.01 : media._audio.volume - 0.01;
-    }
-  },
-});
-
-/**
- * @todo for feature
- * change volume from feature
- */
-export const changeVolumeFx = attach({
-  source: $Media,
-  async effect(media: Nullable<MediaElement>, value: number | string) {
-    if (media) {
-      media._audio.volume = Number(value) / 100;
-    }
-  },
-});
 
 /**
  * @todo for feature

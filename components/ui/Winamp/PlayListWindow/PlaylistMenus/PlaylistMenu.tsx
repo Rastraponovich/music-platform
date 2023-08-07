@@ -1,4 +1,4 @@
-import { useOnClickAway } from "@/src/shared/hooks/useOnClickAway";
+import { useOnClickAway } from "@/src/shared/hooks/use-onclick-away";
 import clsx from "clsx";
 import React, { memo, ReactNode, useCallback, useState, Children } from "react";
 import PlaylistMenuEntry from "./PlaylistMenuEntry";
@@ -13,14 +13,13 @@ const PlaylistMenu = ({ id, children }: PlaylistMenuProps) => {
 
   const [ref, setRef] = useState<Element | null>(null);
 
+  // If we've clicked on a Context Menu spawed inside this menu, it will
+  // register as an external click. However, hiding the menu will remove
+  // the Context Menu from the DOM. Therefore, we wait until the next
+  // event loop to actually hide ourselves.
   const callback = useCallback(() => {
-    // If we've clicked on a Context Menu spawed inside this menu, it will
-    // register as an external click. However, hiding the menu will remove
-    // the Context Menu from the DOM. Therefore, we wait until the next
-    // event loop to actually hide ourselves.
     setTimeout(() => {
-      // Close the menu
-      setSelected(false);
+      setSelected(false); // Close the menu
     }, 0);
   }, []);
 

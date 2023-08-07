@@ -9,6 +9,7 @@ const Playlist = () => {
   const currentIndex = useUnit(playlist.$currentPlayedTrackIndex);
   const playingState = useUnit(winamp.$mediaStatus);
   const selectedTrack = useUnit(playlist.$selectedTrackInPlayList);
+
   return (
     <div
       className={

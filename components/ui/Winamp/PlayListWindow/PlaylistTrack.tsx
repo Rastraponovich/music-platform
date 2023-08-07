@@ -25,8 +25,6 @@ const PlaylistTrack = ({ track, index }: PlaylistTrackProps) => {
     <div
       onClick={() => handleSelectTrackInPlaylist(index)}
       onDoubleClick={() => handleSelectNewTrack(index)}
-      // onKeyPress={(e) => useEscapeFn(e)}
-      // onKeyDown={(e) => useEscapeFn(e)}
       className={clsx(
         "flex h-[13px] max-h-[13px] min-h-[13px] select-none justify-between  px-1 text-[9px]",
         selectedTrackInPlaylist === index && "bg-[#0000C6]",

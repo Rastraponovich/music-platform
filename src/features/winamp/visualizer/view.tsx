@@ -3,7 +3,7 @@ import { useUnit } from "effector-react/scope";
 import { useState, useMemo, useCallback, useEffect } from "react";
 
 import { usePaintBar, usePaintBarFrame } from "@/src/shared/hooks/use-bar-visualizer";
-import { usePaintOscilloscopeFrame } from "@/src/shared/hooks/useOscilloscopeVisualizer";
+import { usePaintOscilloscopeFrame } from "@/src/shared/hooks/use-oscilloscope-visualizer";
 
 import { $baseSkinColors, $Media, winamp, winampStates } from "@/src/widgets/winamp/model";
 import { $dummyVizData, $visualizerStyle, toggleVisualizerStyle } from "./model";
