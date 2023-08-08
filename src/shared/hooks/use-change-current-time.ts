@@ -25,64 +25,40 @@ const useChangeCurentTime = () => {
   }, []);
 };
 
-const useDelPressKeyButton = () => {
-  const activeWindow = useUnit(winampStates.$activeWindow);
-  const handleDeleteTrackFormPlaylist = useUnit(playlist.removeTrackFromPlaylist);
-  const selectedTrackInPlayList = useUnit(playlist.$selectedTrackInPlayList);
-  const handleSelectTrackInPlaylist = useUnit(playlist.selectTrackInPlaylist);
-  const playTrack = useUnit(playlist.doubleClick);
-  const playlistLength = useUnit(playlist.$playlistLength);
-
+export const useChangeCurrentVolume = () => {
   const handleSetVolume = useUnit(keyboardVolumeChanged);
+  const activeWindow = useUnit(winampStates.$activeWindow);
+  const [currentPosition, handleSelect, itemsLength] = useUnit([
+    playlist.$selectedTrackInPlayList,
+    playlist.selectTrackInPlaylist,
+    playlist.$playlistLength,
+  ]);
 
   useEffect(() => {
     const handler = (event: globalThis.KeyboardEvent) => {
-      if (event.key === "Delete") {
-        if (activeWindow === WINAMP_WINDOW_STATE.PLAYLIST) {
-          return handleDeleteTrackFormPlaylist(selectedTrackInPlayList!);
-        }
+      const isArrowKey = event.key === "ArrowUp" || event.key === "ArrowDown";
+      const isPlayerWindow = activeWindow === "PLAYER";
+      const isPlaylistWindow = activeWindow === "PLAYLIST";
+      const isCurrentPositionNotNull = currentPosition !== null;
+      const isArrowUpKey = event.key === "ArrowUp";
+      const isArrowDownKey = event.key === "ArrowDown";
+
+      if (isPlayerWindow && isArrowKey) {
+        return handleSetVolume(event);
       }
 
-      if (event.key === "ArrowUp") {
-        if (activeWindow === WINAMP_WINDOW_STATE.PLAYER) {
-          event.preventDefault();
-          handleSetVolume("up");
+      if (isPlaylistWindow && isCurrentPositionNotNull) {
+        event.preventDefault();
+
+        const nextItem = currentPosition > 0 ? currentPosition - 1 : itemsLength - 1;
+        const prevItem = currentPosition === itemsLength - 1 ? 0 : currentPosition + 1;
+
+        if (isArrowUpKey) {
+          return handleSelect(nextItem);
         }
 
-        if (activeWindow === WINAMP_WINDOW_STATE.PLAYLIST) {
-          if (selectedTrackInPlayList !== null) {
-            event.preventDefault();
-
-            if (selectedTrackInPlayList > 0)
-              return handleSelectTrackInPlaylist(selectedTrackInPlayList - 1);
-
-            return handleSelectTrackInPlaylist(playlistLength - 1);
-          }
-        }
-      }
-
-      if (event.key === "ArrowDown") {
-        if (activeWindow === WINAMP_WINDOW_STATE.PLAYER) {
-          event.preventDefault();
-          handleSetVolume("down");
-        }
-
-        if (activeWindow === WINAMP_WINDOW_STATE.PLAYLIST) {
-          if (selectedTrackInPlayList !== null) {
-            event.preventDefault();
-
-            if (selectedTrackInPlayList === playlistLength - 1)
-              return handleSelectTrackInPlaylist(0);
-
-            return handleSelectTrackInPlaylist(selectedTrackInPlayList + 1);
-          }
-        }
-      }
-
-      if (event.key === "Enter") {
-        if (selectedTrackInPlayList !== null) {
-          event.preventDefault();
-          playTrack(selectedTrackInPlayList);
+        if (isArrowDownKey) {
+          return handleSelect(prevItem);
         }
       }
     };
@@ -94,15 +70,49 @@ const useDelPressKeyButton = () => {
       window.removeEventListener("keydown", handler);
       window.removeEventListener("keypress", handler);
     };
-  }, [
-    activeWindow,
-    handleDeleteTrackFormPlaylist,
-    handleSelectTrackInPlaylist,
-    handleSetVolume,
-    playTrack,
-    playlistLength,
-    selectedTrackInPlayList,
+  }, [handleSelect, handleSetVolume, itemsLength, currentPosition, activeWindow]);
+};
+
+const useDelPressKeyButton = () => {
+  const activeWindow = useUnit(winampStates.$activeWindow);
+  const [handleDelete, handleSelect, hanldeDoubleClick] = useUnit([
+    playlist.removeTrackFromPlaylist,
+    playlist.selectTrackInPlaylist,
+    playlist.doubleClick,
   ]);
+
+  const [itemsLength, selectedItem] = useUnit([
+    playlist.$playlistLength,
+    playlist.$selectedTrackInPlayList,
+  ]);
+
+  useEffect(() => {
+    const handler = (event: globalThis.KeyboardEvent) => {
+      const { key } = event;
+      const selectedItemNotNull = selectedItem !== null;
+
+      if (
+        key === "Delete" &&
+        selectedItemNotNull &&
+        activeWindow === WINAMP_WINDOW_STATE.PLAYLIST
+      ) {
+        return handleDelete(selectedItem);
+      }
+
+      if (key === "Enter" && selectedItemNotNull) {
+        event.preventDefault();
+        return hanldeDoubleClick(selectedItem);
+      }
+    };
+
+    window.addEventListener("keydown", handler);
+    window.addEventListener("keypress", handler);
+
+    return () => {
+      window.removeEventListener("keydown", handler);
+      window.removeEventListener("keypress", handler);
+    };
+  }, [activeWindow, handleDelete, handleSelect, hanldeDoubleClick, itemsLength, selectedItem]);
 };
 
 export { useChangeCurentTime, useDelPressKeyButton };

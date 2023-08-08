@@ -1,4 +1,7 @@
-import { useChangeCurentTime } from "@/src/shared/hooks/use-change-current-time";
+import {
+  useChangeCurentTime,
+  useChangeCurrentVolume,
+} from "@/src/shared/hooks/use-change-current-time";
 
 import type { ReactNode } from "react";
 
@@ -8,6 +11,7 @@ interface HotkeysProps {
 
 export const Hotkeys = ({ children }: HotkeysProps) => {
   const useChangeCurentTimeHook = useChangeCurentTime();
+  const useChangeCurrentVolumeHook = useChangeCurrentVolume();
 
   return <>{children}</>;
 };
