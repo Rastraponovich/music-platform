@@ -1,14 +1,12 @@
 import { attach, createEvent, createStore, sample } from "effector";
-
-import { marqueInfo, $Media } from "@/src/widgets/winamp";
-
 import type { ChangeEvent, MouseEvent } from "react";
-import type { MediaElement } from "@/features/music/types";
 
+import type { MediaElement } from "@/features/music/types";
+import { $Media, marqueInfo } from "@/src/widgets/winamp";
 import { getSnapBalanceValue } from "@/utils/utils";
-import { getMarqueInfo } from "./utils";
 
 import { CURRENT_BALANCE_OFFSET } from "./constants";
+import { getMarqueInfo } from "./utils";
 
 // effects //
 

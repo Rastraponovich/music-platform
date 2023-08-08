@@ -1,7 +1,9 @@
 import clsx from "clsx";
+import { useUnit } from "effector-react";
 import Link from "next/link";
 import { memo } from "react";
-import { useUnit } from "effector-react";
+
+import { WinampButton } from "@/src/shared/ui/winamp/winamp-button";
 
 import {
   $eqVisible,
@@ -19,8 +21,6 @@ import {
   stopButtonClicked,
   toggleVisiblePlaylist,
 } from "./model";
-
-import { WinampButton } from "@/src/shared/ui/winamp/winamp-button";
 
 interface ButtonProps {
   small?: boolean;

@@ -1,6 +1,7 @@
-import { eq } from "@/src/widgets/winamp/model";
 import { useEvent } from "effector-react";
-import React, { memo, ReactNode } from "react";
+import React, { ReactNode, memo } from "react";
+
+import { eq } from "@/src/widgets/winamp/model";
 
 interface PresetMenuButtonProps {
   onClick(): void;

@@ -1,6 +1,6 @@
+import { Dialog } from "@headlessui/react";
 import clsx from "clsx";
 import type { ReactNode } from "react";
-import { Dialog } from "@headlessui/react";
 
 interface ModalProps {
   open: boolean;

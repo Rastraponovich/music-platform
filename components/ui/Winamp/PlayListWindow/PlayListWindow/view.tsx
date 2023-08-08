@@ -1,25 +1,22 @@
 import clsx from "clsx";
-import { useMemo, useRef } from "react";
-import dynamic from "next/dynamic";
-
 import { useUnit } from "effector-react/scope";
+import dynamic from "next/dynamic";
+import { useMemo, useRef } from "react";
 
+import { MiniActions } from "@/src/features/winamp/controls-panel";
 import { useDraggable } from "@/src/shared/hooks/use-draggable";
-
+import { CharacterStrings } from "@/src/shared/ui/winamp/character-strings";
 import {
   $currentTrackDuration,
   duration,
   playlist,
   winampStates,
 } from "@/src/widgets/winamp/model";
-
 import { convertTimeToString } from "@/utils/utils";
 
 import Playlist from "../Playlist";
-import { MiniTimer } from "../mini-timer";
 import PlaylistHeader from "../PlaylistHeader";
-import { MiniActions } from "@/src/features/winamp/controls-panel";
-import { CharacterStrings } from "@/src/shared/ui/winamp/character-strings";
+import { MiniTimer } from "../mini-timer";
 
 const OptionMenu = dynamic(() => import("../PlaylistMenus/OptionMenu"), { ssr: false });
 const AddMenu = dynamic(() => import("../PlaylistMenus/AddMenu"), { ssr: false });

@@ -1,4 +1,4 @@
-import { sample, createEvent, createStore } from "effector";
+import { createEvent, createStore, sample } from "effector";
 import { reset } from "patronum";
 import type { ChangeEvent, MouseEvent } from "react";
 

@@ -1,16 +1,15 @@
 import clsx from "clsx";
-import { useUnit } from "effector-react";
-import { memo, useState, useEffect, ChangeEventHandler } from "react";
-
 import type { Store } from "effector";
-import type { Song } from "@/features/music/types";
+import { useUnit } from "effector-react";
+import { ChangeEventHandler, memo, useEffect, useState } from "react";
 
 import { $songs } from "@/features/music";
+import type { Song } from "@/features/music/types";
 import { winamp } from "@/src/widgets/winamp/model";
 
 import { Modal } from "~/shared/ui/dialog";
-import { Combobox } from "@headlessui/react";
 
+import { Combobox } from "@headlessui/react";
 import { SearchIcon } from "@heroicons/react/outline";
 
 export const SearchInput = () => {

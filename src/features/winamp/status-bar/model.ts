@@ -1,3 +1,5 @@
+import { createEvent, sample } from "effector";
+
 import {
   $clutterBar,
   $timeMode,
@@ -6,7 +8,6 @@ import {
   toggleTimeMode,
   winamp,
 } from "@/src/widgets/winamp";
-import { createEvent, sample } from "effector";
 
 export const toggleTimeModeButtonClicked = createEvent();
 

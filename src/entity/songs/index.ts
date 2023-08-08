@@ -1,4 +1,4 @@
-export * from "./ui"
+export * from "./ui";
 
-export * as songModel from "./model"
-export * as songLib from "./lib"
+export * as songModel from "./model";
+export * as songLib from "./lib";

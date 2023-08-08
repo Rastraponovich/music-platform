@@ -7,12 +7,13 @@ import {
   sample,
   scopeBind,
 } from "effector";
-
 import { createGate } from "effector-react";
 import { ChangeEvent, MouseEvent } from "react";
-import { PlayerState, Song, TimeMode } from "./types";
+
 import { getClientScope } from "@/src/shared/hooks/use-scope";
 import { Nullable } from "@/types";
+
+import { PlayerState, Song, TimeMode } from "./types";
 
 export const initPlayer = createEvent();
 export const destroyPlayer = createEvent();

@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useUnit } from "effector-react";
-import React, { memo, useState, useMemo, ChangeEvent, MouseEvent } from "react";
+import React, { ChangeEvent, MouseEvent, memo, useMemo, useState } from "react";
 
 import { marqueInfo } from "@/src/widgets/winamp/model";
 

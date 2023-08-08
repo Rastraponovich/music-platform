@@ -1,5 +1,6 @@
-import { ChatIcon, ClockIcon, CloudUploadIcon, HeartIcon } from "@heroicons/react/outline";
 import { StatCard } from "../ui/stat-card";
+
+import { ChatIcon, ClockIcon, CloudUploadIcon, HeartIcon } from "@heroicons/react/outline";
 
 export const Stats = () => {
   return (

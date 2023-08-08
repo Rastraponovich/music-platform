@@ -1,5 +1,5 @@
+import { attach, createEffect, createEvent, restore, sample } from "effector";
 import { Router } from "next/router";
-import { createEvent, createEffect, restore, attach, sample } from "effector";
 
 const fxFetchFx = createEffect(() => Promise.resolve(1));
 

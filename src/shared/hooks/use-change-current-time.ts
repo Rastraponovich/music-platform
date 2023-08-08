@@ -1,9 +1,10 @@
-import { playlist, winampStates } from "@/src/widgets/winamp/model";
-import { WINAMP_WINDOW_STATE } from "@/features/music/constants";
 import { useUnit } from "effector-react";
 import { useEffect } from "react";
-import { keyboardVolumeChanged } from "@/src/features/winamp/volume-bar/model";
+
+import { WINAMP_WINDOW_STATE } from "@/features/music/constants";
 import { keyChangeCurrentTime } from "@/src/features/winamp/progress-bar/model";
+import { keyboardVolumeChanged } from "@/src/features/winamp/volume-bar/model";
+import { playlist, winampStates } from "@/src/widgets/winamp/model";
 
 const useChangeCurentTime = () => {
   const changeCurrentTime = useUnit(keyChangeCurrentTime);

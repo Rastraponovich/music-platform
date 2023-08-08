@@ -1,20 +1,19 @@
 import clsx from "clsx";
-import { memo } from "react";
-import dynamic from "next/dynamic";
 import { useUnit } from "effector-react";
-
-import {
-  $timerValue,
-  $currentTimeMode,
-  $clutterbar,
-  $playerState,
-  changedClutterBar,
-  toggleTimeModeButtonClicked,
-} from "./model";
+import dynamic from "next/dynamic";
+import { memo } from "react";
 
 import { TimeMode } from "@/features/music/types";
 
 import { PLAYER_STATES } from "./constants";
+import {
+  $clutterbar,
+  $currentTimeMode,
+  $playerState,
+  $timerValue,
+  changedClutterBar,
+  toggleTimeModeButtonClicked,
+} from "./model";
 
 const Visualizer = dynamic(() => import("../visualizer/view").then((mod) => mod.Visualizer), {
   ssr: false,

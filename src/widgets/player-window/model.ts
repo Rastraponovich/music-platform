@@ -1,6 +1,8 @@
 import { combine } from "effector";
-import { playlist, winamp, winampStates } from "../winamp";
+
 import { PlayerState, WinampState } from "@/features/music/constants";
+
+import { playlist, winamp, winampStates } from "../winamp";
 
 export const $track = winamp.$currentTrack.map((track) => track);
 

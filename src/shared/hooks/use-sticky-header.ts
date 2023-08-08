@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
 const useStickyHeader = (defaultSticky = false) => {
   const [isSticky, setIsSticky] = useState(defaultSticky);
   const ref = useRef<HTMLElement>(null);

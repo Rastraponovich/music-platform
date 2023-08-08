@@ -1,7 +1,9 @@
-import { TResponse } from "@/types";
-import { externalAPI } from "@/utils/axiosInstanse";
 import { AxiosResponse } from "axios";
 import { createEffect } from "effector";
+
+import { TResponse } from "@/types";
+import { externalAPI } from "@/utils/axiosInstanse";
+
 import { Playlist } from "./types";
 
 const getAllPlayListsAPI = async () => await externalAPI.get("/playlists");

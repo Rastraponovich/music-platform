@@ -1,11 +1,11 @@
-import { useState, Fragment, useCallback } from "react";
-
-import { Dialog, Transition } from "@headlessui/react";
+import { Fragment, useCallback, useState } from "react";
 
 import { Button } from "~/shared/ui/button";
-import { PlaylistForm } from "./playlist-form";
-import { ModalTitle, ModalActions } from "~/shared/ui/dialog";
+import { ModalActions, ModalTitle } from "~/shared/ui/dialog";
 
+import { PlaylistForm } from "./playlist-form";
+
+import { Dialog, Transition } from "@headlessui/react";
 import { DocumentAddIcon } from "@heroicons/react/outline";
 
 export const PlaylistFormModal = () => {

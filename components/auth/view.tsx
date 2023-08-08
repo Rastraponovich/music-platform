@@ -2,6 +2,7 @@ import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { memo, useState } from "react";
+
 import { LoginFormModal } from "../login-form";
 
 interface AuthProps {

@@ -1,14 +1,13 @@
 import clsx from "clsx";
 import { useUnit } from "effector-react/scope";
-import { useState, useMemo, useCallback, useEffect } from "react";
-
-import { usePaintBar, usePaintBarFrame } from "@/src/shared/hooks/use-bar-visualizer";
-import { usePaintOscilloscopeFrame } from "@/src/shared/hooks/use-oscilloscope-visualizer";
-
-import { $baseSkinColors, $Media, winamp, winampStates } from "@/src/widgets/winamp/model";
-import { $dummyVizData, $visualizerStyle, toggleVisualizerStyle } from "./model";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { VISUALIZERS } from "@/features/music/constants";
+import { usePaintBar, usePaintBarFrame } from "@/src/shared/hooks/use-bar-visualizer";
+import { usePaintOscilloscopeFrame } from "@/src/shared/hooks/use-oscilloscope-visualizer";
+import { $Media, $baseSkinColors, winamp, winampStates } from "@/src/widgets/winamp/model";
+
+import { $dummyVizData, $visualizerStyle, toggleVisualizerStyle } from "./model";
 
 interface VisualizerProps {
   className?: string;

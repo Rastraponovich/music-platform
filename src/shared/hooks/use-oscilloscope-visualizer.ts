@@ -1,6 +1,7 @@
-import { $baseSkinColors } from "@/src/widgets/winamp/model";
 import { useStore } from "effector-react";
-import { useMemo, useCallback } from "react";
+import { useCallback, useMemo } from "react";
+
+import { $baseSkinColors } from "@/src/widgets/winamp/model";
 
 const PIXEL_DENSITY = 2;
 

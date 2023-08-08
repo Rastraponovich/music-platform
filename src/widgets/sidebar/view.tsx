@@ -1,14 +1,14 @@
-import Link from "next/link";
-import Image from "next/image";
-import { Fragment } from "react";
-import { useUnit } from "effector-react";
-
 import { Dialog, Transition } from "@headlessui/react";
+import { XIcon } from "@heroicons/react/outline";
+import { useUnit } from "effector-react";
+import Image from "next/image";
+import Link from "next/link";
+import { Fragment } from "react";
 
 import { $openedSidebar, toggleSidebar } from "@/features/sidebar";
 
-import { XIcon } from "@heroicons/react/outline";
 import { Navbar } from "~/widgets/navbar";
+
 import { Auth } from "../../../components/auth/view";
 
 export const Sidebar = () => {

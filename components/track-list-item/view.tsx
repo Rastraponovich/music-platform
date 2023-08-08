@@ -1,19 +1,18 @@
-import Image from "next/image";
+import clsx from "clsx";
 import { useUnit } from "effector-react";
+import { useEvent } from "effector-react/scope";
+import Image from "next/image";
 import { memo, useMemo } from "react";
 
-import { useEvent } from "effector-react/scope";
-
+import { MEDIA_STATUS } from "@/features/media/constants";
 import { Song } from "@/features/music/types";
+import { $currentTime } from "@/src/features/winamp/progress-bar/model";
+import { $currentTrackDuration, winamp, winampControls } from "@/src/widgets/winamp/model";
+import { convertTimeToObj } from "@/utils/utils";
 
 import { TrackTimer } from "../track-timer/view";
-import { $currentTrackDuration, winamp, winampControls } from "@/src/widgets/winamp/model";
-import { MEDIA_STATUS } from "@/features/media/constants";
 
-import clsx from "clsx";
-import { convertTimeToObj } from "@/utils/utils";
 import { PauseIcon, PlayIcon } from "@heroicons/react/solid";
-import { $currentTime } from "@/src/features/winamp/progress-bar/model";
 
 interface TrackListItemProps {
   track: Song;

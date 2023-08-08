@@ -1,6 +1,8 @@
-import { useOnClickAway } from "@/src/shared/hooks/use-onclick-away";
 import clsx from "clsx";
-import React, { memo, ReactNode, useCallback, useState, Children } from "react";
+import React, { Children, ReactNode, memo, useCallback, useState } from "react";
+
+import { useOnClickAway } from "@/src/shared/hooks/use-onclick-away";
+
 import PlaylistMenuEntry from "./PlaylistMenuEntry";
 
 interface PlaylistMenuProps {

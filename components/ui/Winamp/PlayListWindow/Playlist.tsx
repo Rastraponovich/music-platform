@@ -1,5 +1,7 @@
-import { playlist, winamp } from "@/src/widgets/winamp/model";
 import { useList, useUnit } from "effector-react";
+
+import { playlist, winamp } from "@/src/widgets/winamp/model";
+
 import PlaylistTrack from "./PlaylistTrack";
 
 const DEFAULT_HEIGHT = 151;

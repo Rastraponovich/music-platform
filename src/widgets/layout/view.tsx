@@ -1,12 +1,12 @@
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import dynamic from "next/dynamic";
-import { memo, ReactNode } from "react";
-
-import { Header } from "~/widgets/header/view";
+import { ReactNode, memo } from "react";
 
 import { Sidebar } from "@/src/widgets/sidebar/view";
+
+import { Header } from "~/widgets/header/view";
 
 const WinampLayoutButton = dynamic(
   import("@/components/ui/winamp-layout-button").then((mod) => mod.WinampLayoutButton),

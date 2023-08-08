@@ -1,11 +1,10 @@
-import React, { memo, useEffect, useState, MouseEvent, useMemo, useRef } from "react";
+import React, { MouseEvent, memo, useEffect, useMemo, useRef, useState } from "react";
 
 import type { Track } from "@/features/music/types";
-
-import { isLong, MARQUEE_MAX_LENGTH, MINUTE, SEPARATOR } from "../lib";
-import { selectors } from "../model";
-
 import { CharacterStrings } from "@/src/shared/ui/winamp/character-strings";
+
+import { MARQUEE_MAX_LENGTH, MINUTE, SEPARATOR, isLong } from "../lib";
+import { selectors } from "../model";
 
 interface MediaInfoTrackProps {
   currentTrack: Track;

@@ -1,15 +1,14 @@
 import { createEvent, sample } from "effector";
 import { debounce } from "patronum";
+import type { ChangeEvent } from "react";
 
 import {
-  changeVolumeFx,
-  marqueInfo,
   $volume,
+  changeVolumeFx,
   keyboardChangedVolumeFx,
+  marqueInfo,
   winampStates,
 } from "@/src/widgets/winamp";
-
-import type { ChangeEvent } from "react";
 
 import { VOLUME_STEP } from "./constants";
 import { generateVolumeMaruqeText } from "./utils";

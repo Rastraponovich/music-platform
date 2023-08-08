@@ -1,10 +1,9 @@
 import clsx from "clsx";
-import React, { memo, useMemo } from "react";
 import { useUnit } from "effector-react";
-
-import { playlist } from "@/src/widgets/winamp/model";
+import React, { memo, useMemo } from "react";
 
 import { Track } from "@/features/music/types";
+import { playlist } from "@/src/widgets/winamp/model";
 
 interface PlaylistTrackProps {
   track: Track;

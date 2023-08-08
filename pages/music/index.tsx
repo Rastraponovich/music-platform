@@ -1,21 +1,18 @@
+import { MusicNoteIcon, PlayIcon } from "@heroicons/react/solid";
 import clsx from "clsx";
-
-import { useState } from "react";
-import { useUnit } from "effector-react";
 import { allSettled, fork, serialize } from "effector";
-
+import { useUnit } from "effector-react";
 import type { GetServerSideProps, NextPage } from "next";
+import { useState } from "react";
 
-import { songModel, Tracklist } from "@/src/entity/songs";
+import { MusicFilter } from "@/components/music-filter";
+import { PlaylistFormModal } from "@/components/playlist-form";
+import { SearchInput } from "@/components/search-input";
+import { UploadFormModal } from "@/components/upload-form";
+import { Tracklist, songModel } from "@/src/entity/songs";
 import { winamp } from "@/src/widgets/winamp/model";
 
-import { MusicNoteIcon, PlayIcon } from "@heroicons/react/solid";
-import { MusicFilter } from "@/components/music-filter";
-import { SearchInput } from "@/components/search-input";
-
 import { WinampIcon } from "~/shared/ui/winamp-icon";
-import { UploadFormModal } from "@/components/upload-form";
-import { PlaylistFormModal } from "@/components/playlist-form";
 
 const MusicPage: NextPage = () => {
   const hanldePlayAll = useUnit(winamp.playAllTracksFromList);

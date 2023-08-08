@@ -1,10 +1,9 @@
+import { PlusSmIcon } from "@heroicons/react/outline";
 import { useUnit } from "effector-react";
-
-import { addToPlaylistButtonClicked } from "./model";
 
 import type { Song } from "@/src/entity/songs/lib";
 
-import { PlusSmIcon } from "@heroicons/react/outline";
+import { addToPlaylistButtonClicked } from "./model";
 
 /**
  * интерфейс кнопки добавления трека в плейлист

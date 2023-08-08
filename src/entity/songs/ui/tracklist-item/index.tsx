@@ -1,21 +1,20 @@
+import { PauseIcon, PlayIcon } from "@heroicons/react/solid";
 import clsx from "clsx";
-import Image from "next/image";
 import { useList, useUnit } from "effector-react";
-import { memo, useState, useMemo, useCallback } from "react";
+import Image from "next/image";
+import { memo, useCallback, useMemo, useState } from "react";
 
-import { MEDIA_STATUS } from "@/features/media/constants";
-import { winamp, winampControls } from "@/src/widgets/winamp/model";
-
-import { Comments } from "@/src/entity/comments";
 import { TrackTimer } from "@/components/track-timer";
+import { MEDIA_STATUS } from "@/features/media/constants";
+import { Track } from "@/features/music/types";
+import { Comments } from "@/src/entity/comments";
+import { Progressbar } from "@/src/features/winamp/progress-bar";
+import { winamp, winampControls } from "@/src/widgets/winamp/model";
 import { convertTimeToObj } from "@/utils/utils";
 
-import { PauseIcon, PlayIcon } from "@heroicons/react/solid";
 import { songLib } from "../..";
 import { $songs, actions, selectors } from "../../model";
 import { Actions } from "./buttons";
-import { Track } from "@/features/music/types";
-import { Progressbar } from "@/src/features/winamp/progress-bar";
 
 /**
  * интерфейс TrackListItem

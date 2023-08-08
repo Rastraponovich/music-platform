@@ -1,8 +1,10 @@
-import { eq } from "@/src/widgets/winamp/model";
-import { useDraggable } from "@/src/shared/hooks/use-draggable";
 import clsx from "clsx";
 import { useStore } from "effector-react";
 import { useRef } from "react";
+
+import { useDraggable } from "@/src/shared/hooks/use-draggable";
+import { eq } from "@/src/widgets/winamp/model";
+
 import { ClosePresetMenuButton, LoadPresetButton } from "./menu-button";
 import { PresetsList } from "./preset-list";
 import { PresetTitle } from "./title";

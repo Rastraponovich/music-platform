@@ -1,6 +1,5 @@
-import Image from "next/image";
-
 import type { NextPage } from "next";
+import Image from "next/image";
 
 import { AlbumsList } from "@/components/album";
 import { Tarifs } from "@/components/tarifs";

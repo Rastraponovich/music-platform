@@ -1,16 +1,17 @@
+import Image from "next/image";
+import Link from "next/link";
+import { ReactNode, memo } from "react";
+
 import { Album } from "@/types";
 import { albums } from "@/utils/__mock__";
 
-import Image from "next/image";
-import Link from "next/link";
-import { memo, ReactNode } from "react";
+import { CalendarIcon, ClockIcon, MusicNoteIcon } from "@heroicons/react/outline";
+import { UserIcon } from "@heroicons/react/solid";
 
 interface AlbumInfoItemProps {
   name: string | ReactNode;
   value: string | number | boolean | ReactNode;
 }
-import { CalendarIcon, ClockIcon, MusicNoteIcon } from "@heroicons/react/outline";
-import { UserIcon } from "@heroicons/react/solid";
 
 export const AlbumsList = () => {
   return (

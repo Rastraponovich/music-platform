@@ -1,7 +1,9 @@
-import { TResponse } from "@/types";
-import { externalAPI } from "@/utils/axiosInstanse";
 import axios, { AxiosResponse } from "axios";
 import { createEffect } from "effector";
+
+import { TResponse } from "@/types";
+import { externalAPI } from "@/utils/axiosInstanse";
+
 import { Song } from "./types";
 
 const getMetadataAPI = async (name: string) => {

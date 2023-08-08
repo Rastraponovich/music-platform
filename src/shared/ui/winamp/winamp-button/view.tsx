@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { memo, useState } from "react";
+
 import { DEFAULT_MINI_ACTION_BUTTON_STYLE } from "./constants";
 
 interface WinampButtonProps {

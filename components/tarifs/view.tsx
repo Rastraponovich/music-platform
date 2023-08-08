@@ -5,12 +5,11 @@ import { Fragment, memo, useEffect, useState } from "react";
 import type { Tarif } from "@/types";
 import { tarifCards } from "@/utils/__mock__";
 
-import { Dialog, Transition } from "@headlessui/react";
-
-import { BadgeCheckIcon } from "@heroicons/react/solid";
-
-import { Input } from "~/shared/ui/input";
 import { Button } from "~/shared/ui/button";
+import { Input } from "~/shared/ui/input";
+
+import { Dialog, Transition } from "@headlessui/react";
+import { BadgeCheckIcon } from "@heroicons/react/solid";
 
 export const Tarifs = () => {
   const [checked, setChecked] = useState<Nullable<number>>(null);

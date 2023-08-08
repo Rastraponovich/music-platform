@@ -1,5 +1,6 @@
-import { toggle } from "@/utils/utils";
 import { createEvent, createStore } from "effector";
+
+import { toggle } from "@/utils/utils";
 
 // events//
 export const toggleSidebar = createEvent();

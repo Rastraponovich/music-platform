@@ -1,6 +1,7 @@
 import { useUnit } from "effector-react/scope";
 import { useEffect, useRef } from "react";
 
+import { CURRENT_BALANCE_BG_OFFSET } from "./constants";
 import {
   $balance,
   $currentBalancePosition,
@@ -8,8 +9,6 @@ import {
   balancebarLifted,
   balancebarUplifted,
 } from "./model";
-
-import { CURRENT_BALANCE_BG_OFFSET } from "./constants";
 
 /**
  * Компонент управляющий балансом трека в главном окне

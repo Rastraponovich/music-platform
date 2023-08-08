@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useUnit } from "effector-react";
-import { memo, MouseEventHandler } from "react";
+import { MouseEventHandler, memo } from "react";
 
 import { winampStates } from "@/src/widgets/winamp/model";
 

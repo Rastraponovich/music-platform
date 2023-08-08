@@ -1,8 +1,9 @@
 import clsx from "clsx";
-import { memo, MouseEvent } from "react";
 import { useEvent } from "effector-react";
-import { useMinimized, useWindowState } from "../model/selectors";
+import { MouseEvent, memo } from "react";
+
 import { actions } from "../model";
+import { useMinimized, useWindowState } from "../model/selectors";
 
 interface EQHeaderProps {
   onMouseDown: (e: MouseEvent<HTMLElement>) => void;

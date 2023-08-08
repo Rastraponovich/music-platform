@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useUnit } from "effector-react";
-import { memo, InputHTMLAttributes } from "react";
+import { InputHTMLAttributes, memo } from "react";
 
 import {
   $currentDuration,

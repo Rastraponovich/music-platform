@@ -1,13 +1,13 @@
-import { sample, createEffect, createEvent, createStore, scopeBind, attach } from "effector";
+import { attach, createEffect, createEvent, createStore, sample, scopeBind } from "effector";
 import { not, reset } from "patronum";
+
+import { getClientScope } from "@/src/shared/hooks/use-scope";
+import type { Nullable } from "@/types";
+import { baseSkinColors } from "@/types/ui.types";
+import { getMMssFromNumber, getSnapBandValue, toggle } from "@/utils/utils";
 
 import { StereoBalanceNode } from "~/shared/lib/audio/stereo-balance-node";
 
-import { getClientScope } from "@/src/shared/hooks/use-scope";
-
-import type { Nullable } from "@/types";
-
-import { baseSkinColors } from "@/types/ui.types";
 import { $songs } from "../../../features/music";
 import {
   BANDS,
@@ -17,19 +17,16 @@ import {
 } from "../../../features/music/constants";
 import {
   Band,
-  Track,
-  TWinampState,
-  TWinampWindow,
   MediaElement,
   StereoBalanceNodeType,
   TMediaStatus,
+  TWinampState,
+  TWinampWindow,
   TimeMode,
+  Track,
 } from "../../../features/music/types";
-import { createWinampPlaylistFactory } from "../../../features/music/winamp-playlist";
 import { createWinampEQFactory } from "../../../features/music/winamp-eq";
-
-import { getMMssFromNumber, getSnapBandValue, toggle } from "@/utils/utils";
-
+import { createWinampPlaylistFactory } from "../../../features/music/winamp-playlist";
 import {
   generateRandomId,
   pausePlayingCb,
@@ -38,6 +35,7 @@ import {
   startPlayingCb,
   stopPlayingCb,
 } from "./utils";
+
 declare global {
   interface Window {
     webkitAudioContext: {
