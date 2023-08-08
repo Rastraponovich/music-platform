@@ -400,9 +400,9 @@ export const $currentTrackTimeRemaining = createStore<number>(0);
 /* effect changed volume from key pressed */
 export const keyboardChangedVolumeFx = attach({
   source: $mediaElement,
-  effect(media: Nullable<MediaElement>, key: "up" | "down") {
+  effect(media: Nullable<MediaElement>, event: KeyboardEvent) {
     if (media) {
-      const volumeChange = key === "up" ? 0.01 : -0.01;
+      const volumeChange = event.key === "ArrowUp" ? 0.01 : -0.01;
 
       media._audio.volume += volumeChange;
     }

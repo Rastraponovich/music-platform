@@ -6,6 +6,8 @@
       {
         "reactSsr": true,
         "factories": [
+          "patronum",
+          "effector-hotkey",
           "/models/factories",
           "/features/music/winamp-playlist",
           "/features/music/winamp-eq"

@@ -1,23 +1,33 @@
 import { createEvent, sample } from "effector";
+import { debounce } from "patronum";
 
-import { changeVolumeFx, marqueInfo, $volume, keyboardChangedVolumeFx } from "@/src/widgets/winamp";
+import {
+  changeVolumeFx,
+  marqueInfo,
+  $volume,
+  keyboardChangedVolumeFx,
+  winampStates,
+} from "@/src/widgets/winamp";
 
 import type { ChangeEvent } from "react";
 
 import { VOLUME_STEP } from "./constants";
-import { getMarqueInfoText } from "./utils";
+import { generateVolumeMaruqeText } from "./utils";
 
 // events //
 export const volumeChanged = createEvent<ChangeEvent<HTMLInputElement>>();
-export const keyboardVolumeChanged = createEvent<"up" | "down">();
+export const keyboardVolumeChanged = createEvent<KeyboardEvent>();
 
 export const volumebarLifted = createEvent();
 export const volumebarUplifted = createEvent();
 
 // stores //
 export const $currentVolume = $volume.map((volume) => volume);
+export const $isActiveWindow = winampStates.$activeWindow.map(
+  (activeWindow) => activeWindow === "PLAYER",
+);
 
-const $marqueText = $currentVolume.map((volume) => getMarqueInfoText(volume));
+const $marqueText = $currentVolume.map((volume) => generateVolumeMaruqeText(volume));
 
 export const $currentVolumePosition = $currentVolume.map((volume) =>
   Math.floor(volume / VOLUME_STEP),
@@ -44,11 +54,16 @@ sample({
   target: keyboardChangedVolumeFx,
 });
 
+const debouncedKeyboardVolumeChanged = debounce({
+  source: keyboardVolumeChanged,
+  timeout: 1000,
+});
+
 /**
  * when volume bar is pressed
  */
 sample({
-  clock: volumebarLifted,
+  clock: [volumebarLifted, keyboardVolumeChanged],
   target: marqueInfo.enabledMarqueInfo,
 });
 
@@ -56,8 +71,9 @@ sample({
  * when volume bar is pressed set marque info text
  */
 sample({
-  clock: volumebarLifted,
+  clock: [volumebarLifted, keyboardVolumeChanged],
   source: $marqueText,
+  filter: marqueInfo.$enabledMaruqeInfo,
   target: marqueInfo.$winampMarqueInfo,
 });
 
@@ -65,6 +81,6 @@ sample({
  * when volume bar is unpressed
  */
 sample({
-  clock: volumebarUplifted,
+  clock: [volumebarUplifted, debouncedKeyboardVolumeChanged],
   target: marqueInfo.disabledMarqueInfo,
 });
