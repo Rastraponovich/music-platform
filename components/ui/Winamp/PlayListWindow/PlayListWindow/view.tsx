@@ -4,14 +4,10 @@ import dynamic from "next/dynamic";
 import { useMemo, useRef } from "react";
 
 import { MiniActions } from "@/src/features/winamp/controls-panel";
+import { $durationTracksInPlaylist, $visiblePlaylist } from "@/src/features/winamp/playlist";
 import { useDraggable } from "@/src/shared/hooks/use-draggable";
 import { CharacterStrings } from "@/src/shared/ui/winamp/character-strings";
-import {
-  $currentTrackDuration,
-  duration,
-  playlist,
-  winampStates,
-} from "@/src/widgets/winamp/model";
+import { $currentTrackDuration, winampStates } from "@/src/widgets/winamp/model";
 import { convertTimeToString } from "@/utils/utils";
 
 import Playlist from "../Playlist";
@@ -30,9 +26,9 @@ const PlayListWindow = () => {
 
   const handleActiveWindow = useUnit(winampStates.changeWindowState);
   const [visible, currentTrackDuration, totalDuration] = useUnit([
-    playlist.$visiblePlaylist,
+    $visiblePlaylist,
     $currentTrackDuration,
-    duration.$durationTracksInPlaylist,
+    $durationTracksInPlaylist,
   ]);
 
   const [onDragStart, onDragging, onDragEnd] = useDraggable(WINDOW_NAME, ref);

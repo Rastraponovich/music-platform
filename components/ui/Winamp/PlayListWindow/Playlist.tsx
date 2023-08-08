@@ -1,16 +1,24 @@
 import { useList, useUnit } from "effector-react";
 
-import { playlist, winamp } from "@/src/widgets/winamp/model";
+import {
+  $currentPlayedTrackIndex,
+  $playlist,
+  $playlistLength,
+  $selectedTrackInPlaylist,
+} from "@/src/features/winamp/playlist";
+import { winamp } from "@/src/widgets/winamp/model";
 
 import PlaylistTrack from "./PlaylistTrack";
 
 const DEFAULT_HEIGHT = 151;
 
 const Playlist = () => {
-  const playlistLength = useUnit(playlist.$playlistLength);
-  const currentIndex = useUnit(playlist.$currentPlayedTrackIndex);
-  const playingState = useUnit(winamp.$mediaStatus);
-  const selectedTrack = useUnit(playlist.$selectedTrackInPlayList);
+  const [playlistLength, currentIndex, selectedTrack, playingState] = useUnit([
+    $playlistLength,
+    $currentPlayedTrackIndex,
+    $selectedTrackInPlaylist,
+    winamp.$mediaStatus,
+  ]);
 
   return (
     <div
@@ -19,7 +27,7 @@ const Playlist = () => {
       }
       style={{ height: DEFAULT_HEIGHT }}
     >
-      {useList(playlist.$playlist, {
+      {useList($playlist, {
         keys: [playlistLength, currentIndex, playingState, selectedTrack],
         fn: (track, index) => <PlaylistTrack track={track} index={index} />,
       })}

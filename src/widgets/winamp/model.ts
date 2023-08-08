@@ -1,20 +1,7 @@
 import { attach, createEffect, createEvent, createStore, sample, scopeBind } from "effector";
 import { not, reset } from "patronum";
 
-import { getClientScope } from "@/src/shared/hooks/use-scope";
-import type { Nullable } from "@/types";
-import { baseSkinColors } from "@/types/ui.types";
-import { getMMssFromNumber, getSnapBandValue, toggle } from "@/utils/utils";
-
-import { StereoBalanceNode } from "~/shared/lib/audio/stereo-balance-node";
-
-import { $songs } from "../../../features/music";
-import {
-  BANDS,
-  MEDIA_STATUS,
-  WINAMP_STATE,
-  WINAMP_WINDOW_STATE,
-} from "../../../features/music/constants";
+import { BANDS, MEDIA_STATUS, WINAMP_STATE, WINAMP_WINDOW_STATE } from "@/features/music/constants";
 import {
   Band,
   MediaElement,
@@ -24,17 +11,24 @@ import {
   TWinampWindow,
   TimeMode,
   Track,
-} from "../../../features/music/types";
-import { createWinampEQFactory } from "../../../features/music/winamp-eq";
-import { createWinampPlaylistFactory } from "../../../features/music/winamp-playlist";
+} from "@/features/music/types";
+import { createWinampEQFactory } from "@/features/music/winamp-eq";
+import { getClientScope } from "@/src/shared/hooks/use-scope";
+import type { Nullable } from "@/types";
+import { baseSkinColors } from "@/types/ui.types";
+import { getMMssFromNumber, getSnapBandValue, toggle } from "@/utils/utils";
+
+import { StereoBalanceNode } from "~/shared/lib/audio/stereo-balance-node";
+
 import {
-  generateRandomId,
   pausePlayingCb,
   playNextTrackIsOneInPlayListCb,
   startPlayFromBegginingCb,
   startPlayingCb,
   stopPlayingCb,
 } from "./utils";
+
+export { $currentTrack };
 
 declare global {
   interface Window {
@@ -308,15 +302,17 @@ const showWinamp = createEvent();
 const setMediaStatus = createEvent<TMediaStatus>();
 
 const selectTrackFromList = createEvent<Track>();
-const removeTrackFromPlaylist = createEvent<number>();
-const playAllTracksFromList = createEvent();
 
-const playNextTrack = createEvent();
-const onPlayClicked = createEvent();
-const onPauseClicked = createEvent();
-const onStopButtonClicked = createEvent();
-const nextTrackClicked = createEvent();
-const prevTrackClicked = createEvent();
+export const removeTrackFromPlaylist = createEvent<number>();
+
+export const playAllTracksFromList = createEvent();
+
+export const playNextTrack = createEvent();
+export const onPlayClicked = createEvent();
+export const onPauseClicked = createEvent();
+export const onStopButtonClicked = createEvent();
+export const nextTrackClicked = createEvent();
+export const prevTrackClicked = createEvent();
 
 const toggleLoop = createEvent();
 const toggleShuffle = createEvent();
@@ -346,7 +342,7 @@ export const setCurrentTime_ = createEvent<number>();
 
 // end segment //
 
-const $mediaElement = createStore<Nullable<MediaElement>>(null);
+export const $mediaElement = createStore<Nullable<MediaElement>>(null);
 const $currentTrack = createStore<Nullable<Track>>(null);
 
 const $currentTrackIsEmpty = $currentTrack.map((track) => track === null);
@@ -364,10 +360,12 @@ const $enabledMaruqeInfo = createStore<boolean>(false);
 const $winampMarqueInfo = createStore<Nullable<string>>("");
 
 const $loop = createStore<boolean>(false);
-const $shuffled = createStore<boolean>(false);
 
-const $winampState = createStore<TWinampState>(WINAMP_STATE.DESTROYED);
-const $mediaStatus = createStore<TMediaStatus>(MEDIA_STATUS.STOPPED);
+export const $shuffled = createStore<boolean>(false);
+
+export const $winampState = createStore<TWinampState>(WINAMP_STATE.DESTROYED);
+
+export const $mediaStatus = createStore<TMediaStatus>(MEDIA_STATUS.STOPPED);
 
 const $visiblePlayer = createStore<boolean>(false);
 const $shadePlayer = createStore<boolean>(false);
@@ -477,7 +475,7 @@ const startPlayFromBegginingFx = attach({
   mapParams: () => startPlayFromBegginingCb,
 });
 
-const startPlayingFx = attach({
+export const startPlayingFx = attach({
   effect: baseFx,
   mapParams: () => startPlayingCb,
 });
@@ -642,131 +640,6 @@ const {
   toggleVisiblePresetWindow,
 } = createWinampEQFactory($mediaElement);
 
-const {
-  $playlist,
-  addTrackToPlaylist,
-  $playlistLength,
-  $selectedTrackInPlaylist,
-  selectTrackInPlaylist,
-  doubleClickedTrackInPlaylist,
-  $currentPlayedTrackIndex,
-  setCurrentPlayedTrackIndex,
-  $durationTracksInPlaylist,
-  $visiblePlaylist,
-  toggleVisiblePlaylist,
-} = createWinampPlaylistFactory();
-
-$playlist.on(selectTrackFromList, (_, track) => [track]);
-
-$playlist.on(removeTrackFromPlaylist, (tracks, id) => tracks.filter((_, index) => index !== id));
-
-$selectedTrackInPlaylist.reset(removeTrackFromPlaylist);
-
-$currentPlayedTrackIndex.on(selectTrackFromList, () => 0);
-
-sample({
-  clock: removeTrackFromPlaylist,
-  source: $currentPlayedTrackIndex,
-  filter: (currentIndex, removedIndex) => {
-    if (currentIndex && currentIndex > removedIndex) return true;
-    return false;
-  },
-  fn: (currentIndex) => currentIndex! - 1,
-  target: $currentPlayedTrackIndex,
-});
-
-sample({
-  clock: $currentPlayedTrackIndex,
-  source: $playlist,
-  filter: (_, id) => id !== null,
-  fn: (playlist, id) => playlist[id!],
-  target: $currentTrack,
-});
-
-//when track ended check next track in playlist exists
-// checking playlist is emtpy state
-const checkPlayNextTrack = sample({
-  clock: playNextTrack,
-  source: $playlistLength,
-  filter: (playlistLength) => playlistLength > 0,
-});
-
-const checkPlayNextTrackNoShuffle = sample({
-  clock: checkPlayNextTrack,
-  source: $shuffled,
-
-  //experemental
-  filter: not($shuffled),
-});
-
-//when playlist is not empty check currentTrackIndex in playlist if not last put next, otherwise put first
-const playNextTrackNoShuffle = sample({
-  clock: checkPlayNextTrackNoShuffle,
-  source: { currentPlayedTrackIndex: $currentPlayedTrackIndex, playlistLength: $playlistLength },
-
-  fn: ({ currentPlayedTrackIndex, playlistLength }) => {
-    const lastTrack = currentPlayedTrackIndex === playlistLength! - 1;
-
-    if (lastTrack) return 0;
-    return currentPlayedTrackIndex! + 1;
-  },
-});
-
-//set new Track index in currentPlayedTrackIndexPlaylist
-sample({
-  clock: playNextTrackNoShuffle,
-  fn: (newTrackIndex) => newTrackIndex,
-  target: $currentPlayedTrackIndex,
-});
-
-// when Shuffle is ON
-const checkPlayNextTrackShuffled = sample({
-  clock: checkPlayNextTrack,
-  source: $shuffled,
-
-  //experemental
-  filter: $shuffled,
-});
-
-const isOneTrackInPlayList = sample({
-  clock: checkPlayNextTrackShuffled,
-  source: $playlistLength,
-  filter: (playListLength) => playListLength === 1,
-});
-
-const isBiggerOneTrackInPlayList = sample({
-  clock: checkPlayNextTrackShuffled,
-  source: $playlistLength,
-  filter: (playListLength) => playListLength > 1,
-});
-
-sample({
-  clock: isOneTrackInPlayList,
-  target: playNextTrackIsOneInPlayListFx,
-});
-
-sample({
-  clock: isBiggerOneTrackInPlayList,
-  source: { playlistLength: $playlistLength, currentPlayedTrackIndex: $currentPlayedTrackIndex },
-  fn: ({ playlistLength, currentPlayedTrackIndex }) => {
-    if (currentPlayedTrackIndex) {
-      return generateRandomId(playlistLength, currentPlayedTrackIndex);
-    }
-
-    return 0;
-  },
-  target: $currentPlayedTrackIndex,
-});
-
-//setting new Track in CurrentTrack
-sample({
-  clock: $currentPlayedTrackIndex,
-  source: $playlist,
-  filter: (_, newTrackIndex) => newTrackIndex !== null,
-  fn: (playlist, newTrackIndex) => playlist[newTrackIndex as number],
-  target: loadUrl,
-});
-
 //Controls
 
 //when press playbutton when status playing
@@ -793,7 +666,7 @@ sample({
   target: stopPlayingFx,
 });
 
-$mediaStatus.on([stopPlayingFx.done, doubleClickedTrackInPlaylist], () => MEDIA_STATUS.STOPPED);
+$mediaStatus.on([stopPlayingFx.done], () => MEDIA_STATUS.STOPPED);
 
 // const delayedStopButtonClicked = delay({
 //     source: onStopButtonClicked,
@@ -802,56 +675,8 @@ $mediaStatus.on([stopPlayingFx.done, doubleClickedTrackInPlaylist], () => MEDIA_
 // })
 
 sample({
-  clock: doubleClickedTrackInPlaylist,
-  target: startPlayingFx,
-});
-
-sample({
   clock: nextTrackClicked,
   target: playNextTrack,
-});
-
-const checkPrevTrackClicked = sample({
-  clock: prevTrackClicked,
-  source: $playlistLength,
-  filter: (playListLength) => playListLength > 0,
-});
-
-const playPrevTrackNoShuffle = sample({
-  clock: checkPrevTrackClicked,
-  source: $shuffled,
-
-  //experemental
-  filter: not($shuffled),
-});
-
-/**
- * somthing in logic wrong. need to deep testing
- */
-sample({
-  clock: playPrevTrackNoShuffle,
-  source: { playlist: $playlist, currentPlayedTrackIndex: $currentPlayedTrackIndex },
-  fn: ({ playlist, currentPlayedTrackIndex }) => {
-    if (currentPlayedTrackIndex === 0) return playlist.length - 1;
-
-    return currentPlayedTrackIndex! - 1;
-  },
-  target: setCurrentPlayedTrackIndex,
-});
-
-const checkPlayPrevTrackShuffled = sample({
-  clock: checkPrevTrackClicked,
-  source: $shuffled,
-  filter: (shuffle) => shuffle,
-});
-
-sample({
-  clock: checkPlayPrevTrackShuffled,
-  source: { playlistLength: $playlistLength, currentPlayedTrackIndex: $currentPlayedTrackIndex },
-  fn: ({ playlistLength, currentPlayedTrackIndex }) => {
-    return generateRandomId(playlistLength, currentPlayedTrackIndex!);
-  },
-  target: setCurrentPlayedTrackIndex,
 });
 
 //balance Control
@@ -874,14 +699,14 @@ sample({
     state === WINAMP_STATE.MINIMIZED ||
     state === WINAMP_STATE.DESTROYED,
   fn: () => false,
-  target: [$visibleEQ, $visiblePlayer, $visiblePlaylist],
+  target: [$visibleEQ, $visiblePlayer],
 });
 
 sample({
   clock: $winampState,
   filter: (state) => state === WINAMP_STATE.OPENED || state === WINAMP_STATE.TRACKLOADED,
   fn: () => true,
-  target: [$visibleEQ, $visiblePlayer, $visiblePlaylist],
+  target: [$visibleEQ, $visiblePlayer],
 });
 
 sample({
@@ -913,16 +738,6 @@ sample({
 });
 
 // <== to here
-
-sample({
-  clock: playAllTracksFromList,
-  source: $songs,
-  fn: (songs) => [...songs],
-  target: $playlist,
-});
-
-/* inline sample */
-$currentPlayedTrackIndex.on(playAllTracksFromList, () => 0);
 
 sample({
   clock: playAllTracksFromList,
@@ -1014,23 +829,6 @@ export const winampControls = {
   toggleLoop,
 };
 
-export const playlist = {
-  doubleClick: doubleClickedTrackInPlaylist,
-  $playlistLength,
-  $playlist,
-  $selectedTrackInPlayList: $selectedTrackInPlaylist,
-  selectTrackInPlaylist,
-  $currentPlayedTrackIndex,
-  addTrackToPlaylist,
-  $visiblePlaylist,
-  toggleVisiblePlaylist,
-  removeTrackFromPlaylist,
-};
-
-export const duration = {
-  $durationTracksInPlaylist,
-};
-
 export const winamp = {
   init: initWinamp,
   destroy: destroyWinamp,
@@ -1081,4 +879,4 @@ export const eq = {
   toggleMinimized: toggleMinimizeEQ,
 };
 
-export { loadUrl, selectTrackFromList, $mediaElement as $Media, $clutterBar, changeClutterBar };
+export { loadUrl, selectTrackFromList, $clutterBar, changeClutterBar };

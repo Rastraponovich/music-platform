@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { VISUALIZERS } from "@/features/music/constants";
 import { usePaintBar, usePaintBarFrame } from "@/src/shared/hooks/use-bar-visualizer";
 import { usePaintOscilloscopeFrame } from "@/src/shared/hooks/use-oscilloscope-visualizer";
-import { $Media, $baseSkinColors, winamp, winampStates } from "@/src/widgets/winamp/model";
+import { $baseSkinColors, $mediaElement, winamp, winampStates } from "@/src/widgets/winamp/model";
 
 import { $dummyVizData, $visualizerStyle, toggleVisualizerStyle } from "./model";
 
@@ -57,7 +57,7 @@ export const Visualizer = (_: VisualizerProps) => {
     $baseSkinColors,
   ]);
 
-  const [media, windowShaded] = useUnit([$Media, winampStates.$shadePlayer])!;
+  const [media, windowShaded] = useUnit([$mediaElement, winampStates.$shadePlayer])!;
   const analyser = media!._analyser;
   const toggleVisualizer = useUnit(toggleVisualizerStyle);
 

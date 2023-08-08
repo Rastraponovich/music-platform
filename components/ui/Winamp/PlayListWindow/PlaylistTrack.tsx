@@ -3,18 +3,30 @@ import { useUnit } from "effector-react";
 import React, { memo, useMemo } from "react";
 
 import { Track } from "@/features/music/types";
-import { playlist } from "@/src/widgets/winamp/model";
+import {
+  $currentPlayedTrackIndex,
+  $selectedTrackInPlaylist,
+  doubleClickedTrackInPlaylist,
+  selectTrackInPlaylist,
+} from "@/src/features/winamp/playlist";
 
 interface PlaylistTrackProps {
   track: Track;
   index: number;
 }
 
+/* @todo refactor export * from "./view" */
+
 const PlaylistTrack = ({ track, index }: PlaylistTrackProps) => {
-  const currentIndex = useUnit(playlist.$currentPlayedTrackIndex);
-  const selectedTrackInPlaylist = useUnit(playlist.$selectedTrackInPlayList);
-  const handleSelectTrackInPlaylist = useUnit(playlist.selectTrackInPlaylist);
-  const handleSelectNewTrack = useUnit(playlist.doubleClick);
+  const [currentIndex, selectedTrack] = useUnit([
+    $currentPlayedTrackIndex,
+    $selectedTrackInPlaylist,
+  ]);
+
+  const [handleSelectTrack, handleSelectNewTrack] = useUnit([
+    selectTrackInPlaylist,
+    doubleClickedTrackInPlaylist,
+  ]);
 
   const firstMinute = useMemo(() => Math.floor(track.metaData.format.duration / 60), [track]);
   const lastMinute = useMemo(() => Math.floor(track.metaData.format.duration % 60), [track]);
@@ -22,11 +34,11 @@ const PlaylistTrack = ({ track, index }: PlaylistTrackProps) => {
 
   return (
     <div
-      onClick={() => handleSelectTrackInPlaylist(index)}
+      onClick={() => handleSelectTrack(index)}
       onDoubleClick={() => handleSelectNewTrack(index)}
       className={clsx(
         "flex h-[13px] max-h-[13px] min-h-[13px] select-none justify-between  px-1 text-[9px]",
-        selectedTrackInPlaylist === index && "bg-[#0000C6]",
+        selectedTrack === index && "bg-[#0000C6]",
         currentIndex === index ? "text-white" : "text-[#00FF00] ",
       )}
     >
