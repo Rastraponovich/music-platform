@@ -1,6 +1,7 @@
-import { Combobox } from "@headlessui/react";
 import clsx from "clsx";
-import { ChangeEventHandler, memo, ReactNode } from "react";
+import { ChangeEventHandler, ReactNode, memo } from "react";
+
+import { Combobox } from "@headlessui/react";
 
 interface SelectSearchProps {
   value: unknown;

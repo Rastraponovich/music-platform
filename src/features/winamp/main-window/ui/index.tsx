@@ -1,18 +1,18 @@
 import clsx from "clsx";
-import { useRef } from "react";
 import { useUnit } from "effector-react";
-
-import { $clutterBar, winampStates } from "@/src/widgets/winamp/model";
+import { useRef } from "react";
 
 import { useDraggable } from "@/src/shared/hooks/use-draggable";
+import { $clutterBar, winampStates } from "@/src/widgets/winamp/model";
 
+import { MediaInfo } from "~/widgets/player-window";
+
+import { BalanceBar } from "~/features/winamp/balance-bar";
 import { ControlsPanel, WindowControls } from "~/features/winamp/controls-panel";
 import { Progressbar } from "~/features/winamp/progress-bar";
-import { BalanceBar } from "~/features/winamp/balance-bar";
-import { VolumeBar } from "~/features/winamp/volume-bar";
 import { StatusBar } from "~/features/winamp/status-bar";
 import { TitleBar } from "~/features/winamp/title-bar";
-import { MediaInfo } from "~/widgets/player-window";
+import { VolumeBar } from "~/features/winamp/volume-bar";
 
 const WINDOW_NAME = "PLAYER";
 

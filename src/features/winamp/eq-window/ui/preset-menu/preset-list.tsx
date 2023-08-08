@@ -1,8 +1,9 @@
-import { eq } from "@/src/widgets/winamp/model";
-import { TPreset } from "@/features/music/types";
 import clsx from "clsx";
 import { useList, useUnit } from "effector-react";
 import React, { memo } from "react";
+
+import { TPreset } from "@/features/music/types";
+import { eq } from "@/src/widgets/winamp/model";
 
 interface PresetProps {
   preset: TPreset;

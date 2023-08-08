@@ -1,5 +1,6 @@
 import clsx from "clsx";
-import React, { useState } from "react";
+import { useState } from "react";
+
 import { AccordionFilter } from "~/shared/ui/accordion-filter";
 
 export const MusicFilter = () => {

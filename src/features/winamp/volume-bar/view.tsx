@@ -1,14 +1,13 @@
 import { useUnit } from "effector-react/scope";
 
+import { VOLUME_BG_OFFSET } from "./constants";
 import {
-  $currentVolumePosition,
   $currentVolume,
+  $currentVolumePosition,
   volumeChanged,
   volumebarLifted,
   volumebarUplifted,
 } from "./model";
-
-import { VOLUME_BG_OFFSET } from "./constants";
 
 export const VolumeBar = () => {
   const [volume, currentVolumePosition] = useUnit([$currentVolume, $currentVolumePosition]);

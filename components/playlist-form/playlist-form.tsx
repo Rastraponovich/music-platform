@@ -1,13 +1,13 @@
 import { useUnit } from "effector-react";
-import { useState, useEffect, useCallback, ChangeEvent } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 
 import { $songs } from "@/features/music";
-
 import type { Song } from "@/features/music/types";
 
 import { Input } from "~/shared/ui/input";
-import { PlaylistFormTrack } from "./playlist-form-track";
+
 import SelectSearch from "../ui/SelectSearch/SelectSearch";
+import { PlaylistFormTrack } from "./playlist-form-track";
 
 import { SearchIcon } from "@heroicons/react/outline";
 

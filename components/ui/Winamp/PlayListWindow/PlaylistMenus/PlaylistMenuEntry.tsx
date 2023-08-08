@@ -1,6 +1,7 @@
-import { useIsHovered } from "@/src/shared/hooks/use-hovered";
 import clsx from "clsx";
-import React, { memo, ReactNode } from "react";
+import React, { ReactNode, memo } from "react";
+
+import { useIsHovered } from "@/src/shared/hooks/use-hovered";
 
 interface PlaylistMenuEntryProps {
   children: ReactNode;

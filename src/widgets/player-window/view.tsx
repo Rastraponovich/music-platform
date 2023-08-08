@@ -1,9 +1,10 @@
 import { useUnit } from "effector-react";
 
-import { $track, $currentTrackId, $isPlayerNotStopped, $showingTicker } from "./model";
-import { Ticker } from "@/src/features/winamp/main-window/media-info/ui/ticker";
-import { KBPS, KHZ, MonoStereo } from "@/src/features/winamp/main-window/media-info/ui/info";
 import { $bitrate, $numberOfChannels, $sampleRate } from "@/src/entity/winamp";
+import { KBPS, KHZ, MonoStereo } from "@/src/features/winamp/main-window/media-info/ui/info";
+import { Ticker } from "@/src/features/winamp/main-window/media-info/ui/ticker";
+
+import { $currentTrackId, $isPlayerNotStopped, $showingTicker, $track } from "./model";
 
 export const MediaInfo = () => {
   const [isPlayerNotStopped, track, currentId] = useUnit([

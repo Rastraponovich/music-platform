@@ -2,7 +2,7 @@ import { createEvent, createStore } from "effector";
 
 import type { Nullable } from "@/types";
 
-import { Visualizers, VISUALIZER_ORDER } from "./constants";
+import { VISUALIZER_ORDER, Visualizers } from "./constants";
 
 export type VisualizerKey = "OSCILLOSCOPE" | "BAR" | "NONE" | "MILKDROP";
 

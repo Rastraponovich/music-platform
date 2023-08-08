@@ -1,8 +1,7 @@
-import clsx from "clsx";
-import { memo, ReactNode } from "react";
-
-import { ChevronUpIcon } from "@heroicons/react/outline";
 import { Disclosure, Transition } from "@headlessui/react";
+import { ChevronUpIcon } from "@heroicons/react/outline";
+import clsx from "clsx";
+import { ReactNode, memo } from "react";
 
 interface AccordionFilterProps {
   title: string | ReactNode;

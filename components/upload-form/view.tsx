@@ -1,17 +1,16 @@
-import dynamic from "next/dynamic";
 import { useUnit } from "effector-react";
+import dynamic from "next/dynamic";
 import { Fragment, useCallback, useState } from "react";
 
 import { $currentSong, $files, changeSong, submitted, uploadFile } from "@/features/music";
 
-import { Dialog, Transition } from "@headlessui/react";
-
-import { Input } from "~/shared/ui/input";
 import { Button } from "~/shared/ui/button";
+import { ModalActions, ModalTitle } from "~/shared/ui/dialog";
+import { Input } from "~/shared/ui/input";
 import { InputFile } from "~/shared/ui/input-file";
 
+import { Dialog, Transition } from "@headlessui/react";
 import { UploadIcon } from "@heroicons/react/solid";
-import { ModalActions, ModalTitle } from "~/shared/ui/dialog";
 
 const PreviewImage = dynamic(() => import("../preview-image").then((mod) => mod.PreviewImage), {
   ssr: false,

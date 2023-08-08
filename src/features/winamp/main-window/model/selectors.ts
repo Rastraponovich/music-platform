@@ -1,10 +1,10 @@
 import { useUnit } from "effector-react";
 
-import { $currentBalance, $currentBalanceStep } from "./balance-bar";
-import { $currentVolume, $currentVolumeStep } from "./volume-bar";
+import type { TMediaStatus, TimeMode } from "@/features/music/types";
 import { $clutterBar, progress, winamp } from "@/src/widgets/winamp";
 
-import type { TimeMode, TMediaStatus } from "@/features/music/types";
+import { $currentBalance, $currentBalanceStep } from "./balance-bar";
+import { $currentVolume, $currentVolumeStep } from "./volume-bar";
 
 /**
  * возвращает текущее положение баланса

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { fork, serialize, Scope } from "effector";
+import { Scope, fork, serialize } from "effector";
 
 let clientScope: Scope;
 

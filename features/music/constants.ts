@@ -1,8 +1,8 @@
 import {
   Band,
-  TPreset,
   PresetTypes,
   TMediaStatus,
+  TPreset,
   TVISUALIZERS,
   TWinampState,
   TWinampWindow,

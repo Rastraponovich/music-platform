@@ -1,4 +1,5 @@
 import { useUnit } from "effector-react";
+
 import { TIME_MODE } from "@/features/media/constants";
 import { $timeMode, $timer } from "@/src/widgets/winamp/model";
 

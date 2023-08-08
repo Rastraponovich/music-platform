@@ -1,14 +1,13 @@
-import { Store, createEffect, scopeBind, createEvent, sample, createStore } from "effector";
+import { Store, createEffect, createEvent, createStore, sample, scopeBind } from "effector";
 import { reset } from "patronum";
+import type { ChangeEvent } from "react";
 
 import { getClientScope } from "@/src/shared/hooks/use-scope";
+import type { Nullable } from "@/types";
 import { getSnapBandValue } from "@/utils/utils";
 
-import type { ChangeEvent } from "react";
-import type { Nullable } from "@/types";
-import type { MediaElement, _Bands, Band, TPreset } from "./types";
-
 import { PRESETS, PRESETS_ARRAY } from "./constants";
+import type { Band, MediaElement, TPreset, _Bands } from "./types";
 
 const CHANGE_ALL_BANDS_EVENT: Record<string, number> = {
   min: 0,

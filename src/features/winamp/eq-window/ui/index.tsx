@@ -1,8 +1,10 @@
-import { $clutterBar, winampStates } from "@/src/widgets/winamp/model";
-import { useDraggable } from "@/src/shared/hooks/use-draggable";
 import clsx from "clsx";
 import { useEvent, useStore } from "effector-react";
 import { useRef } from "react";
+
+import { useDraggable } from "@/src/shared/hooks/use-draggable";
+import { $clutterBar, winampStates } from "@/src/widgets/winamp/model";
+
 import { selectors } from "../model";
 import { EQButtons } from "./buttons";
 import { EQHeader } from "./header";

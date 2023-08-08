@@ -1,6 +1,7 @@
-import { Character } from "~/shared/ui/winamp/character-strings";
 import clsx from "clsx";
 import { memo } from "react";
+
+import { Character } from "~/shared/ui/winamp/character-strings";
 
 interface KBPSProps {
   bitrate: number;

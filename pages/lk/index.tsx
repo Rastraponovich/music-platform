@@ -1,9 +1,8 @@
 // import { useUnit } from "effector-react";
+import { allSettled, fork, serialize } from "effector";
+import type { GetServerSideProps, NextPage } from "next";
 
 import { getSongs } from "@/features/music";
-import { allSettled, fork, serialize } from "effector";
-
-import type { GetServerSideProps, NextPage } from "next";
 
 import {
   AccordionFiltersSkeleton,

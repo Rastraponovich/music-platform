@@ -1,9 +1,10 @@
-import { changeClutterBar } from "@/src/widgets/winamp"
-import { createEvent, sample } from "effector"
+import { createEvent, sample } from "effector";
 
-export const changedClutterBar = createEvent<string>()
+import { changeClutterBar } from "@/src/widgets/winamp";
+
+export const changedClutterBar = createEvent<string>();
 
 sample({
-    clock: changedClutterBar,
-    target: changeClutterBar,
-})
+  clock: changedClutterBar,
+  target: changeClutterBar,
+});

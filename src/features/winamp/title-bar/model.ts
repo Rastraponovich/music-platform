@@ -1,5 +1,7 @@
-import { winamp, winampStates } from "~/widgets/winamp";
 import { createEvent, sample } from "effector";
+
+import { winamp, winampStates } from "~/widgets/winamp";
+
 import { WindowNames } from "./constants";
 
 export const minimizeButtonClicked = createEvent();

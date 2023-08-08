@@ -1,5 +1,6 @@
-import { useStore } from "effector-react"
-import { $enabledMarque, $marqueInfoText } from "./model"
+import { useStore } from "effector-react";
 
-export const useEnabledMarque = () => useStore($enabledMarque)
-export const useMarqueInfoText = () => useStore($marqueInfoText)
+import { $enabledMarque, $marqueInfoText } from "./model";
+
+export const useEnabledMarque = () => useStore($enabledMarque);
+export const useMarqueInfoText = () => useStore($marqueInfoText);

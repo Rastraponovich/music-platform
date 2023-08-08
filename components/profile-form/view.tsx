@@ -1,8 +1,8 @@
 import Image from "next/image";
 import { useState } from "react";
 
-import { Input } from "~/shared/ui/input";
 import { Button } from "~/shared/ui/button";
+import { Input } from "~/shared/ui/input";
 
 import { CameraIcon } from "@heroicons/react/outline";
 

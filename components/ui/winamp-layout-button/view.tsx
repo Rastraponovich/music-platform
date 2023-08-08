@@ -1,10 +1,9 @@
 import clsx from "clsx";
 import { useUnit } from "effector-react";
 
-import { winamp, winampStates } from "@/src/widgets/winamp/model";
-
 import { MEDIA_STATUS } from "@/features/media/constants";
 import { WINAMP_STATE } from "@/features/music/constants";
+import { winamp, winampStates } from "@/src/widgets/winamp/model";
 
 import { WinampIcon } from "~/shared/ui/winamp-icon";
 

@@ -1,5 +1,7 @@
-import { Nullable } from "@/types";
 import { MouseEventHandler } from "react";
+
+import { Nullable } from "@/types";
+
 import { Playlist } from "../playlist/types";
 
 export enum PlayerState {

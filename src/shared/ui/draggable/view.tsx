@@ -1,6 +1,7 @@
+import { ReactNode, useRef } from "react";
+
 import { TWinampWindow } from "@/features/music/types";
 import { useDraggable } from "@/src/shared/hooks/use-draggable";
-import { useRef, ReactNode } from "react";
 
 interface DraggableProps {
   children: ReactNode;

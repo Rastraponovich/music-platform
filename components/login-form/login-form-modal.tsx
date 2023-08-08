@@ -1,13 +1,13 @@
 import clsx from "clsx";
-import { useState, Fragment, useCallback, useRef } from "react";
-
-import { Dialog, Tab, Transition } from "@headlessui/react";
-
-import { XIcon } from "@heroicons/react/outline";
+import { Fragment, useCallback, useRef, useState } from "react";
 
 import { Button } from "~/shared/ui/button";
 import { ModalTitle } from "~/shared/ui/dialog";
+
 import { LoginFormTabs } from "./login-form-tabs";
+
+import { Dialog, Tab, Transition } from "@headlessui/react";
+import { XIcon } from "@heroicons/react/outline";
 
 export const LoginFormModal = () => {
   const [isOpened, setIsOpened] = useState<boolean>(false);

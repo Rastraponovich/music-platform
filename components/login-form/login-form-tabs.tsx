@@ -1,7 +1,9 @@
-import { Tab } from "@headlessui/react";
 import clsx from "clsx";
+
 import { LoginForm } from "./login-form";
 import { RegistrationForm } from "./registration-form";
+
+import { Tab } from "@headlessui/react";
 
 export const LoginFormTabs = () => {
   return (

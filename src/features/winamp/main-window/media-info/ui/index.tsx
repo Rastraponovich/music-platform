@@ -1,11 +1,11 @@
 import { useStore } from "effector-react";
+import { useMemo } from "react";
 
+import { WINAMP_STATE } from "@/features/music/constants";
 import { playlist, winamp, winampStates } from "@/src/widgets/winamp/model";
 
+import { KBPS, KHZ, MonoStereo } from "./info";
 import { Ticker } from "./ticker";
-import { WINAMP_STATE } from "@/features/music/constants";
-import { useMemo } from "react";
-import { KBPS, MonoStereo, KHZ } from "./info";
 
 /**
  *

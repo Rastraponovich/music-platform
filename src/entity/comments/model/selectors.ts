@@ -1,4 +1,5 @@
-import { useStore } from "effector-react"
-import { $comments } from "./model"
+import { useStore } from "effector-react";
 
-export const useComments = (id: number) => useStore($comments)[id]
+import { $comments } from "./model";
+
+export const useComments = (id: number) => useStore($comments)[id];

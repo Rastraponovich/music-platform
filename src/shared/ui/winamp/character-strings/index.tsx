@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import deburr from "lodash.deburr";
-import { memo, ReactNode } from "react";
+import { ReactNode, memo } from "react";
+
 interface Props extends React.HTMLAttributes<HTMLSpanElement> {
   children: string | number;
   className?: string;

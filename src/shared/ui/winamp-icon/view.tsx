@@ -1,4 +1,5 @@
 import { forwardRef } from "react";
+
 import type { TIconSize } from "@/types/ui.types";
 
 interface WinampIconProps {

@@ -1,8 +1,11 @@
 import clsx from "clsx";
 import { useUnit } from "effector-react";
-import { memo, MouseEventHandler } from "react";
+import { MouseEventHandler, memo } from "react";
 
+import MiniTimer from "@/components/ui/Winamp/PlayListWindow/mini-timer";
 import { WinampButton } from "@/src/shared/ui/winamp/winamp-button";
+
+import { MiniActions } from "../controls-panel";
 import {
   $isActiveWindow,
   $shaded,
@@ -10,9 +13,6 @@ import {
   minimizeButtonClicked,
   shadeButtonClicked,
 } from "./model";
-
-import { MiniActions } from "../controls-panel";
-import MiniTimer from "@/components/ui/Winamp/PlayListWindow/mini-timer";
 
 interface TitleBarProps {
   onMouseDown: MouseEventHandler;
