@@ -2,7 +2,7 @@ import { attach, createEvent, createStore, sample } from "effector";
 import type { ChangeEvent, MouseEvent } from "react";
 
 import type { MediaElement } from "@/features/music/types";
-import { $Media, marqueInfo } from "@/src/widgets/winamp";
+import { $mediaElement, marqueInfo } from "@/src/widgets/winamp";
 import { getSnapBalanceValue } from "@/utils/utils";
 
 import { CURRENT_BALANCE_OFFSET } from "./constants";
@@ -11,7 +11,7 @@ import { getMarqueInfo } from "./utils";
 // effects //
 
 const changeBalanceFx = attach({
-  source: $Media,
+  source: $mediaElement,
   async effect(media: Nullable<MediaElement>, event: ChangeEvent<HTMLInputElement>) {
     const value = getSnapBalanceValue(Number(event.target.value));
 

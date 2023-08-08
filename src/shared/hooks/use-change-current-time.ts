@@ -2,9 +2,15 @@ import { useUnit } from "effector-react";
 import { useEffect } from "react";
 
 import { WINAMP_WINDOW_STATE } from "@/features/music/constants";
+import {
+  $playlistLength,
+  $selectedTrackInPlaylist,
+  doubleClickedTrackInPlaylist,
+  selectTrackInPlaylist,
+} from "@/src/features/winamp/playlist";
 import { keyChangeCurrentTime } from "@/src/features/winamp/progress-bar/model";
 import { keyboardVolumeChanged } from "@/src/features/winamp/volume-bar/model";
-import { playlist, winampStates } from "@/src/widgets/winamp/model";
+import { removeTrackFromPlaylist, winampStates } from "@/src/widgets/winamp/model";
 
 const useChangeCurentTime = () => {
   const changeCurrentTime = useUnit(keyChangeCurrentTime);
@@ -30,9 +36,9 @@ export const useChangeCurrentVolume = () => {
   const handleSetVolume = useUnit(keyboardVolumeChanged);
   const activeWindow = useUnit(winampStates.$activeWindow);
   const [currentPosition, handleSelect, itemsLength] = useUnit([
-    playlist.$selectedTrackInPlayList,
-    playlist.selectTrackInPlaylist,
-    playlist.$playlistLength,
+    $selectedTrackInPlaylist,
+    selectTrackInPlaylist,
+    $playlistLength,
   ]);
 
   useEffect(() => {
@@ -77,15 +83,12 @@ export const useChangeCurrentVolume = () => {
 const useDelPressKeyButton = () => {
   const activeWindow = useUnit(winampStates.$activeWindow);
   const [handleDelete, handleSelect, hanldeDoubleClick] = useUnit([
-    playlist.removeTrackFromPlaylist,
-    playlist.selectTrackInPlaylist,
-    playlist.doubleClick,
+    removeTrackFromPlaylist,
+    selectTrackInPlaylist,
+    doubleClickedTrackInPlaylist,
   ]);
 
-  const [itemsLength, selectedItem] = useUnit([
-    playlist.$playlistLength,
-    playlist.$selectedTrackInPlayList,
-  ]);
+  const [itemsLength, selectedItem] = useUnit([$playlistLength, $selectedTrackInPlaylist]);
 
   useEffect(() => {
     const handler = (event: globalThis.KeyboardEvent) => {

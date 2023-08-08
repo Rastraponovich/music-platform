@@ -10,7 +10,7 @@ import {
   $isPlaying,
   $loopIsOn,
   $shuffled,
-  $visiblePlaylist,
+  $visibledPlaylist,
   eqVisibilityToggled,
   loopToggled,
   nextTrackButtonClicked,
@@ -19,7 +19,7 @@ import {
   prevTrackButtonClicked,
   shuffleToggled,
   stopButtonClicked,
-  toggleVisiblePlaylist,
+  toggledPlaylist,
 } from "./model";
 
 interface ButtonProps {
@@ -167,7 +167,7 @@ export const ToggleEQButton = () => {
 };
 
 export const TogglePlaylistButton = () => {
-  const [isVisible, toggle] = useUnit([$visiblePlaylist, toggleVisiblePlaylist]);
+  const [isVisible, toggle] = useUnit([$visibledPlaylist, toggledPlaylist]);
 
   return (
     <WinampButton

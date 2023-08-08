@@ -1,9 +1,10 @@
-import { useStore } from "effector-react";
+import { useUnit } from "effector-react";
 import { useMemo } from "react";
 
 import { WINAMP_STATE } from "@/features/music/constants";
-import { playlist, winamp, winampStates } from "@/src/widgets/winamp/model";
+import { winamp, winampStates } from "@/src/widgets/winamp/model";
 
+import { $currentPlayedTrackIndex } from "../../../playlist";
 import { KBPS, KHZ, MonoStereo } from "./info";
 import { Ticker } from "./ticker";
 
@@ -12,10 +13,10 @@ import { Ticker } from "./ticker";
  * @deprecated
  */
 export const MediaInfo = () => {
-  const currentTrack = useStore(winamp.$currentTrack);
-  const currentId = useStore(playlist.$currentPlayedTrackIndex);
-  const playerState = useStore(winamp.$mediaStatus);
-  const winampState = useStore(winampStates.$winampState);
+  const currentTrack = useUnit(winamp.$currentTrack);
+  const currentId = useUnit($currentPlayedTrackIndex);
+  const playerState = useUnit(winamp.$mediaStatus);
+  const winampState = useUnit(winampStates.$winampState);
 
   const allow = useMemo(
     () => currentTrack !== null && winampState !== WINAMP_STATE.CLOSED,

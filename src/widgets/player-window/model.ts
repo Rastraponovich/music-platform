@@ -1,12 +1,13 @@
 import { combine } from "effector";
 
 import { PlayerState, WinampState } from "@/features/music/constants";
+import { $currentPlayedTrackIndex } from "@/src/features/winamp/playlist";
 
-import { playlist, winamp, winampStates } from "../winamp";
+import { winamp, winampStates } from "../winamp";
 
 export const $track = winamp.$currentTrack.map((track) => track);
 
-export const $currentTrackId = playlist.$currentPlayedTrackIndex.map((id) => id);
+export const $currentTrackId = $currentPlayedTrackIndex.map((id) => id);
 
 export const $isPlayerNotStopped = winamp.$mediaStatus.map(
   (status) => status !== PlayerState.STOPPED,

@@ -1,8 +1,9 @@
 import { createStore, sample } from "effector";
 
-import { marqueInfo, playlist, winamp } from "@/src/widgets/winamp/model";
+import { marqueInfo, winamp } from "@/src/widgets/winamp/model";
 import { Nullable } from "@/types";
 
+import { $currentPlayedTrackIndex } from "../../../playlist";
 import { MARQUEE_MAX_LENGTH, MINUTE, SEPARATOR, isLong } from "../lib";
 
 export const $enabledMarque = createStore<boolean>(false).on(
@@ -52,9 +53,9 @@ const $text = createStore("");
 
 sample({
   clock: winamp.$currentTrack,
-  source: [playlist.$currentPlayedTrackIndex, $total],
-  //@ts-ignore
-  fn: ([currentId, total]: [number, string], currentTrack) => {
+  source: { currentId: $currentPlayedTrackIndex, total: $total },
+
+  fn: ({ currentId, total }, currentTrack) => {
     if (currentTrack)
       return `${currentId !== null && currentId + 1}. ${currentTrack.artist} - ${
         currentTrack.name
@@ -72,14 +73,3 @@ sample({
     isLong(text) ? `${text}${SEPARATOR}${text}` : text.padEnd(MARQUEE_MAX_LENGTH, " "),
   target: $trackName,
 });
-
-// useEffect(() => {
-//     const total =
-//     const text = `${currentId !== null && currentId + 1}. ${currentTrack.artist} - ${
-//         currentTrack.name
-//     }   ${total}`
-
-//     setTrack(isLong(text) ? `${text}${SEPARATOR}${text}` : text.padEnd(MARQUEE_MAX_LENGTH, " "))
-
-//     return () => setpos(1)
-// }, [currentId, min, sec, track.length])
