@@ -7,12 +7,13 @@ import {
   MediaElement,
   StereoBalanceNodeType,
   TMediaStatus,
+  TPreset,
   TWinampState,
   TWinampWindow,
   TimeMode,
   Track,
+  _Bands,
 } from "@/features/music/types";
-import { createWinampEQFactory } from "@/features/music/winamp-eq";
 import { getClientScope } from "@/src/shared/hooks/use-scope";
 import type { Nullable } from "@/types";
 import { baseSkinColors } from "@/types/ui.types";
@@ -491,6 +492,86 @@ export const playNextTrackIsOneInPlayListFx = attach({
   mapParams: () => playNextTrackIsOneInPlayListCb,
 });
 
+export const toggleEQFx = attach({
+  source: $mediaElement,
+  async effect(media, { enable }: { enable: boolean }) {
+    if (media) {
+      const connectionSource = enable ? media._preamp : media._balance;
+
+      media._staticSource.disconnect();
+      media._staticSource.connect(connectionSource);
+    }
+  },
+});
+
+export const resetEqBandFx = attach({
+  source: $mediaElement,
+  async effect(media, { name }: { name: string }) {
+    const bandName = Number(name) as keyof _Bands;
+
+    media!._bands[bandName].gain.value = 0;
+
+    return { [bandName]: 50 } as Record<Band, number>;
+  },
+});
+
+export const setEQbandFx = attach({
+  source: $mediaElement,
+  async effect(media, { name, value }: { name: string; value: string | number }) {
+    const snapBandValue = getSnapBandValue(Number(value));
+
+    const bandName = Number(name) as keyof _Bands;
+    const db = snapBandValue * 0.24 - 12;
+
+    media!._bands[bandName].gain.value = db;
+
+    return { [bandName]: snapBandValue } as Record<Band, number>;
+  },
+});
+
+export const changePreampFx = attach({
+  source: $mediaElement,
+  async effect(media, { value }: { value: number }) {
+    const db = value * 0.24 - 12;
+
+    media!._preamp.gain.value = Math.pow(10, db / 20);
+
+    return value;
+  },
+});
+
+export const setAllBandsEqFx = attach({
+  source: $mediaElement,
+  async effect(media, { key }: { key: "min" | "max" | "reset" }) {
+    const dbValues = {
+      max: 12,
+      min: -12,
+      reset: 0,
+    };
+
+    const db = dbValues[key] || 0;
+
+    for (const [, band] of Object.entries(media!._bands)) {
+      band.gain.value = db;
+    }
+
+    return key;
+  },
+});
+
+export const loadPresetEQFx = attach({
+  source: $mediaElement,
+  async effect(media, { preset }: { preset: TPreset }) {
+    Object.entries(preset.value).forEach(([key, value]) => {
+      const bandName = Number(key) as keyof _Bands;
+      const db = value * 0.24 - 12;
+
+      media!._bands[bandName].gain.value = db;
+    });
+    return preset.value;
+  },
+});
+
 // runtime //
 
 export const $isPlaying = $mediaStatus.map((status) => status === MEDIA_STATUS.PLAYING);
@@ -615,31 +696,6 @@ sample({
   target: createWinampFx,
 });
 
-const {
-  toggleVisibleEQ,
-  toggleAutoEQ,
-  enableClickedEQ,
-  toggleMinimizeEQ,
-  resetEqBand,
-  disableClickedEQ,
-  changePreampValue,
-  changeEQBand,
-  changeAllBandsValues,
-  $visibleEQ,
-  $preamp,
-  $minimizedEQ,
-  $enabledEQ,
-  $bands,
-  $autoEQ,
-  loadPreset,
-  $presets,
-  $currentPreset,
-  $selectedPreset,
-  $visiblePresetWindow,
-  selectPreset,
-  toggleVisiblePresetWindow,
-} = createWinampEQFactory($mediaElement);
-
 //Controls
 
 //when press playbutton when status playing
@@ -699,14 +755,14 @@ sample({
     state === WINAMP_STATE.MINIMIZED ||
     state === WINAMP_STATE.DESTROYED,
   fn: () => false,
-  target: [$visibleEQ, $visiblePlayer],
+  target: $visiblePlayer,
 });
 
 sample({
   clock: $winampState,
   filter: (state) => state === WINAMP_STATE.OPENED || state === WINAMP_STATE.TRACKLOADED,
   fn: () => true,
-  target: [$visibleEQ, $visiblePlayer],
+  target: $visiblePlayer,
 });
 
 sample({
@@ -760,28 +816,6 @@ $enabledMaruqeInfo.on(disabledMarqueInfo, () => false);
 
 $winampMarqueInfo.on(setMarqueInfo, (_, payload) => String(payload));
 $winampMarqueInfo.reset([disabledMarqueInfo, $enabledMaruqeInfo]);
-
-sample({
-  clock: changeEQBand,
-  fn: (event) => {
-    const snapBandValue = getSnapBandValue(Number(event.target.value));
-    const db = (snapBandValue / 100) * 24 - 12;
-
-    return `EQ: ${event.target.name}HZ ${db.toFixed(1)} DB`;
-  },
-  target: setMarqueInfo,
-});
-
-sample({
-  clock: changePreampValue,
-  fn: (event) => {
-    const snapBandValue = getSnapBandValue(Number(event.target.value));
-    const db = (snapBandValue / 100) * 24 - 12;
-
-    return `EQ: PREAMP ${db.toFixed(1)} DB`;
-  },
-  target: setMarqueInfo,
-});
 
 sample({
   clock: $currentTrackTime,
@@ -852,31 +886,6 @@ export const winampStates = {
   changeWindowState,
   $visiblePlayer,
   $shadePlayer,
-};
-
-export const eq = {
-  changeAllBandsValues,
-  changePreampValue,
-  changeEQBand,
-  disableClickedEQ,
-  enableClickedEQ,
-  resetEqBand,
-  $auto: $autoEQ,
-  $enabled: $enabledEQ,
-  $preamp,
-  $bands,
-  $visibleEQ,
-  toggleVisibleEQ,
-  toggleAutoEQ,
-  $presets,
-  loadPreset,
-  $currentPreset,
-  $selectedPreset,
-  $visiblePresetWindow,
-  selectPreset,
-  toggleVisiblePresetWindow,
-  $minimized: $minimizedEQ,
-  toggleMinimized: toggleMinimizeEQ,
 };
 
 export { loadUrl, selectTrackFromList, $clutterBar, changeClutterBar };

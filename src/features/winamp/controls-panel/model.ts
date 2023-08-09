@@ -1,7 +1,8 @@
 import { createEvent, sample } from "effector";
 
-import { eq, winamp, winampControls } from "@/src/widgets/winamp";
+import { winamp, winampControls } from "@/src/widgets/winamp";
 
+import { $visibleEQ, toggleVisibleEQ } from "../equalizer";
 import { $visiblePlaylist, toggleVisiblePlaylist } from "../playlist";
 
 export const loopToggled = createEvent();
@@ -23,7 +24,7 @@ export const $loopIsOn = winamp.$loop.map((loop) => loop);
 
 export const $shuffled = winamp.$shuffle.map((shuffled) => shuffled);
 
-export const $eqVisible = eq.$visibleEQ.map((visible) => visible);
+export const $eqVisible = $visibleEQ.map((visible) => visible);
 
 export const $visibledPlaylist = $visiblePlaylist.map((visible) => visible);
 
@@ -93,5 +94,5 @@ sample({
  */
 sample({
   clock: eqVisibilityToggled,
-  target: eq.toggleVisibleEQ,
+  target: toggleVisibleEQ,
 });
