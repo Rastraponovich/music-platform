@@ -28,16 +28,10 @@ import { CharacterStrings } from "~/shared/ui/winamp/character-strings";
 
 import { WINDOW_NAME } from "./constants";
 
-const OptionMenu = dynamic(
-  () => import("../../../../components/ui/Winamp/PlayListWindow/menus/OptionMenu"),
-  { ssr: false },
-);
-const AddMenu = dynamic(
-  () => import("../../../../components/ui/Winamp/PlayListWindow/menus/AddMenu"),
-  { ssr: false },
-);
-
-//  const DEFAULT_HEIGHT = 151;
+const OptionMenu = dynamic(() => import("../menu").then(({ OptionMenu }) => OptionMenu), {
+  ssr: false,
+});
+const AddMenu = dynamic(() => import("../menu").then(({ AddMenu }) => AddMenu), { ssr: false });
 
 export const PlayListWindow = () => {
   const ref = useRef(null);
