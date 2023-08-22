@@ -5,6 +5,9 @@ import { MEDIA_STATUS } from "@/features/media/constants";
 import { $songs } from "@/features/music";
 import { WINAMP_STATE } from "@/features/music/constants";
 import type { Track } from "@/features/music/types";
+import type { Nullable } from "@/types";
+import { toggle } from "@/utils/utils";
+
 import {
   $currentTrack,
   $mediaStatus,
@@ -18,10 +21,8 @@ import {
   removeTrackFromPlaylist,
   selectTrackFromList,
   startPlayingFx,
-} from "@/src/widgets/winamp";
-import { generateRandomId } from "@/src/widgets/winamp/utils";
-import type { Nullable } from "@/types";
-import { toggle } from "@/utils/utils";
+} from "~/widgets/winamp";
+import { generateRandomId } from "~/widgets/winamp/utils";
 
 export const toggleVisiblePlaylist = createEvent();
 export const addTrackToPlaylist = createEvent<Track>();
@@ -30,8 +31,8 @@ export const setCurrentPlayedTrackIndex = createEvent<number>();
 export const doubleClickedTrackInPlaylist = createEvent<number>();
 
 export const $playlist = createStore<Track[]>([]);
-export const $visiblePlaylist = createStore<boolean>(true);
-export const $durationTracksInPlaylist = createStore<number>(0);
+export const $visiblePlaylist = createStore(true);
+export const $durationTracksInPlaylist = createStore(0);
 export const $removedTrackIndex = createStore<Nullable<number>>(null);
 export const $selectedTrackInPlaylist = createStore<Nullable<number>>(null);
 export const $currentPlayedTrackIndex = createStore<Nullable<number>>(null);

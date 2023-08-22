@@ -1,7 +1,7 @@
 import { useUnit } from "effector-react";
 
-import PlayListWindow from "@/components/ui/Winamp/PlayListWindow/PlayListWindow";
 import { WINAMP_STATE } from "@/features/music/constants";
+import { PlayListWindow } from "@/src/features/winamp/playlist/view";
 
 import { winampStates } from "~/widgets/winamp/model";
 
