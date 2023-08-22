@@ -1,12 +1,12 @@
 import {
   Band,
+  MediaStatus,
   PresetTypes,
-  TMediaStatus,
   TPreset,
   TVISUALIZERS,
   TWinampState,
-  TWinampWindow,
   UseDraggblePosition,
+  WinampWindow,
 } from "./types";
 
 export const VISUALIZERS: TVISUALIZERS = {
@@ -19,13 +19,13 @@ export const VISUALIZERS: TVISUALIZERS = {
 export const VISUALIZER_ORDER = [VISUALIZERS.BAR, VISUALIZERS.OSCILLOSCOPE, VISUALIZERS.NONE];
 export const BANDS: Band[] = [60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000];
 
-export const MEDIA_STATUS: Record<TMediaStatus, TMediaStatus> = {
+export const MEDIA_STATUS: Record<MediaStatus, MediaStatus> = {
   PAUSED: "PAUSED",
   PLAYING: "PLAYING",
   STOPPED: "STOPPED",
 };
 
-export const WINAMP_PLAYER_STATE: Record<TMediaStatus, TMediaStatus> = {
+export const WINAMP_PLAYER_STATE: Record<MediaStatus, MediaStatus> = {
   PAUSED: "PAUSED",
   PLAYING: "PLAYING",
   STOPPED: "STOPPED",
@@ -57,14 +57,14 @@ export const WINAMP_STATE: Record<TWinampState, TWinampState> = {
   MINIMIZED: "MINIMIZED",
 };
 
-export const WINAMP_WINDOW_STATE: Record<TWinampWindow, TWinampWindow> = {
+export const WINAMP_WINDOW_STATE: Record<WinampWindow, WinampWindow> = {
   EQUALIZER: "EQUALIZER",
   NONE: "NONE",
   PLAYER: "PLAYER",
   PLAYLIST: "PLAYLIST",
   PRESETS: "PRESETS",
 };
-export const DEFALUT_WINDOW_STATE: Record<TWinampWindow, UseDraggblePosition> = {
+export const DEFALUT_WINDOW_STATE: Record<WinampWindow, UseDraggblePosition> = {
   PLAYER: {
     clientX: "1rem",
     clientY: "95px",

@@ -101,9 +101,9 @@ export type TWinampState =
   | "OPENED"
   | "MINIMIZED";
 
-export type TMediaStatus = "PLAYING" | "STOPPED" | "PAUSED";
+export type MediaStatus = "PLAYING" | "STOPPED" | "PAUSED";
 
-export type TWinampWindow = "PLAYER" | "EQUALIZER" | "PLAYLIST" | "NONE" | "PRESETS";
+export type WinampWindow = "PLAYER" | "EQUALIZER" | "PLAYLIST" | "NONE" | "PRESETS";
 
 export type UseDraggblePosition = {
   clientX: string | number;
