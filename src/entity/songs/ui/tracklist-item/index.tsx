@@ -1,26 +1,34 @@
-import { PauseIcon, PlayIcon } from "@heroicons/react/solid";
 import clsx from "clsx";
-import { useList, useUnit } from "effector-react";
+import { useList, useStoreMap, useUnit } from "effector-react";
 import Image from "next/image";
 import { memo, useCallback, useMemo, useState } from "react";
+import { Comments } from "~/entity/comments";
 
 import { TrackTimer } from "@/components/track-timer";
 import { MEDIA_STATUS } from "@/features/media/constants";
-import { Track } from "@/features/music/types";
-import { Comments } from "@/src/entity/comments";
-import { Progressbar } from "@/src/features/winamp/progress-bar";
-import { winamp, winampControls } from "@/src/widgets/winamp/model";
+import type { Track } from "@/features/music/types";
 import { convertTimeToObj } from "@/utils/utils";
 
-import { songLib } from "../..";
-import { $songs, actions, selectors } from "../../model";
+import { winamp, winampControls } from "~/widgets/winamp/model";
+
+import { Progressbar } from "~/features/winamp/progress-bar";
+
+import {
+  $favoritesTracks,
+  $songs,
+  $songsCount,
+  Song,
+  addToFavoriteButtonClicked,
+} from "../../model";
 import { Actions } from "./buttons";
+
+import { PauseIcon, PlayIcon } from "@heroicons/react/solid";
 
 /**
  * интерфейс TrackListItem
  */
 interface TrackListItemProps {
-  track: songLib.Song;
+  track: Song;
   isCurrentTrack: boolean;
 }
 
@@ -29,10 +37,16 @@ interface TrackListItemProps {
  * @param {boolean} isCurrentTrack
  * @param {track} songLib.Song
  */
-export const TrackListItem = memo(({ track, isCurrentTrack }: TrackListItemProps) => {
+export const TrackListItem = memo<TrackListItemProps>(({ track, isCurrentTrack }) => {
   const mediaStatus = useUnit(winamp.$mediaStatus);
-  const isFavorite = selectors.useFavoriteTrack(track?.id) || false;
-  const handleAddToFavButtonClicked = useUnit(actions.addToFavoriteButtonClicked);
+
+  const isFavorite = useStoreMap({
+    store: $favoritesTracks,
+    keys: [track?.id],
+    fn: (favorites) => favorites.some((favorite) => favorite === track?.id),
+  });
+
+  const handleAddToFavButtonClicked = useUnit(addToFavoriteButtonClicked);
 
   const { firstMinute, lastSecond, lastMinute, firstSecond } = useMemo(
     () => convertTimeToObj(track?.metaData?.format.duration),
@@ -122,7 +136,7 @@ TrackListItem.displayName = "TrackListItem";
 
 export const Tracklist = () => {
   const currentTrack = useUnit(winamp.$currentTrack) as Track;
-  const countSongs = selectors.useCountSongs();
+  const countSongs = useUnit($songsCount);
 
   return (
     <div className="flex  flex-col divide-y-2 divide-gray-200">
@@ -139,7 +153,7 @@ interface PlayButtonProps {
   onClick(): void;
 }
 
-const PlayButton = memo(({ isCurrentTrack, onClick }: PlayButtonProps) => {
+const PlayButton = memo<PlayButtonProps>(({ isCurrentTrack, onClick }) => {
   const mediaStatus = useUnit(winamp.$mediaStatus);
 
   return (

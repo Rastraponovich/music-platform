@@ -1,10 +1,11 @@
-import { AnnotationIcon, HeartIcon, PlusSmIcon, TrashIcon } from "@heroicons/react/outline";
-import { HeartIcon as Fav } from "@heroicons/react/solid";
 import { memo } from "react";
 
-import { AddToPlaylistButton } from "@/src/features/add-to-playlist";
+import { AddToPlaylistButton } from "~/features/add-to-playlist";
 
-import { Song } from "../../lib";
+import type { Song } from "../../model";
+
+import { AnnotationIcon, HeartIcon, TrashIcon } from "@heroicons/react/outline";
+import { HeartIcon as Fav } from "@heroicons/react/solid";
 
 /**
  * base Interface
@@ -22,7 +23,8 @@ interface AddToFavoritesButtonProps extends ButtonProps {
 }
 
 const AddToFavoritesButton = ({ onClick, isFavorite }: AddToFavoritesButtonProps) => {
-  const styles = "h-5 w-6 text-gray-500 duration-200 group-hover:text-gray-900";
+  // const styles = "h-5 w-6 text-gray-500 duration-200 group-hover:text-gray-900";
+
   return (
     <button onClick={onClick} title="добавить в избранное">
       {!isFavorite ? (
@@ -78,8 +80,8 @@ interface ActionsProps {
   isFavorite: boolean;
 }
 
-export const Actions = memo(
-  ({ track, toggleComments, addToFavorites, isFavorite = false }: ActionsProps) => {
+export const Actions = memo<ActionsProps>(
+  ({ track, toggleComments, addToFavorites, isFavorite = false }) => {
     return (
       <div className="flex items-center justify-end space-x-1 justify-self-end">
         <AddToPlaylistButton track={track} />
@@ -90,3 +92,5 @@ export const Actions = memo(
     );
   },
 );
+
+Actions.displayName = "Actions";

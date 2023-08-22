@@ -1,18 +1,20 @@
-import { MusicNoteIcon, PlayIcon } from "@heroicons/react/solid";
 import clsx from "clsx";
 import { allSettled, fork, serialize } from "effector";
 import { useUnit } from "effector-react";
 import type { GetServerSideProps, NextPage } from "next";
 import { useState } from "react";
+import { Tracklist, songModel } from "~/entity/songs";
 
 import { MusicFilter } from "@/components/music-filter";
 import { PlaylistFormModal } from "@/components/playlist-form";
 import { SearchInput } from "@/components/search-input";
 import { UploadFormModal } from "@/components/upload-form";
-import { Tracklist, songModel } from "@/src/entity/songs";
-import { winamp } from "@/src/widgets/winamp/model";
+
+import { winamp } from "~/widgets/winamp/model";
 
 import { WinampIcon } from "~/shared/ui/winamp-icon";
+
+import { MusicNoteIcon, PlayIcon } from "@heroicons/react/solid";
 
 const MusicPage: NextPage = () => {
   const hanldePlayAll = useUnit(winamp.playAllTracksFromList);
@@ -21,7 +23,7 @@ const MusicPage: NextPage = () => {
 
   const handleShowWinamp = useUnit(winamp.show);
 
-  const countSongs = songModel.selectors.useCountSongs();
+  const countSongs = useUnit(songModel.$songsCount);
 
   return (
     <main className="grow px-20 py-10">
@@ -93,7 +95,7 @@ export default MusicPage;
 export const getServerSideProps: GetServerSideProps = async () => {
   const scope = fork();
 
-  await allSettled(songModel.actions.getSongs, { scope });
+  await allSettled(songModel.songsGet, { scope });
 
   return {
     props: {
