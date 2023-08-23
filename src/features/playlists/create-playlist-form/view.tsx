@@ -201,7 +201,7 @@ const SearchSection = () => {
         isOpened={isOpenedValues}
         onClick={handleToggleValues}
       >
-        {isOpenedValues && <DropdownSongsList />}
+        <DropdownSongsList />
       </SelectSearch>
     </div>
   );

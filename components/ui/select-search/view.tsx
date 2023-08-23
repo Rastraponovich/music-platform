@@ -40,7 +40,7 @@ export const SelectSearch = memo<SelectSearchProps>(
         </div>
 
         <Combobox.Options static className="max-h-40 overflow-y-auto text-sm">
-          {children}
+          {isOpened && children}
         </Combobox.Options>
       </Combobox>
     );
