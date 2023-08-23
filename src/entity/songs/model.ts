@@ -1,6 +1,5 @@
 import { attach, createEvent, createStore, sample } from "effector";
-
-import type { Playlist } from "@/features/playlist/types";
+import type { Playlist } from "~/entity/playlists";
 
 import { api } from "~/shared/api";
 
