@@ -4,7 +4,7 @@ import { ChangeEvent } from "react";
 
 import { TResponse } from "@/types";
 
-import { PlayListAPI } from "./playlist-api";
+import { PlayListAPI } from "../../src/entity/playlists/playlist-api";
 import { Playlist } from "./types";
 
 const getPlaylists = createEvent();
