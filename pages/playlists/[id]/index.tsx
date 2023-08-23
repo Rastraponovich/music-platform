@@ -1,13 +1,14 @@
 import { fork, serialize } from "effector";
-import { useUnit } from "effector-react";
+import { useList } from "effector-react";
 import type { GetServerSideProps, NextPage } from "next";
 import Image from "next/image";
 import { ALBUMS, AlbumInfo } from "~/entity/albums";
 import { PlaylistFormModal } from "~/entity/playlists";
 
 import { $songs } from "@/features/music";
-import { TrackListItem } from "@/src/widgets/tracklist";
 import type { Album } from "@/types";
+
+import { TrackListItem } from "~/widgets/tracklist";
 
 import { Rating } from "~/shared/ui/rating";
 
@@ -25,8 +26,6 @@ const albumInfo = {
 };
 
 const PlaylistPage: NextPage<PlaylistPageProps> = ({ playlist }) => {
-  const songs = useUnit($songs);
-
   return (
     <main className="grow space-y-4 px-20 pb-5 pt-1">
       <h2 className="text-2xl font-semibold">Плейлист</h2>
@@ -40,13 +39,14 @@ const PlaylistPage: NextPage<PlaylistPageProps> = ({ playlist }) => {
           <div className="col-span-7 flex  flex-col rounded bg-white">
             <h4>Список треков</h4>
             <div className="flex flex-col">
-              {songs.length > 0 ? (
-                songs.map((track) => (
-                  <TrackListItem key={track.id} track={track} isCurrentTrack={false} />
-                ))
-              ) : (
-                <span className="text-base font-light italic text-gray-500 ">Пусто</span>
-              )}
+              {useList($songs, {
+                keys: [$songs.map((item) => item.length)],
+                getKey: (item) => item.id!,
+                fn: (song) => <TrackListItem id={song.id!} />,
+                placeholder: (
+                  <span className="text-base font-light italic text-gray-500 ">Пусто</span>
+                ),
+              })}
             </div>
           </div>
           <AlbumInfo albumProps={albumInfo} />

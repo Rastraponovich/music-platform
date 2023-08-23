@@ -1,15 +1,15 @@
 import clsx from "clsx";
 import { useUnit } from "effector-react";
-import { useEvent } from "effector-react/scope";
 import Image from "next/image";
 import { memo, useMemo } from "react";
 
 import { MEDIA_STATUS } from "@/features/media/constants";
-import { Song } from "@/features/music/types";
-import { $currentTime } from "@/src/features/winamp/progress-bar/model";
-import { convertTimeToObj } from "@/utils/utils";
+import type { Song } from "@/features/music/types";
+import { convertTimeToString } from "@/utils/utils";
 
-import { $currentTrackDuration, winamp, winampControls } from "~/widgets/winamp/model";
+import { $currentTrackDuration, winamp, winampControls } from "~/widgets/winamp";
+
+import { $currentTime } from "~/features/winamp/progress-bar";
 
 import { TrackTimer } from "../track-timer/view";
 
@@ -21,18 +21,19 @@ interface TrackListItemProps {
 }
 
 export const TrackListItemSmall = memo<TrackListItemProps>(({ track, isCurrentTrack }) => {
-  const mediaStatus = useUnit(winamp.$mediaStatus);
+  const [currentTrackDuration, currentTrackTime, mediaStatus] = useUnit([
+    $currentTrackDuration,
+    $currentTime,
+    winamp.$mediaStatus,
+  ]);
 
-  const { firstMinute, lastSecond, lastMinute, firstSecond } = useMemo(
-    () => convertTimeToObj(track?.metaData?.format.duration),
-    [track],
-  );
-
-  const [handleSelectTrack, handlePlay, handlePause] = useEvent([
+  const [handleSelectTrack, handlePlay, handlePause] = useUnit([
     winamp.selectTrackFromList,
     winampControls.play,
     winampControls.pause,
   ]);
+
+  const duration = useMemo(() => convertTimeToString(track?.metaData?.format.duration), [track]);
 
   const play = () => {
     if (!isCurrentTrack) return handleSelectTrack(track);
@@ -41,9 +42,9 @@ export const TrackListItemSmall = memo<TrackListItemProps>(({ track, isCurrentTr
     return handlePlay();
   };
 
-  const needToShow = isCurrentTrack && mediaStatus !== MEDIA_STATUS.STOPPED;
-  const currentTrackDuration = useUnit($currentTrackDuration);
-  const currentTrackTime = useUnit($currentTime);
+  const needToShow = useMemo(() => {
+    return isCurrentTrack && mediaStatus !== MEDIA_STATUS.STOPPED;
+  }, [isCurrentTrack, mediaStatus]);
 
   return (
     <div
@@ -97,11 +98,7 @@ export const TrackListItemSmall = memo<TrackListItemProps>(({ track, isCurrentTr
         <div className="col-span-1 col-start-12  flex flex-col justify-self-end text-xs text-gray-800 md:col-start-13 md:flex-row md:text-sm">
           {needToShow && <TrackTimer />}
 
-          <span>
-            {firstMinute}
-            {lastMinute}:{firstSecond}
-            {lastSecond}
-          </span>
+          <span>{duration}</span>
         </div>
       </div>
     </div>
