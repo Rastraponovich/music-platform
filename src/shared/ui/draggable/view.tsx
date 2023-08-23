@@ -1,11 +1,11 @@
 import { ReactNode, useRef } from "react";
 
-import { TWinampWindow } from "@/features/music/types";
+import { WinampWindow } from "@/features/music/types";
 import { useDraggable } from "@/src/shared/hooks/use-draggable";
 
 interface DraggableProps {
   children: ReactNode;
-  WINDOW_NAME: TWinampWindow;
+  WINDOW_NAME: WinampWindow;
 }
 
 export const Draggable = ({ children, WINDOW_NAME }: DraggableProps) => {

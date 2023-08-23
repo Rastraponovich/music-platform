@@ -54,13 +54,20 @@ export const convertTimeToString = (duration: number): string => {
   return `${firstMinute}${lastMinute}:${firstSecond}${lastSecond}`;
 };
 
+type ConvertTimeToObjectResult = {
+  firstMinute: number;
+  lastMinute: number;
+  firstSecond: number;
+  lastSecond: number;
+};
+
 /**
  * Converts a given time duration in seconds into an object containing the first and last digits of the minutes and seconds.
  *
  * @param {number} duration - The time duration in seconds.
  * @return {Object} - An object with the first and last digits of the minutes and seconds.
  */
-export const convertTimeToObj = (duration: number) => {
+export const convertTimeToObj = (duration: number): ConvertTimeToObjectResult => {
   const seconds = duration % 60;
   const minutes = Math.floor(duration / 60);
 

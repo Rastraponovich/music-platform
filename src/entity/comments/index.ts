@@ -1,2 +1,2 @@
-export * from "./ui";
+export * from "./view";
 export * as commentsModel from "./model";

@@ -1,8 +1,7 @@
 import { MouseEventHandler } from "react";
+import { Playlist } from "~/entity/playlists";
 
 import { Nullable } from "@/types";
-
-import { Playlist } from "../playlist/types";
 
 export enum PlayerState {
   STOPED = "STOPED",

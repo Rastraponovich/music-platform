@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import { useUnit } from "effector-react";
 import { MouseEventHandler, memo } from "react";
+import { MiniTimer } from "~/entity/winamp";
 
-import MiniTimer from "@/components/ui/Winamp/PlayListWindow/mini-timer";
-import { WinampButton } from "@/src/shared/ui/winamp/winamp-button";
+import { WinampButton } from "~/shared/ui/winamp/winamp-button";
 
 import { MiniActions } from "../controls-panel";
 import {

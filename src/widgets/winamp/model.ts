@@ -1,24 +1,24 @@
 import { attach, createEffect, createEvent, createStore, sample, scopeBind } from "effector";
 import { not, reset } from "patronum";
+import { BANDS, MEDIA_STATUS, WINAMP_STATE, WINAMP_WINDOW_STATE } from "~/entity/winamp/constants";
 
-import { BANDS, MEDIA_STATUS, WINAMP_STATE, WINAMP_WINDOW_STATE } from "@/features/music/constants";
 import {
   Band,
   MediaElement,
+  MediaStatus,
   StereoBalanceNodeType,
-  TMediaStatus,
   TPreset,
   TWinampState,
-  TWinampWindow,
   TimeMode,
   Track,
+  WinampWindow,
   _Bands,
 } from "@/features/music/types";
-import { getClientScope } from "@/src/shared/hooks/use-scope";
 import type { Nullable } from "@/types";
 import { baseSkinColors } from "@/types/ui.types";
 import { getMMssFromNumber, getSnapBandValue, toggle } from "@/utils/utils";
 
+import { getClientScope } from "~/shared/hooks/use-scope";
 import { StereoBalanceNode } from "~/shared/lib/audio/stereo-balance-node";
 
 import {
@@ -295,12 +295,12 @@ const closeWinamp = createEvent();
 //function has load track in Media._audio
 const loadUrl = createEvent<Track>();
 
-const changeWindowState = createEvent<TWinampWindow>();
+const changeWindowState = createEvent<WinampWindow>();
 const toggleShadePlayer = createEvent();
 const minimizedWinamp = createEvent();
 const showWinamp = createEvent();
 
-const setMediaStatus = createEvent<TMediaStatus>();
+const setMediaStatus = createEvent<MediaStatus>();
 
 const selectTrackFromList = createEvent<Track>();
 
@@ -347,7 +347,7 @@ export const $mediaElement = createStore<Nullable<MediaElement>>(null);
 const $currentTrack = createStore<Nullable<Track>>(null);
 
 const $currentTrackIsEmpty = $currentTrack.map((track) => track === null);
-const $activeWindow = createStore<TWinampWindow>(WINAMP_WINDOW_STATE.NONE);
+const $activeWindow = createStore<WinampWindow>(WINAMP_WINDOW_STATE.NONE);
 
 const $clutterBar = createStore<Record<string, boolean>>({
   o: false,
@@ -366,7 +366,7 @@ export const $shuffled = createStore<boolean>(false);
 
 export const $winampState = createStore<TWinampState>(WINAMP_STATE.DESTROYED);
 
-export const $mediaStatus = createStore<TMediaStatus>(MEDIA_STATUS.STOPPED);
+export const $mediaStatus = createStore<MediaStatus>(MEDIA_STATUS.STOPPED);
 
 const $visiblePlayer = createStore<boolean>(false);
 const $shadePlayer = createStore<boolean>(false);

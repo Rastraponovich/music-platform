@@ -6,13 +6,13 @@ import { winampStates } from "@/src/widgets/winamp/model";
 import { DEFALUT_WINDOW_STATE } from "@/features/music/constants";
 
 import type {
-  TWinampWindow,
+  WinampWindow,
   UseDraggblePosition,
   UseDraggbleReturnProps,
 } from "@/features/music/types";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const useDraggable = (WINDOW_NAME: TWinampWindow, ref: any): UseDraggbleReturnProps => {
+export const useDraggable = (WINDOW_NAME: WinampWindow, ref: any): UseDraggbleReturnProps => {
   const handleActiveWindow = useUnit(winampStates.changeWindowState);
 
   const position = useMemo(() => {

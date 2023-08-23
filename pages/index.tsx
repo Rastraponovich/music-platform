@@ -1,8 +1,8 @@
 import type { NextPage } from "next";
 import Image from "next/image";
 
-import { AlbumsList } from "@/components/album";
 import { Tarifs } from "@/components/tarifs";
+import { AlbumsList } from "@/src/entity/albums/album";
 
 // import { getPlaylists } from "@/features/playlist"
 // import { allSettled, fork, serialize } from "effector"

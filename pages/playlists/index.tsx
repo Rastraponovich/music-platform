@@ -1,11 +1,8 @@
 import { fork, serialize } from "effector";
 import { useList } from "effector-react";
-import { GetServerSideProps, NextPage } from "next";
-
-import Album from "@/components/Albums/Album/Album";
-import PlaylistFormModal from "@/components/playlist-form/playlist-form-modal";
-import { $playlists } from "@/features/playlist";
-import { albums } from "@/utils/__mock__";
+import type { GetServerSideProps, NextPage } from "next";
+import { ALBUMS, AlbumComponent } from "~/entity/albums";
+import { $playlists, PlaylistFormModal } from "~/entity/playlists";
 
 const PlaylistPage: NextPage = () => {
   return (
@@ -15,8 +12,8 @@ const PlaylistPage: NextPage = () => {
         <PlaylistFormModal />
       </div>
       <section className="grid grid-cols-3 content-start gap-4 py-5">
-        {albums.map((item) => (
-          <Album album={item} key={item.id} />
+        {ALBUMS.map((item) => (
+          <AlbumComponent album={item} key={item.id} />
         ))}
       </section>
 

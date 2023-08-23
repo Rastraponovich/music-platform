@@ -1,6 +1,6 @@
 import { useUnit } from "effector-react";
 
-import type { TMediaStatus, TimeMode } from "@/features/music/types";
+import type { MediaStatus, TimeMode } from "@/features/music/types";
 import { $clutterBar, progress, winamp } from "@/src/widgets/winamp";
 
 import { $currentBalance, $currentBalanceStep } from "./balance-bar";
@@ -44,9 +44,9 @@ export const useTimer = (): Record<string, number> => useUnit(progress.$timer);
 
 /**
  *  возвращает состояние медиафайла
- * @returns {TMediaStatus}
+ * @returns {MediaStatus}
  */
-export const usePlayerState = (): TMediaStatus => useUnit(winamp.$mediaStatus);
+export const usePlayerState = (): MediaStatus => useUnit(winamp.$mediaStatus);
 
 /**
  * clutterBar
