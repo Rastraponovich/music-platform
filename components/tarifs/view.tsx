@@ -2,11 +2,11 @@ import clsx from "clsx";
 import Image from "next/image";
 import { Fragment, memo, useEffect, useState } from "react";
 
-import type { Tarif } from "@/types";
-import { tarifCards } from "@/utils/__mock__";
-
 import { Button } from "~/shared/ui/button";
 import { Input } from "~/shared/ui/input";
+
+import { TARIF_CARDS } from "./constants";
+import type { Tarif } from "./model";
 
 import { Dialog, Transition } from "@headlessui/react";
 import { BadgeCheckIcon } from "@heroicons/react/solid";
@@ -36,7 +36,7 @@ export const Tarifs = () => {
     <section className="flex flex-col  bg-white px-5 py-10 sm:px-10 md:px-20">
       <h2 className="mb-4 text-3xl font-bold first-letter:uppercase">тарифы</h2>
       <div className="sm:gird-cols-1 grid gap-4 md:grid-cols-3">
-        {tarifCards.map((tarif) => (
+        {TARIF_CARDS.map((tarif) => (
           <TarifCard
             key={tarif.id}
             tarif={tarif}

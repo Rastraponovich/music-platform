@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { useUnit } from "effector-react";
 import { ChangeEvent, Fragment, memo, useCallback, useEffect, useState } from "react";
 
-import SelectSearch from "@/components/ui/SelectSearch/SelectSearch";
+import { SelectSearch } from "@/components/ui/select-search";
 import { $songs } from "@/features/music";
 import type { Song } from "@/features/music/types";
 

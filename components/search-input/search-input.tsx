@@ -5,7 +5,8 @@ import { ChangeEventHandler, memo, useEffect, useState } from "react";
 
 import { $songs } from "@/features/music";
 import type { Song } from "@/features/music/types";
-import { winamp } from "@/src/widgets/winamp/model";
+
+import { winamp } from "~/widgets/winamp";
 
 import { Modal } from "~/shared/ui/dialog";
 

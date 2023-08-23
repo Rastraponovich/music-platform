@@ -1,4 +1,5 @@
-import { StatCard } from "../ui/stat-card";
+import clsx from "clsx";
+import { ReactNode, memo } from "react";
 
 import { ChatIcon, ClockIcon, CloudUploadIcon, HeartIcon } from "@heroicons/react/outline";
 
@@ -52,3 +53,24 @@ export const Stats = () => {
     </section>
   );
 };
+
+interface StatCardProps {
+  icon?: ReactNode;
+  title?: string;
+  desc?: string;
+  className?: string;
+  value?: ReactNode;
+}
+
+const StatCard = memo<StatCardProps>(({ desc, icon, title, value, className }) => {
+  return (
+    <figure className={clsx("group stat", className)}>
+      <div className="stat-figure group-hover:animate-pulse">{icon}</div>
+      <h3 className="stat-title">{title}</h3>
+      <span className="stat-value">{value}</span>
+      <p className="stat-desc">{desc}</p>
+    </figure>
+  );
+});
+
+StatCard.displayName = "StatCard";

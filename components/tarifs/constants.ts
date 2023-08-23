@@ -1,6 +1,6 @@
 import type { Tarif } from "@/types";
 
-const tarifCards: Tarif[] = [
+export const TARIF_CARDS: Tarif[] = [
   {
     id: 1,
     name: "пидор",
@@ -26,5 +26,3 @@ const tarifCards: Tarif[] = [
     recomended: true,
   },
 ];
-
-export { tarifCards };
