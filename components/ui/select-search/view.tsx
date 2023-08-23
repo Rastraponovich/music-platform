@@ -13,6 +13,8 @@ interface SelectSearchProps {
   onClick(): void;
 }
 
+// TODO: Refactor
+
 export const SelectSearch = memo<SelectSearchProps>(
   ({ onClick, value, onChange, Icon, onChangeValue, children, isOpened }) => {
     return (

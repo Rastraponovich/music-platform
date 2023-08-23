@@ -3,7 +3,6 @@ import { allSettled, fork, serialize } from "effector";
 import { useUnit } from "effector-react";
 import type { GetServerSideProps, NextPage } from "next";
 import { useState } from "react";
-import { PlaylistFormModal } from "~/entity/playlists";
 import { $songsCount, songsGet } from "~/entity/songs";
 
 import { MusicFilter } from "@/components/music-filter";
@@ -13,6 +12,7 @@ import { Tracklist } from "~/widgets/tracklist";
 import { winamp } from "~/widgets/winamp";
 
 import { SearchInput } from "~/features/music-page/search-input";
+import { PlaylistFormModal } from "~/features/playlists/create-playlist-form";
 
 import { WinampIcon } from "~/shared/ui/winamp-icon";
 
