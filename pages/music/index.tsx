@@ -5,7 +5,7 @@ import type { GetServerSideProps, NextPage } from "next";
 import { useState } from "react";
 import { $songsCount, songsGet } from "~/entity/songs";
 
-import { MusicFilter } from "@/components/music-filter";
+import { MusicFilter } from "@/src/features/music-page/music-filter";
 import { UploadFormModal } from "@/components/upload-form";
 
 import { Tracklist } from "~/widgets/tracklist";
