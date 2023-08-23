@@ -1,8 +1,8 @@
 import { combine, createEvent, createStore, sample } from "effector";
 import { not } from "patronum";
+import { $songs, Song } from "~/entity/songs";
 
-import { $songs, Song } from "@/src/entity/songs";
-import { winamp } from "@/src/widgets/winamp";
+import { winamp } from "~/widgets/winamp";
 
 export const closed = createEvent();
 export const opened = createEvent();

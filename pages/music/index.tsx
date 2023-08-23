@@ -4,14 +4,15 @@ import { useUnit } from "effector-react";
 import type { GetServerSideProps, NextPage } from "next";
 import { useState } from "react";
 import { PlaylistFormModal } from "~/entity/playlists";
-import { songModel } from "~/entity/songs";
+import { $songsCount, songsGet } from "~/entity/songs";
 
 import { MusicFilter } from "@/components/music-filter";
-import { SearchInput } from "@/components/search-input";
 import { UploadFormModal } from "@/components/upload-form";
-import { Tracklist } from "@/src/widgets/tracklist";
 
-import { winamp } from "~/widgets/winamp/model";
+import { Tracklist } from "~/widgets/tracklist";
+import { winamp } from "~/widgets/winamp";
+
+import { SearchInput } from "~/features/music-page/search-input";
 
 import { WinampIcon } from "~/shared/ui/winamp-icon";
 
@@ -24,7 +25,7 @@ const MusicPage: NextPage = () => {
 
   const handleShowWinamp = useUnit(winamp.show);
 
-  const countSongs = useUnit(songModel.$songsCount);
+  const countSongs = useUnit($songsCount);
 
   return (
     <main className="grow px-20 py-10">
@@ -96,7 +97,7 @@ export default MusicPage;
 export const getServerSideProps: GetServerSideProps = async () => {
   const scope = fork();
 
-  await allSettled(songModel.songsGet, { scope });
+  await allSettled(songsGet, { scope });
 
   return {
     props: {
