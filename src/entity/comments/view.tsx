@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import React, { memo, useState } from "react";
 
-import { TComment } from "../lib";
+import type { TComment } from "./model";
 
 interface CommentsProps {
   opened: boolean;
