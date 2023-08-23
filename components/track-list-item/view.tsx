@@ -7,8 +7,9 @@ import { memo, useMemo } from "react";
 import { MEDIA_STATUS } from "@/features/media/constants";
 import { Song } from "@/features/music/types";
 import { $currentTime } from "@/src/features/winamp/progress-bar/model";
-import { $currentTrackDuration, winamp, winampControls } from "@/src/widgets/winamp/model";
 import { convertTimeToObj } from "@/utils/utils";
+
+import { $currentTrackDuration, winamp, winampControls } from "~/widgets/winamp/model";
 
 import { TrackTimer } from "../track-timer/view";
 
@@ -63,19 +64,15 @@ export const TrackListItemSmall = memo<TrackListItemProps>(({ track, isCurrentTr
         <button
           onClick={play}
           className={clsx(
-            "col-span-1 justify-self-start text-gray-500 duration-150 hover:text-black md:justify-self-center",
+            "col-span-1 justify-self-start text-gray-500 duration-150 hover:text-gray-900 md:justify-self-center",
             isCurrentTrack &&
               mediaStatus === "PLAYING" &&
-              "animate-pulse  text-black hover:animate-none",
+              "animate-pulse text-gray-900 hover:animate-none",
           )}
           title="play/pause"
         >
-          {isCurrentTrack ? (
-            mediaStatus === "PLAYING" ? (
-              <PauseIcon className="h-6 w-6 md:h-10 md:w-10" />
-            ) : (
-              <PlayIcon className="h-6 w-6 md:h-10 md:w-10" />
-            )
+          {isCurrentTrack && mediaStatus === "PLAYING" ? (
+            <PauseIcon className="h-6 w-6 md:h-10 md:w-10" />
           ) : (
             <PlayIcon className="h-6 w-6 md:h-10 md:w-10" />
           )}

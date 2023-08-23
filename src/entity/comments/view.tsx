@@ -35,7 +35,10 @@ export const Comments = memo<CommentsProps>(({ opened }) => {
       >
         <label htmlFor="">
           <span
-            className={clsx("text-md text-gray-500 first-letter:capitalize", focus && "text-black")}
+            className={clsx(
+              "text-md text-gray-500 first-letter:capitalize",
+              focus && "text-gray-900",
+            )}
           >
             Новое сообщение
           </span>

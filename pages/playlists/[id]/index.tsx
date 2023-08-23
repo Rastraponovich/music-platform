@@ -4,9 +4,9 @@ import type { GetServerSideProps, NextPage } from "next";
 import Image from "next/image";
 import { ALBUMS, AlbumInfo } from "~/entity/albums";
 import { PlaylistFormModal } from "~/entity/playlists";
-import { TrackListItem } from "~/entity/songs";
 
 import { $songs } from "@/features/music";
+import { TrackListItem } from "@/src/widgets/tracklist";
 import type { Album } from "@/types";
 
 import { Rating } from "~/shared/ui/rating";

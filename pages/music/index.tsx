@@ -4,11 +4,12 @@ import { useUnit } from "effector-react";
 import type { GetServerSideProps, NextPage } from "next";
 import { useState } from "react";
 import { PlaylistFormModal } from "~/entity/playlists";
-import { Tracklist, songModel } from "~/entity/songs";
+import { songModel } from "~/entity/songs";
 
 import { MusicFilter } from "@/components/music-filter";
 import { SearchInput } from "@/components/search-input";
 import { UploadFormModal } from "@/components/upload-form";
+import { Tracklist } from "@/src/widgets/tracklist";
 
 import { winamp } from "~/widgets/winamp/model";
 
