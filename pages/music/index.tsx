@@ -6,7 +6,7 @@ import { useState } from "react";
 import { $songsCount, songsGet } from "~/entity/songs";
 
 import { MusicFilter } from "@/src/features/music-page/music-filter";
-import { UploadFormModal } from "@/components/upload-form";
+import { UploadFormModal } from "@/src/features/music-page/upload-form";
 
 import { Tracklist } from "~/widgets/tracklist";
 import { winamp } from "~/widgets/winamp";
