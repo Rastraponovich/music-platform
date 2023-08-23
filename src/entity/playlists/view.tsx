@@ -40,13 +40,17 @@ export const PlaylistForm = () => {
   }, [searchValue, isOpenedValues]);
 
   useEffect(() => {
-    setDisplaySongs(
-      songs.filter(
+    setDisplaySongs(() => {
+      const result = songs.filter(
         (item) =>
           item.artist.toLowerCase().includes(searchValue.toLowerCase()) ||
           item.name.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase()),
-      ),
-    );
+      );
+
+      console.log(result);
+
+      return result;
+    });
     return () => setDisplaySongs([]);
   }, [searchValue, songs]);
 

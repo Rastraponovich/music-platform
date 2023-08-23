@@ -1,1 +1,2 @@
-export * from "./search-input";
+export * from "./view";
+export * from "./model";
