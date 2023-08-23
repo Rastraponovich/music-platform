@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useList, useUnit } from "effector-react";
-import { Fragment, memo } from "react";
+import { FormEventHandler, Fragment, memo } from "react";
 import type { Song } from "~/entity/songs";
 
 import { SelectSearch } from "@/components/ui/select-search";
@@ -16,6 +16,8 @@ import {
   $name,
   $searchString,
   $songsSelected,
+  formReseted,
+  formSubmitted,
   modalToggled,
   nameChanged,
   searchChanged,
@@ -27,8 +29,22 @@ import { Combobox, Dialog, Transition } from "@headlessui/react";
 import { DocumentAddIcon, SearchIcon } from "@heroicons/react/outline";
 
 export const PlaylistForm = () => {
+  const onSubmit = useUnit(formSubmitted);
+
+  const handleSubmit: FormEventHandler = (event) => {
+    event.preventDefault();
+    onSubmit();
+  };
+
+  const handleReset = useUnit(formReseted);
+
   return (
-    <form className="flex flex-col space-y-4 py-2 px-4" id="playlist-create-form">
+    <form
+      className="flex flex-col space-y-4 py-2 px-4"
+      id="playlist-create-form"
+      onSubmit={handleSubmit}
+      onReset={handleReset}
+    >
       <FormName />
 
       <h3 className="mb-2 text-base font-semibold first-letter:uppercase">Добавить трек</h3>
@@ -111,19 +127,12 @@ export const PlaylistFormModal = () => {
 
               <PlaylistForm />
               <ModalActions>
-                <Button
-                  className="btn-sm"
-                  variant="error"
-                  onClick={handleToggleModal}
-                  type="reset"
-                  form="playlist-create-form"
-                >
+                <Button className="btn-sm" variant="error" type="reset" form="playlist-create-form">
                   Отмена
                 </Button>
                 <Button
                   className="btn-sm"
                   variant="success"
-                  onClick={handleToggleModal}
                   type="submit"
                   form="playlist-create-form"
                 >

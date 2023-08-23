@@ -70,6 +70,6 @@ sample({
 $modalOpened.reset(formReseted);
 
 reset({
-  clock: [$modalOpened.map((opened) => !opened)],
+  clock: not($modalOpened),
   target: [$name, $artist, $audioFile, $coverFile, $nameErrorText, $artistErrorText],
 });

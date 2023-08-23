@@ -5,9 +5,10 @@ import { $songs, Song } from "~/entity/songs";
 export const searchChanged = createEvent<string>();
 export const nameChanged = createEvent<string>();
 export const songSelected = createEvent<Song>();
-export const formSubmitted = createEvent();
 export const toggledDropdown = createEvent();
+export const formSubmitted = createEvent();
 export const modalToggled = createEvent();
+export const formReseted = createEvent();
 
 export const $name = createStore("");
 export const $searchString = createStore("");
@@ -62,3 +63,5 @@ sample({
   },
   target: $songsSelected,
 });
+
+$modalIsOpened.reset(formReseted);
