@@ -27,29 +27,13 @@ import { Combobox, Dialog, Transition } from "@headlessui/react";
 import { DocumentAddIcon, SearchIcon } from "@heroicons/react/outline";
 
 export const PlaylistForm = () => {
-  const [isOpenedValues, handleToggleValues] = useUnit([$dropDownIsOpened, toggledDropdown]);
-  const [search, handleSearch] = useUnit([$searchString, searchChanged]);
-  const handleSelectSong = useUnit(songSelected);
-
   return (
     <form className="flex flex-col space-y-4 py-2 px-4" id="playlist-create-form">
       <FormName />
 
       <h3 className="mb-2 text-base font-semibold first-letter:uppercase">Добавить трек</h3>
       <div className="grid grid-cols-2 gap-4 rounded border border-black/30 p-2">
-        <div className="flex flex-col space-y-2">
-          <span className="font-semibold first-letter:uppercase">поиск трека</span>
-          <SelectSearch
-            value={search}
-            onChangeValue={(e) => handleSearch(e.target.value)}
-            onChange={handleSelectSong}
-            Icon={<SearchIcon className="group mr-2 h-6 w-6 text-gray-500" />}
-            isOpened={isOpenedValues}
-            onClick={handleToggleValues}
-          >
-            {isOpenedValues && <DropdownSongsList />}
-          </SelectSearch>
-        </div>
+        <SearchSection />
 
         <SelectedSongsList />
       </div>
@@ -197,6 +181,28 @@ const SelectedSongsList = () => {
           ),
         })}
       </div>
+    </div>
+  );
+};
+
+const SearchSection = () => {
+  const [isOpenedValues, handleToggleValues] = useUnit([$dropDownIsOpened, toggledDropdown]);
+  const [search, handleSearch] = useUnit([$searchString, searchChanged]);
+  const handleSelectSong = useUnit(songSelected);
+
+  return (
+    <div className="flex flex-col space-y-2">
+      <span className="font-semibold first-letter:uppercase">поиск трека</span>
+      <SelectSearch
+        value={search}
+        onChangeValue={(e) => handleSearch(e.target.value)}
+        onChange={handleSelectSong}
+        Icon={<SearchIcon className="group mr-2 h-6 w-6 text-gray-500" />}
+        isOpened={isOpenedValues}
+        onClick={handleToggleValues}
+      >
+        {isOpenedValues && <DropdownSongsList />}
+      </SelectSearch>
     </div>
   );
 };

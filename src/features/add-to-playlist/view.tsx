@@ -1,7 +1,6 @@
 import { useUnit } from "effector-react";
 import { memo } from "react";
-
-import type { Song } from "@/src/entity/songs";
+import type { Song } from "~/entity/songs";
 
 import { addToPlaylistButtonClicked } from "./model";
 
