@@ -3,10 +3,10 @@ import { allSettled, fork, serialize } from "effector";
 import { useUnit } from "effector-react";
 import type { GetServerSideProps, NextPage } from "next";
 import { useState } from "react";
+import { PlaylistFormModal } from "~/entity/playlists";
 import { Tracklist, songModel } from "~/entity/songs";
 
 import { MusicFilter } from "@/components/music-filter";
-import { PlaylistFormModal } from "@/components/playlist-form";
 import { SearchInput } from "@/components/search-input";
 import { UploadFormModal } from "@/components/upload-form";
 

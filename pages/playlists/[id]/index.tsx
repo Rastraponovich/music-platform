@@ -2,10 +2,10 @@ import { fork, serialize } from "effector";
 import { useUnit } from "effector-react";
 import type { GetServerSideProps, NextPage } from "next";
 import Image from "next/image";
+import { PlaylistFormModal } from "~/entity/playlists";
 import { TrackListItem } from "~/entity/songs";
 
 import { AlbumInfo } from "@/components/album";
-import PlaylistFormModal from "@/components/playlist-form/playlist-form-modal";
 import { $songs } from "@/features/music";
 import type { Album } from "@/types";
 import { albums } from "@/utils/__mock__";
