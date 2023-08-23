@@ -28,13 +28,13 @@ import { Dialog, Transition } from "@headlessui/react";
 import { UploadIcon } from "@heroicons/react/solid";
 
 const PreviewImage = dynamic(
-  () => import("@/components/preview-image").then((mod) => mod.PreviewImage),
+  () => import("@/src/shared/ui/preview-image").then((mod) => mod.PreviewImage),
   {
     ssr: false,
   },
 );
 const AudioPreview = dynamic(
-  () => import("@/components/audio-preview").then((mod) => mod.AudioPreview),
+  () => import("@/src/shared/ui/audio-preview").then((mod) => mod.AudioPreview),
   {
     ssr: false,
   },
