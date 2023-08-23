@@ -2,8 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { ReactNode, memo } from "react";
 
-import { Album } from "@/types";
-import { albums } from "@/utils/__mock__";
+import type { Album } from "@/types";
+
+import { ALBUMS } from "./constants";
 
 import { CalendarIcon, ClockIcon, MusicNoteIcon } from "@heroicons/react/outline";
 import { UserIcon } from "@heroicons/react/solid";
@@ -13,10 +14,10 @@ interface AlbumInfoItemProps {
   value: string | number | boolean | ReactNode;
 }
 
-export const AlbumsList = () => {
+export const ALBUMSList = () => {
   return (
     <div className="grid items-center gap-4 sm:grid-cols-1 md:grid-cols-2">
-      {albums.map((album) => (
+      {ALBUMS.map((album) => (
         <AlbumComponent key={album.id} album={album} />
       ))}
     </div>

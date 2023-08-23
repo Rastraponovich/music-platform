@@ -2,13 +2,12 @@ import { fork, serialize } from "effector";
 import { useUnit } from "effector-react";
 import type { GetServerSideProps, NextPage } from "next";
 import Image from "next/image";
+import { ALBUMS, AlbumInfo } from "~/entity/albums";
 import { PlaylistFormModal } from "~/entity/playlists";
 import { TrackListItem } from "~/entity/songs";
 
-import { AlbumInfo } from "@/components/album";
 import { $songs } from "@/features/music";
 import type { Album } from "@/types";
-import { albums } from "@/utils/__mock__";
 
 import { Rating } from "~/shared/ui/rating";
 
@@ -71,7 +70,7 @@ export default PlaylistPage;
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const scope = fork();
 
-  const playlist = albums.find((item) => item.id === Number(params!.id));
+  const playlist = ALBUMS.find((item) => item.id === Number(params!.id));
 
   // await allSettled(getPlaylists, { scope })
 
