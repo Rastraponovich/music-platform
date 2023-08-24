@@ -7,10 +7,10 @@ import { WinampButton } from "~/shared/ui/winamp/winamp-button";
 
 interface PlaylistMenuProps {
   id: string;
-  children: ReactNode | Array<ReactNode>;
+  children: ReactNode | ReactNode[];
 }
 
-const PlaylistMenu = ({ id, children }: PlaylistMenuProps) => {
+export const PlaylistMenu = memo<PlaylistMenuProps>(({ id, children }) => {
   const [selected, setSelected] = useState(false);
 
   const [ref, setRef] = useState<Element | null>(null);
@@ -45,9 +45,9 @@ const PlaylistMenu = ({ id, children }: PlaylistMenuProps) => {
       )}
     </div>
   );
-};
+});
 
-export default memo(PlaylistMenu);
+PlaylistMenu.displayName = "PlaylistMenu";
 
 interface PlaylistMenuContructorProps {
   children: ReactNode;

@@ -1,10 +1,8 @@
 import { attach, createEvent, createStore, sample } from "effector";
-import type { ChangeEvent, MouseEvent } from "react";
 import { MediaElement } from "~/entity/songs";
 
 import { getSnapBalanceValue } from "@/utils/utils";
 
-//TODO: exclude react from model
 import {
   $mediaElement,
   $winampMarqueInfo,
@@ -19,8 +17,8 @@ import { getMarqueInfo } from "./utils";
 
 const changeBalanceFx = attach({
   source: $mediaElement,
-  async effect(media: Nullable<MediaElement>, event: ChangeEvent<HTMLInputElement>) {
-    const value = getSnapBalanceValue(Number(event.target.value));
+  async effect(media: Nullable<MediaElement>, balance: string) {
+    const value = getSnapBalanceValue(Number(balance));
 
     if (media) {
       media!._balance.balance.value = value / 100;
@@ -31,9 +29,9 @@ const changeBalanceFx = attach({
 });
 
 // events //
-export const balanceChanged = createEvent<ChangeEvent<HTMLInputElement>>();
-export const balancebarLifted = createEvent<MouseEvent<HTMLInputElement>>();
-export const balancebarUplifted = createEvent<MouseEvent<HTMLInputElement>>();
+export const balanceChanged = createEvent<string>();
+export const balancebarLifted = createEvent();
+export const balancebarUplifted = createEvent();
 
 // stores //
 export const $balance = createStore(0);

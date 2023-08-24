@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useUnit } from "effector-react/scope";
+import { useUnit } from "effector-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { $baseSkinColors, $mediaElement, $mediaStatus, $shadePlayer } from "~/widgets/winamp";
@@ -7,14 +7,12 @@ import { $baseSkinColors, $mediaElement, $mediaStatus, $shadePlayer } from "~/wi
 import { usePaintBar, usePaintBarFrame } from "~/shared/hooks/use-bar-visualizer";
 import { usePaintOscilloscopeFrame } from "~/shared/hooks/use-oscilloscope-visualizer";
 
-import { Visualizers } from "./constants";
+import { PIXEL_DENSITY, Visualizers } from "./constants";
 import { $dummyVizData, $visualizerStyle, toggleVisualizerStyle } from "./model";
 
 interface VisualizerProps {
   className?: string;
 }
-
-const PIXEL_DENSITY = 2;
 
 function preRenderBg(
   width: number,

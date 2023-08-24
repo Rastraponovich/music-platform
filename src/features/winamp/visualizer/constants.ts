@@ -6,3 +6,4 @@ export enum Visualizers {
 }
 
 export const VISUALIZER_ORDER = [Visualizers.BAR, Visualizers.OSCILLOSCOPE, Visualizers.NONE];
+export const PIXEL_DENSITY = 2;

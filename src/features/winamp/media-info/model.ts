@@ -13,7 +13,7 @@ export const $marqueInfoText = createStore<Nullable<string>>(null);
 
 export const $minute = createStore<Nullable<number>>(null);
 export const $second = createStore<Nullable<number>>(null);
-export const $total = createStore<string>("");
+export const $total = createStore("");
 export const $text = createStore("");
 export const $trackName = createStore(SEPARATOR);
 

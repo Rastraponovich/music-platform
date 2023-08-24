@@ -4,7 +4,7 @@ import type { Band } from "~/entity/songs";
 import { WINAMP_STATE } from "~/entity/winamp";
 
 import type { Nullable } from "@/types";
-import { getSnapBandValue, toggle } from "@/utils/utils";
+import { getSnapBandValue } from "@/utils/utils";
 
 import {
   $winampState,
@@ -77,10 +77,10 @@ export const $selectedPreset = createStore<Nullable<Preset>>(null);
 export const $currentPreset = createStore<Preset>(PRESETS.DEFAULT);
 export const $bands = createStore<Record<Band, number>>(PRESETS.DEFAULT.value);
 
-$autoEQ.on(toggleAutoEQ, toggle);
-$visibleEQ.on(toggleVisibleEQ, toggle);
-$minimizedEQ.on(toggleMinimizeEQ, toggle);
-$visiblePresetWindow.on(toggleVisiblePresetWindow, toggle);
+$autoEQ.on(toggleAutoEQ, (autoEq) => !autoEq);
+$visibleEQ.on(toggleVisibleEQ, (visible) => !visible);
+$minimizedEQ.on(toggleMinimizeEQ, (minimized) => !minimized);
+$visiblePresetWindow.on(toggleVisiblePresetWindow, (presetVisible) => !presetVisible);
 
 $bands.on(setBand, (bands, band) => ({ ...bands, ...band }));
 $bands.reset(resetAllBands);
@@ -168,25 +168,14 @@ sample({
   target: $visibleEQ,
 });
 
-// refactor to one effect and event from here ==>
-
 sample({
-  clock: disableClickedEQ,
+  clock: [enableClickedEQ, disableClickedEQ],
   source: $enabledEQ,
   fn: (enabled) => ({ enable: !enabled }),
   target: toggleEQFx,
 });
 
-sample({
-  clock: enableClickedEQ,
-  source: $enabledEQ,
-  fn: (enabled) => ({ enable: !enabled }),
-  target: toggleEQFx,
-});
-
-$enabledEQ.on(toggleEQFx.done, toggle);
-
-// <== to here
+$enabledEQ.on(toggleEQFx.done, (enabled) => !enabled);
 
 sample({
   clock: [resetEqBandFx.doneData, setEQbandFx.doneData, loadPresetEQFx.doneData],

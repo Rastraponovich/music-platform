@@ -105,7 +105,6 @@ const playNextTrackNoShuffle = sample({
 //set new Track index in currentPlayedTrackIndexPlaylist
 sample({
   clock: playNextTrackNoShuffle,
-  fn: (newTrackIndex) => newTrackIndex,
   target: $currentPlayedTrackIndex,
 });
 
