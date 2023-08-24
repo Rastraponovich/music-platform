@@ -4,19 +4,19 @@ import {
   BANDS,
   BASE_SKIN_COLORS,
   MEDIA_STATUS,
+  TimeMode,
   WINAMP_STATE,
   WINAMP_WINDOW_STATE,
 } from "~/entity/winamp/constants";
 
 // problem
-import {
+import type {
   Band,
   MediaElement,
   MediaStatus,
   StereoBalanceNodeType,
   TPreset,
   TWinampState,
-  TimeMode,
   Track,
   WinampWindow,
   _Bands,
@@ -34,8 +34,6 @@ import {
   startPlayingCb,
   stopPlayingCb,
 } from "./utils";
-
-export { $currentTrack };
 
 declare global {
   interface Window {
@@ -354,7 +352,7 @@ export const setCurrentTime_ = createEvent<number>();
 // end segment //
 
 export const $mediaElement = createStore<Nullable<MediaElement>>(null);
-const $currentTrack = createStore<Nullable<Track>>(null);
+export const $currentTrack = createStore<Nullable<Track>>(null);
 
 const $currentTrackIsEmpty = $currentTrack.map((track) => track === null);
 

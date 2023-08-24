@@ -2,8 +2,7 @@ import clsx from "clsx";
 import { useUnit } from "effector-react";
 import dynamic from "next/dynamic";
 import { memo } from "react";
-
-import { TimeMode } from "@/features/music/types";
+import { TimeMode } from "~/entity/winamp";
 
 import { PLAYER_STATES } from "./constants";
 import {

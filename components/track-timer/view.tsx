@@ -1,9 +1,9 @@
 import { useUnit } from "effector-react";
+import { TimeMode } from "~/entity/winamp";
 
-import { TIME_MODE } from "@/features/media/constants";
+import { $timeMode, $timer } from "~/widgets/winamp";
 
-import { $timeMode, $timer } from "~/widgets/winamp/model";
-
+//TODO: refactor
 export const TrackTimer = () => {
   const [timeMode, timer] = useUnit([$timeMode, $timer]);
 
@@ -13,10 +13,10 @@ export const TrackTimer = () => {
     <span
       className="after:mx-1 md:after:content-['/']"
       title={`${
-        timeMode === TIME_MODE.REMAINING && "-"
+        timeMode === TimeMode.REMAINING && "-"
       } ${firstMinute} ${lastMinute}:${firstSecond} ${lastSecond}`}
     >
-      {timeMode === TIME_MODE.REMAINING && "-"}
+      {timeMode === TimeMode.REMAINING && "-"}
       {firstMinute}
       {lastMinute}:{firstSecond}
       {lastSecond}

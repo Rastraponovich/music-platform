@@ -11,11 +11,6 @@ export enum PlayerState {
   DESTROYED = "DESTROYED",
 }
 
-export enum TimeMode {
-  ELAPSED = "ELAPSED",
-  REMAINING = "REMAINING",
-}
-
 export type Song = {
   id?: number;
   name: string;

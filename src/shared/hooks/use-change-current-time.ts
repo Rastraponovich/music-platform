@@ -2,15 +2,17 @@ import { useUnit } from "effector-react";
 import { useEffect } from "react";
 
 import { WINAMP_WINDOW_STATE } from "@/features/music/constants";
+
+import { $activeWindow, removeTrackFromPlaylist } from "~/widgets/winamp";
+
 import {
   $playlistLength,
   $selectedTrackInPlaylist,
   doubleClickedTrackInPlaylist,
   selectTrackInPlaylist,
-} from "@/src/features/winamp/playlist";
-import { keyChangeCurrentTime } from "@/src/features/winamp/progress-bar/model";
-import { keyboardVolumeChanged } from "@/src/features/winamp/volume-bar/model";
-import { $activeWindow, removeTrackFromPlaylist } from "@/src/widgets/winamp/model";
+} from "~/features/winamp/playlist";
+import { keyChangeCurrentTime } from "~/features/winamp/progress-bar";
+import { keyboardVolumeChanged } from "~/features/winamp/volume-bar";
 
 const useChangeCurentTime = () => {
   const changeCurrentTime = useUnit(keyChangeCurrentTime);
