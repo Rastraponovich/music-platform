@@ -69,7 +69,7 @@ export const addToFavoriteButtonClicked = createEvent<Song["id"]>();
 export const $searchTrackNameFiled = createStore("");
 
 export const $songs = createStore<Song[]>([]);
-export const $songsCount = createStore<number>(0);
+export const $songsCount = createStore(0);
 
 const $currentSong = createStore<Song>({ userId: 5 } as Song);
 

@@ -36,7 +36,7 @@ export const balancebarLifted = createEvent<MouseEvent<HTMLInputElement>>();
 export const balancebarUplifted = createEvent<MouseEvent<HTMLInputElement>>();
 
 // stores //
-export const $balance = createStore<number>(0);
+export const $balance = createStore(0);
 export const $currentBalancePosition = createStore(0);
 
 //runtime //

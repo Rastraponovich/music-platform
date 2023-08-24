@@ -8,7 +8,7 @@ import { $currentPlayedTrackIndex } from "../playlist";
 import { MARQUEE_MAX_LENGTH, MINUTE, SEPARATOR } from "./constants";
 import { isLong } from "./utils";
 
-export const $enabledMarque = createStore<boolean>(false);
+export const $enabledMarque = createStore(false);
 export const $marqueInfoText = createStore<Nullable<string>>(null);
 
 export const $minute = createStore<Nullable<number>>(null);
