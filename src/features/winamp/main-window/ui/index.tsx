@@ -2,10 +2,9 @@ import clsx from "clsx";
 import { useUnit } from "effector-react";
 import { useRef } from "react";
 
-import { useDraggable } from "@/src/shared/hooks/use-draggable";
-import { $clutterBar, winampStates } from "@/src/widgets/winamp/model";
-
+// TODO make a upper layer
 import { MediaInfo } from "~/widgets/player-window";
+import { $clutterBar, $shadePlayer, $visiblePlayer, changeWindowState } from "~/widgets/winamp";
 
 import { BalanceBar } from "~/features/winamp/balance-bar";
 import { ControlsPanel, WindowControls } from "~/features/winamp/controls-panel";
@@ -14,20 +13,18 @@ import { StatusBar } from "~/features/winamp/status-bar";
 import { TitleBar } from "~/features/winamp/title-bar";
 import { VolumeBar } from "~/features/winamp/volume-bar";
 
+import { useDraggable } from "~/shared/hooks/use-draggable";
+
 const WINDOW_NAME = "PLAYER";
 
 export const MainWindow = () => {
   const ref = useRef(null);
 
-  const [isVisible, clutter, shaded] = useUnit([
-    winampStates.$visiblePlayer,
-    $clutterBar,
-    winampStates.$shadePlayer,
-  ]);
+  const [isVisible, clutter, shaded] = useUnit([$visiblePlayer, $clutterBar, $shadePlayer]);
 
   const [onDragStart, onDragging, onDragEnd] = useDraggable(WINDOW_NAME, ref);
 
-  const handleActiveWindow = useUnit(winampStates.changeWindowState);
+  const handleActiveWindow = useUnit(changeWindowState);
 
   return (
     <aside

@@ -2,7 +2,7 @@ import { useUnit } from "effector-react";
 
 import { PlayListWindow } from "@/src/features/winamp/playlist/view";
 
-import { winampStates } from "~/widgets/winamp/model";
+import { $winampState } from "~/widgets/winamp/model";
 
 import { EQWindow } from "~/features/winamp/equalizer";
 import { MainWindow } from "~/features/winamp/main-window";
@@ -13,7 +13,7 @@ import { InitPlayer } from "~/shared/lib/init-player";
 import { WINAMP_STATE } from "./constants";
 
 export const Winamp = () => {
-  const state = useUnit(winampStates.$winampState);
+  const state = useUnit($winampState);
 
   return (
     <>

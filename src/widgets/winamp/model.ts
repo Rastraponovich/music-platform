@@ -300,9 +300,9 @@ export const destroyWinamp = createEvent();
 export const closeWinamp = createEvent();
 
 //function has load track in Media._audio
-const loadUrl = createEvent<Track>();
+export const loadUrl = createEvent<Track>();
 
-const changeWindowState = createEvent<WinampWindow>();
+export const changeWindowState = createEvent<WinampWindow>();
 
 export const toggleShadePlayer = createEvent();
 
@@ -312,7 +312,7 @@ export const showWinamp = createEvent();
 
 const setMediaStatus = createEvent<MediaStatus>();
 
-const selectTrackFromList = createEvent<Track>();
+export const selectTrackFromList = createEvent<Track>();
 
 export const removeTrackFromPlaylist = createEvent<number>();
 
@@ -328,7 +328,7 @@ export const prevTrackClicked = createEvent();
 const toggleLoop = createEvent();
 const toggleShuffle = createEvent();
 
-const changeClutterBar = createEvent<string>();
+export const changeClutterBar = createEvent<string>();
 
 const toggleEnabledMarqueInfo = createEvent();
 const enabledMarqueInfo = createEvent();
@@ -357,9 +357,10 @@ export const $mediaElement = createStore<Nullable<MediaElement>>(null);
 const $currentTrack = createStore<Nullable<Track>>(null);
 
 const $currentTrackIsEmpty = $currentTrack.map((track) => track === null);
-const $activeWindow = createStore<WinampWindow>(WINAMP_WINDOW_STATE.NONE);
 
-const $clutterBar = createStore<Record<string, boolean>>({
+export const $activeWindow = createStore<WinampWindow>(WINAMP_WINDOW_STATE.NONE);
+
+export const $clutterBar = createStore<Record<string, boolean>>({
   o: false,
   a: false,
   i: false,
@@ -378,8 +379,8 @@ export const $winampState = createStore<TWinampState>(WINAMP_STATE.DESTROYED);
 
 export const $mediaStatus = createStore<MediaStatus>(MEDIA_STATUS.STOPPED);
 
-const $visiblePlayer = createStore<boolean>(false);
-const $shadePlayer = createStore<boolean>(false);
+export const $visiblePlayer = createStore<boolean>(false);
+export const $shadePlayer = createStore<boolean>(false);
 
 export const $baseSkinColors = createStore<string[]>(BASE_SKIN_COLORS);
 
@@ -872,14 +873,3 @@ export const winampControls = {
   toggleShuffle,
   toggleLoop,
 };
-
-export const winampStates = {
-  $winampState,
-
-  $activeWindow,
-  changeWindowState,
-  $visiblePlayer,
-  $shadePlayer,
-};
-
-export { loadUrl, selectTrackFromList, $clutterBar, changeClutterBar };

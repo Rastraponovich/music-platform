@@ -7,7 +7,12 @@ import type { MouseEventHandler } from "react";
 import type { Track } from "@/features/music/types";
 import { convertTimeToString } from "@/utils/utils";
 
-import { $currentTrackDuration, $mediaStatus, winampStates } from "~/widgets/winamp";
+import {
+  $activeWindow,
+  $currentTrackDuration,
+  $mediaStatus,
+  changeWindowState,
+} from "~/widgets/winamp";
 
 import { MiniActions } from "~/features/winamp/controls-panel";
 import {
@@ -35,7 +40,7 @@ const AddMenu = dynamic(() => import("../menu").then(({ AddMenu }) => AddMenu), 
 export const PlayListWindow = () => {
   const ref = useRef(null);
 
-  const handleActiveWindow = useUnit(winampStates.changeWindowState);
+  const handleActiveWindow = useUnit(changeWindowState);
   const [visible, currentTrackDuration, totalDuration] = useUnit([
     $visiblePlaylist,
     $currentTrackDuration,
@@ -114,7 +119,7 @@ interface PlaylistHeaderProps {
 
 const PlaylistHeader = memo<PlaylistHeaderProps>(
   ({ onMouseDown, onMouseMove, onMouseUp, onMouseLeave }) => {
-    const windowState = useUnit(winampStates.$activeWindow);
+    const windowState = useUnit($activeWindow);
 
     return (
       <div

@@ -10,7 +10,7 @@ import {
 } from "@/src/features/winamp/playlist";
 import { keyChangeCurrentTime } from "@/src/features/winamp/progress-bar/model";
 import { keyboardVolumeChanged } from "@/src/features/winamp/volume-bar/model";
-import { removeTrackFromPlaylist, winampStates } from "@/src/widgets/winamp/model";
+import { $activeWindow, removeTrackFromPlaylist } from "@/src/widgets/winamp/model";
 
 const useChangeCurentTime = () => {
   const changeCurrentTime = useUnit(keyChangeCurrentTime);
@@ -34,7 +34,7 @@ const useChangeCurentTime = () => {
 
 export const useChangeCurrentVolume = () => {
   const handleSetVolume = useUnit(keyboardVolumeChanged);
-  const activeWindow = useUnit(winampStates.$activeWindow);
+  const activeWindow = useUnit($activeWindow);
   const [currentPosition, handleSelect, itemsLength] = useUnit([
     $selectedTrackInPlaylist,
     selectTrackInPlaylist,
@@ -81,7 +81,7 @@ export const useChangeCurrentVolume = () => {
 };
 
 const useDelPressKeyButton = () => {
-  const activeWindow = useUnit(winampStates.$activeWindow);
+  const activeWindow = useUnit($activeWindow);
   const [handleDelete, handleSelect, hanldeDoubleClick] = useUnit([
     removeTrackFromPlaylist,
     selectTrackInPlaylist,

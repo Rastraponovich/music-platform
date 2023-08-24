@@ -2,13 +2,14 @@ import { createEvent, sample } from "effector";
 import { debounce } from "patronum";
 import type { ChangeEvent } from "react";
 
+// TODO: remove ui from model
 import {
+  $activeWindow,
   $volume,
   changeVolumeFx,
   keyboardChangedVolumeFx,
   marqueInfo,
-  winampStates,
-} from "@/src/widgets/winamp";
+} from "~/widgets/winamp";
 
 import { VOLUME_STEP } from "./constants";
 import { generateVolumeMaruqeText } from "./utils";
@@ -22,9 +23,7 @@ export const volumebarUplifted = createEvent();
 
 // stores //
 export const $currentVolume = $volume.map((volume) => volume);
-export const $isActiveWindow = winampStates.$activeWindow.map(
-  (activeWindow) => activeWindow === "PLAYER",
-);
+export const $isActiveWindow = $activeWindow.map((activeWindow) => activeWindow === "PLAYER");
 
 const $marqueText = $currentVolume.map((volume) => generateVolumeMaruqeText(volume));
 

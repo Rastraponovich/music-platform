@@ -4,7 +4,7 @@ import { MouseEvent, ReactNode, memo, useRef } from "react";
 
 import { TPreset } from "@/features/music/types";
 
-import { winampStates } from "~/widgets/winamp/model";
+import { $activeWindow } from "~/widgets/winamp/model";
 
 import { useDraggable } from "~/shared/hooks/use-draggable";
 
@@ -122,7 +122,7 @@ interface PresetTitleProps {
 
 const PresetTitle = memo(
   ({ onMouseDown, onMouseMove, onMouseUp, onMouseLeave }: PresetTitleProps) => {
-    const activeWindow = useUnit(winampStates.$activeWindow);
+    const activeWindow = useUnit($activeWindow);
 
     return (
       <h3

@@ -3,7 +3,7 @@ import { useUnit } from "effector-react";
 import { ChangeEvent, MouseEvent, memo, useCallback, useMemo, useRef, useState } from "react";
 import "react";
 
-import { $clutterBar, marqueInfo, winampStates } from "~/widgets/winamp";
+import { $activeWindow, $clutterBar, changeWindowState, marqueInfo } from "~/widgets/winamp";
 
 import { useDraggable } from "~/shared/hooks/use-draggable";
 import { WinampButton } from "~/shared/ui/winamp/winamp-button";
@@ -36,7 +36,7 @@ export const EQWindow = () => {
   const clutter = useUnit($clutterBar);
   const [minimized, visibled] = useUnit([$minimizedEQ, $visibleEQ]);
 
-  const handleActiveWindow = useUnit(winampStates.changeWindowState);
+  const handleActiveWindow = useUnit(changeWindowState);
 
   const handleActiveWindowClicked = () => handleActiveWindow(WINDOW_NAME);
 
@@ -218,8 +218,7 @@ interface EQHeaderProps {
 }
 
 const EQHeader = memo(({ onMouseDown, onMouseMove, onMouseUp, onMouseLeave }: EQHeaderProps) => {
-  const [minimized] = useUnit([$minimizedEQ]);
-  const windowState = useUnit(winampStates.$activeWindow);
+  const [minimized, windowState] = useUnit([$minimizedEQ, $activeWindow]);
 
   const [handleMinimize, handleCloseEQ] = useUnit([toggleMinimizeEQ, toggleVisibleEQ]);
 
