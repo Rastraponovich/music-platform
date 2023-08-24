@@ -1,17 +1,17 @@
 import { combine } from "effector";
 
+//TODO
 import { PlayerState, WinampState } from "@/features/music/constants";
-import { $currentPlayedTrackIndex } from "@/src/features/winamp/playlist";
 
-import { winamp, winampStates } from "../winamp";
+import { $currentPlayedTrackIndex } from "~/features/winamp/playlist";
 
-export const $track = winamp.$currentTrack.map((track) => track);
+import { $currentTrack, $mediaStatus, winampStates } from "../winamp";
+
+export const $track = $currentTrack.map((track) => track);
 
 export const $currentTrackId = $currentPlayedTrackIndex.map((id) => id);
 
-export const $isPlayerNotStopped = winamp.$mediaStatus.map(
-  (status) => status !== PlayerState.STOPPED,
-);
+export const $isPlayerNotStopped = $mediaStatus.map((status) => status !== PlayerState.STOPPED);
 
 export const $isWinampClosed = winampStates.$winampState.map(
   (state) => state === WinampState.CLOSED,

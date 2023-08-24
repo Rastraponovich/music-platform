@@ -1,7 +1,8 @@
 import { createStore, sample } from "effector";
 
-import { marqueInfo, winamp } from "@/src/widgets/winamp/model";
 import { Nullable } from "@/types";
+
+import { $currentTrack, marqueInfo } from "~/widgets/winamp";
 
 import { $currentPlayedTrackIndex } from "../../../playlist";
 import { MARQUEE_MAX_LENGTH, MINUTE, SEPARATOR, isLong } from "../lib";
@@ -15,25 +16,19 @@ export const $marqueInfoText = createStore<Nullable<string>>(null).on(
   (_, info) => info,
 );
 
-export const $minute = createStore<Nullable<number>>(null).on(
-  winamp.$currentTrack,
-  (state, currentTrack) => {
-    if (currentTrack !== null) {
-      return Math.floor(currentTrack.metaData.format.duration / MINUTE);
-    }
-    return null;
-  },
-);
+export const $minute = createStore<Nullable<number>>(null).on($currentTrack, (_, currentTrack) => {
+  if (currentTrack !== null) {
+    return Math.floor(currentTrack.metaData.format.duration / MINUTE);
+  }
+  return null;
+});
 
-export const $second = createStore<Nullable<number>>(null).on(
-  winamp.$currentTrack,
-  (state, currentTrack) => {
-    if (currentTrack !== null) {
-      return Math.floor(currentTrack.metaData.format.duration % MINUTE);
-    }
-    return null;
-  },
-);
+export const $second = createStore<Nullable<number>>(null).on($currentTrack, (_, currentTrack) => {
+  if (currentTrack !== null) {
+    return Math.floor(currentTrack.metaData.format.duration % MINUTE);
+  }
+  return null;
+});
 
 const $total = createStore<string>("");
 
@@ -52,7 +47,7 @@ sample({
 const $text = createStore("");
 
 sample({
-  clock: winamp.$currentTrack,
+  clock: $currentTrack,
   source: { currentId: $currentPlayedTrackIndex, total: $total },
 
   fn: ({ currentId, total }, currentTrack) => {

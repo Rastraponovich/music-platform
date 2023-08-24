@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import { useUnit } from "effector-react";
 import { memo } from "react";
-import { TimeMode } from "~/entity/winamp/constants";
+import { TimeMode } from "~/entity/winamp";
 
-import { $timeMode, $timer, toggleTimeMode, winamp } from "~/widgets/winamp";
+import { $mediaStatus, $timeMode, $timer, toggleTimeMode } from "~/widgets/winamp";
 
 import { CharacterString } from "~/shared/ui/winamp/character-strings";
 
@@ -12,10 +12,7 @@ interface MiniTimerProps {
 }
 
 export const MiniTimer = memo<MiniTimerProps>(({ className }) => {
-  const playerState = useUnit(winamp.$mediaStatus);
-  const timeMode = useUnit($timeMode);
-
-  const timer = useUnit($timer);
+  const [playerState, timeMode, timer] = useUnit([$mediaStatus, $timeMode, $timer]);
 
   const { firstSecond, lastSecond, firstMinute, lastMinute } = timer;
   const handleSwitchTimeMode = useUnit(toggleTimeMode);

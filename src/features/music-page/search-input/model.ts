@@ -2,7 +2,7 @@ import { combine, createEvent, createStore, sample } from "effector";
 import { not } from "patronum";
 import { $songs, Song } from "~/entity/songs";
 
-import { winamp } from "~/widgets/winamp";
+import { selectTrackFromList } from "~/widgets/winamp";
 
 export const closed = createEvent();
 export const opened = createEvent();
@@ -41,5 +41,5 @@ sample({
 
 sample({
   clock: songSelected,
-  target: [winamp.selectTrackFromList, closed],
+  target: [selectTrackFromList, closed],
 });

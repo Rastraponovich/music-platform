@@ -10,7 +10,7 @@ import { MainWindow } from "~/features/winamp/main-window";
 import { Hotkeys } from "~/shared/lib/hotkeys";
 import { InitPlayer } from "~/shared/lib/init-player";
 
-import { WINAMP_STATE } from "../constants";
+import { WINAMP_STATE } from "./constants";
 
 export const Winamp = () => {
   const state = useUnit(winampStates.$winampState);

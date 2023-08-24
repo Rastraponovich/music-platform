@@ -1,3 +1,3 @@
-export * from "./ui";
+export * from "./view";
 export * from "./model";
 export * from "./constants";

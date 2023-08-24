@@ -1,7 +1,8 @@
 import React, { MouseEvent, memo, useEffect, useMemo, useRef, useState } from "react";
 
 import type { Track } from "@/features/music/types";
-import { CharacterStrings } from "@/src/shared/ui/winamp/character-strings";
+
+import { CharacterStrings } from "~/shared/ui/winamp/character-strings";
 
 import { MARQUEE_MAX_LENGTH, MINUTE, SEPARATOR, isLong } from "../lib";
 import { selectors } from "../model";

@@ -1,6 +1,6 @@
 import { createEvent, sample } from "effector";
 
-import { winamp, winampStates } from "~/widgets/winamp";
+import { closeWinamp, minimizedWinamp, toggleShadePlayer, winampStates } from "~/widgets/winamp";
 
 import { WindowNames } from "./constants";
 
@@ -19,7 +19,7 @@ export const $isActiveWindow = winampStates.$activeWindow.map(
  */
 sample({
   clock: closeButtonClicked,
-  target: winamp.close,
+  target: closeWinamp,
 });
 
 /**
@@ -27,7 +27,7 @@ sample({
  */
 sample({
   clock: shadeButtonClicked,
-  target: winamp.toggleShadePlayer,
+  target: toggleShadePlayer,
 });
 
 /**
@@ -35,5 +35,5 @@ sample({
  */
 sample({
   clock: minimizeButtonClicked,
-  target: winamp.minimize,
+  target: minimizedWinamp,
 });

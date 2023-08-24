@@ -1,7 +1,7 @@
-import { useStore } from "effector-react";
+import { useUnit } from "effector-react";
 import { useCallback, useMemo } from "react";
 
-import { $baseSkinColors } from "@/src/widgets/winamp/model";
+import { $baseSkinColors } from "~/widgets/winamp/model";
 
 const PIXEL_DENSITY = 2;
 
@@ -28,7 +28,7 @@ export function usePaintOscilloscopeFrame({
   width: number;
   renderWidth: number;
 }) {
-  const colors = useStore($baseSkinColors);
+  const colors = useUnit($baseSkinColors);
 
   const bufferLength = analyser.fftSize;
 

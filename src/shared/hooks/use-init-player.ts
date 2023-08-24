@@ -1,10 +1,10 @@
 import { useEvent } from "effector-react/scope";
 import { useEffect } from "react";
 
-import { winamp } from "@/src/widgets/winamp/model";
+import { destroyWinamp, initWinamp } from "~/widgets/winamp";
 
 export const useInitPlayer = () => {
-  const [init, destroy] = useEvent([winamp.init, winamp.destroy]);
+  const [init, destroy] = useEvent([initWinamp, destroyWinamp]);
 
   useEffect(() => {
     init();

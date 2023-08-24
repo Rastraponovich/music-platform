@@ -3,9 +3,11 @@ import { useUnit } from "effector-react/scope";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { VISUALIZERS } from "@/features/music/constants";
-import { usePaintBar, usePaintBarFrame } from "@/src/shared/hooks/use-bar-visualizer";
-import { usePaintOscilloscopeFrame } from "@/src/shared/hooks/use-oscilloscope-visualizer";
-import { $baseSkinColors, $mediaElement, winamp, winampStates } from "@/src/widgets/winamp/model";
+
+import { $baseSkinColors, $mediaElement, $mediaStatus, winampStates } from "~/widgets/winamp";
+
+import { usePaintBar, usePaintBarFrame } from "~/shared/hooks/use-bar-visualizer";
+import { usePaintOscilloscopeFrame } from "~/shared/hooks/use-oscilloscope-visualizer";
 
 import { $dummyVizData, $visualizerStyle, toggleVisualizerStyle } from "./model";
 
@@ -51,7 +53,7 @@ function preRenderBg(
 
 export const Visualizer = (_: VisualizerProps) => {
   const [mediaStatus, style, dummyVizData, colors] = useUnit([
-    winamp.$mediaStatus,
+    $mediaStatus,
     $visualizerStyle,
     $dummyVizData,
     $baseSkinColors,

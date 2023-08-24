@@ -1,6 +1,6 @@
 import { createEvent, sample } from "effector";
 
-import { winamp, winampControls } from "@/src/widgets/winamp";
+import { $shuffled as $baseShuffled, $loop, $mediaStatus, winampControls } from "~/widgets/winamp";
 
 import { $visibleEQ, toggleVisibleEQ } from "../equalizer";
 import { $visiblePlaylist, toggleVisiblePlaylist } from "../playlist";
@@ -18,11 +18,11 @@ export const prevTrackButtonClicked = createEvent();
 /**
  * @todo Fix names of variables in this function. move reducer
  */
-export const $isPlaying = winamp.$mediaStatus.map((status) => status === "PLAYING");
+export const $isPlaying = $mediaStatus.map((status) => status === "PLAYING");
 
-export const $loopIsOn = winamp.$loop.map((loop) => loop);
+export const $loopIsOn = $loop.map((loop) => loop);
 
-export const $shuffled = winamp.$shuffle.map((shuffled) => shuffled);
+export const $shuffled = $baseShuffled.map((shuffled) => shuffled);
 
 export const $eqVisible = $visibleEQ.map((visible) => visible);
 

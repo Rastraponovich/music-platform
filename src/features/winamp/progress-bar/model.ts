@@ -1,8 +1,8 @@
 import { createEvent, createStore, sample } from "effector";
 import { reset } from "patronum";
 import type { ChangeEvent, MouseEvent } from "react";
+import { $currentTrack } from "~/entity/winamp";
 
-import { $currentTrack } from "@/src/entity/winamp";
 import {
   $currentTrackDuration,
   $currentTrackTime,
@@ -11,7 +11,7 @@ import {
   marqueInfo,
   setCurrentTime_,
   setMarqueInfo,
-} from "@/src/widgets/winamp";
+} from "~/widgets/winamp";
 
 import { generateMarqueSeekText } from "./utils";
 

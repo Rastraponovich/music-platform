@@ -1,6 +1,6 @@
 import { createEvent, sample } from "effector";
 
-import { changeClutterBar } from "@/src/widgets/winamp";
+import { changeClutterBar } from "~/widgets/winamp";
 
 export const changedClutterBar = createEvent<string>();
 

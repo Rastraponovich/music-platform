@@ -294,17 +294,21 @@ const createWinampFx = createEffect<Track, Nullable<MediaElement>, Error>((track
   };
 });
 
-const initWinamp = createEvent();
-const destroyWinamp = createEvent();
-const closeWinamp = createEvent();
+export const initWinamp = createEvent();
+export const destroyWinamp = createEvent();
+
+export const closeWinamp = createEvent();
 
 //function has load track in Media._audio
 const loadUrl = createEvent<Track>();
 
 const changeWindowState = createEvent<WinampWindow>();
-const toggleShadePlayer = createEvent();
-const minimizedWinamp = createEvent();
-const showWinamp = createEvent();
+
+export const toggleShadePlayer = createEvent();
+
+export const minimizedWinamp = createEvent();
+
+export const showWinamp = createEvent();
 
 const setMediaStatus = createEvent<MediaStatus>();
 
@@ -366,7 +370,7 @@ const $clutterBar = createStore<Record<string, boolean>>({
 const $enabledMaruqeInfo = createStore<boolean>(false);
 const $winampMarqueInfo = createStore<Nullable<string>>("");
 
-const $loop = createStore<boolean>(false);
+export const $loop = createStore<boolean>(false);
 
 export const $shuffled = createStore<boolean>(false);
 
@@ -867,22 +871,6 @@ export const winampControls = {
   nextTrack: nextTrackClicked,
   toggleShuffle,
   toggleLoop,
-};
-
-export const winamp = {
-  init: initWinamp,
-  destroy: destroyWinamp,
-  close: closeWinamp,
-  show: showWinamp,
-  minimize: minimizedWinamp,
-
-  $mediaStatus,
-  $currentTrack,
-  selectTrackFromList,
-  playAllTracksFromList,
-  toggleShadePlayer,
-  $loop,
-  $shuffle: $shuffled,
 };
 
 export const winampStates = {

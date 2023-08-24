@@ -1,13 +1,13 @@
 import clsx from "clsx";
 import { useList, useUnit } from "effector-react";
 import dynamic from "next/dynamic";
-import { useMemo, useRef } from "react";
-import { MouseEventHandler, memo } from "react";
+import { memo, useMemo, useRef } from "react";
+import type { MouseEventHandler } from "react";
 
 import type { Track } from "@/features/music/types";
 import { convertTimeToString } from "@/utils/utils";
 
-import { $currentTrackDuration, winamp, winampStates } from "~/widgets/winamp";
+import { $currentTrackDuration, $mediaStatus, winampStates } from "~/widgets/winamp";
 
 import { MiniActions } from "~/features/winamp/controls-panel";
 import {
@@ -151,7 +151,7 @@ const Playlist = () => {
     $playlistLength,
     $currentPlayedTrackIndex,
     $selectedTrackInPlaylist,
-    winamp.$mediaStatus,
+    $mediaStatus,
   ]);
 
   return (

@@ -3,10 +3,10 @@ import { useUnit } from "effector-react";
 import { ChangeEvent, MouseEvent, memo, useCallback, useMemo, useRef, useState } from "react";
 import "react";
 
-import { useDraggable } from "@/src/shared/hooks/use-draggable";
-import { WinampButton } from "@/src/shared/ui/winamp/winamp-button";
-import { $clutterBar, winampStates } from "@/src/widgets/winamp/model";
-import { marqueInfo } from "@/src/widgets/winamp/model";
+import { $clutterBar, marqueInfo, winampStates } from "~/widgets/winamp";
+
+import { useDraggable } from "~/shared/hooks/use-draggable";
+import { WinampButton } from "~/shared/ui/winamp/winamp-button";
 
 import { GRAPH_HEIGHT, GRAPH_WIDTH, TALL_SPRITE, WIDE_SPRITE, WINDOW_NAME } from "./constants";
 import {

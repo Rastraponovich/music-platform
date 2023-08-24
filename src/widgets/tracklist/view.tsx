@@ -15,7 +15,13 @@ import { MEDIA_STATUS } from "~/entity/winamp";
 import { TrackTimer } from "@/components/track-timer";
 import { convertTimeToString } from "@/utils/utils";
 
-import { $currentTrackDuration, winamp, winampControls } from "~/widgets/winamp";
+import {
+  $currentTrack,
+  $currentTrackDuration,
+  $mediaStatus,
+  selectTrackFromList,
+  winampControls,
+} from "~/widgets/winamp";
 
 import { AddToPlaylistButton } from "~/features/add-to-playlist";
 import { $currentTime, Progressbar } from "~/features/winamp/progress-bar";
@@ -42,7 +48,7 @@ interface TrackListItemProps {
 }
 
 export const TrackListItem = memo<TrackListItemProps>(({ id }) => {
-  const mediaStatus = useUnit(winamp.$mediaStatus);
+  const mediaStatus = useUnit($mediaStatus);
 
   const { track, duration } = useStoreMap({
     store: $songs,
@@ -65,7 +71,7 @@ export const TrackListItem = memo<TrackListItemProps>(({ id }) => {
   });
 
   const isCurrentPlayedTrack = useStoreMap({
-    store: winamp.$currentTrack,
+    store: $currentTrack,
     keys: [id],
     fn: (currentTrack) => currentTrack?.id === id,
   });
@@ -73,7 +79,7 @@ export const TrackListItem = memo<TrackListItemProps>(({ id }) => {
   const handleAddToFavButtonClicked = useUnit(addToFavoriteButtonClicked);
 
   const [handleSelectTrack, handlePlay, handlePause] = useUnit([
-    winamp.selectTrackFromList,
+    selectTrackFromList,
     winampControls.play,
     winampControls.pause,
   ]);
@@ -157,7 +163,7 @@ interface PlayButtonProps {
 }
 
 const PlayButton = memo<PlayButtonProps>(({ isCurrentTrack, onClick }) => {
-  const mediaStatus = useUnit(winamp.$mediaStatus);
+  const mediaStatus = useUnit($mediaStatus);
 
   return (
     <button
@@ -259,11 +265,11 @@ export const TrackListItemSmall = memo<TrackListSmallItemProps>(({ track, isCurr
   const [currentTrackDuration, currentTrackTime, mediaStatus] = useUnit([
     $currentTrackDuration,
     $currentTime,
-    winamp.$mediaStatus,
+    $mediaStatus,
   ]);
 
   const [handleSelectTrack, handlePlay, handlePause] = useUnit([
-    winamp.selectTrackFromList,
+    selectTrackFromList,
     winampControls.play,
     winampControls.pause,
   ]);
