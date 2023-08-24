@@ -1,5 +1,3 @@
-import { Dialog, Transition } from "@headlessui/react";
-import { XIcon } from "@heroicons/react/outline";
 import { useUnit } from "effector-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +7,10 @@ import { $openedSidebar, toggleSidebar } from "@/features/sidebar";
 
 import { Navbar } from "~/widgets/navbar";
 
-import { Auth } from "../../../components/auth/view";
+import { Auth } from "../../features/auth/view";
+
+import { Dialog, Transition } from "@headlessui/react";
+import { XIcon } from "@heroicons/react/outline";
 
 export const Sidebar = () => {
   const open = useUnit($openedSidebar);

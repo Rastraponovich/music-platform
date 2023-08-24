@@ -3,12 +3,13 @@ import { useList } from "effector-react";
 import type { GetServerSideProps, NextPage } from "next";
 import Image from "next/image";
 import { ALBUMS, AlbumInfo } from "~/entity/albums";
-import { PlaylistFormModal } from "~/entity/playlists";
 
 import { $songs } from "@/features/music";
 import type { Album } from "@/types";
 
 import { TrackListItem } from "~/widgets/tracklist";
+
+import { PlaylistFormModal } from "~/features/playlists/create-playlist-form";
 
 import { Rating } from "~/shared/ui/rating";
 

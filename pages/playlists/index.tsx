@@ -2,7 +2,9 @@ import { fork, serialize } from "effector";
 import { useList } from "effector-react";
 import type { GetServerSideProps, NextPage } from "next";
 import { ALBUMS, AlbumComponent } from "~/entity/albums";
-import { $playlists, PlaylistFormModal } from "~/entity/playlists";
+import { $playlists } from "~/entity/playlists";
+
+import { PlaylistFormModal } from "~/features/playlists/create-playlist-form";
 
 const PlaylistPage: NextPage = () => {
   return (
