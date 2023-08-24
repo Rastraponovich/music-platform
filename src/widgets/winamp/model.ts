@@ -2,6 +2,7 @@ import { attach, createEffect, createEvent, createStore, sample, scopeBind } fro
 import { not, reset } from "patronum";
 import { BANDS, MEDIA_STATUS, WINAMP_STATE, WINAMP_WINDOW_STATE } from "~/entity/winamp/constants";
 
+// problem
 import {
   Band,
   MediaElement,
@@ -15,7 +16,7 @@ import {
   _Bands,
 } from "@/features/music/types";
 import type { Nullable } from "@/types";
-import { baseSkinColors } from "@/types/ui.types";
+import { BASE_SKIN_COLORS } from "@/types/ui.types";
 import { getMMssFromNumber, getSnapBandValue, toggle } from "@/utils/utils";
 
 import { getClientScope } from "~/shared/hooks/use-scope";
@@ -371,7 +372,7 @@ export const $mediaStatus = createStore<MediaStatus>(MEDIA_STATUS.STOPPED);
 const $visiblePlayer = createStore<boolean>(false);
 const $shadePlayer = createStore<boolean>(false);
 
-export const $baseSkinColors = createStore<string[]>(baseSkinColors);
+export const $baseSkinColors = createStore<string[]>(BASE_SKIN_COLORS);
 
 // volume segment //
 export const $volume = createStore<number>(50);

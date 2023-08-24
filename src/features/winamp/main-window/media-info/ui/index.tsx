@@ -1,7 +1,7 @@
 import { useUnit } from "effector-react";
 import { useMemo } from "react";
+import { WINAMP_STATE } from "~/entity/winamp";
 
-import { WINAMP_STATE } from "@/features/music/constants";
 import { winamp, winampStates } from "@/src/widgets/winamp/model";
 
 import { $currentPlayedTrackIndex } from "../../../playlist";

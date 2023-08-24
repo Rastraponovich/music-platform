@@ -1,4 +1,6 @@
-import { winamp } from "@/src/widgets/winamp";
+import { winamp } from "~/widgets/winamp";
+
+//<-- problem
 
 export const $currentTrack = winamp.$currentTrack.map((track) => track);
 

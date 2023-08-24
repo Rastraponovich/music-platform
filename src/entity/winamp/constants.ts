@@ -2,6 +2,11 @@ import type { Band, MediaStatus, TWinampState, WinampWindow } from "@/features/m
 
 export const BANDS: Band[] = [60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000];
 
+export enum TimeMode {
+  ELAPSED = "ELAPSED",
+  REMAINING = "REMAINING",
+}
+
 export const MEDIA_STATUS: Record<MediaStatus, MediaStatus> = {
   PAUSED: "PAUSED",
   PLAYING: "PLAYING",

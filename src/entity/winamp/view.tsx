@@ -2,9 +2,11 @@ import clsx from "clsx";
 import { useUnit } from "effector-react";
 import { memo } from "react";
 
-import { TimeMode } from "@/features/music/types";
-import { CharacterString } from "@/src/shared/ui/winamp/character-strings";
-import { $timeMode, $timer, toggleTimeMode, winamp } from "@/src/widgets/winamp/model";
+import { $timeMode, $timer, toggleTimeMode, winamp } from "~/widgets/winamp";
+
+import { CharacterString } from "~/shared/ui/winamp/character-strings";
+
+import { TimeMode } from "./constants";
 
 interface MiniTimerProps {
   className?: string;

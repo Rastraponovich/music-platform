@@ -1,8 +1,9 @@
 import { createEvent, createStore, sample } from "effector";
 import { reset } from "patronum";
 import type { ChangeEvent } from "react";
+import { WINAMP_STATE } from "~/entity/winamp";
 
-import { PRESETS, PRESETS_ARRAY, WINAMP_STATE } from "@/features/music/constants";
+import { PRESETS, PRESETS_ARRAY } from "@/features/music/constants";
 import type { Band, TPreset } from "@/features/music/types";
 import {
   $winampState,

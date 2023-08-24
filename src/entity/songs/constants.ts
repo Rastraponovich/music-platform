@@ -47,16 +47,6 @@ export enum WinampState {
   MINIMIZED = "MINIMIZED",
 }
 
-export const WINAMP_STATE: Record<TWinampState, TWinampState> = {
-  CREATED: "CREATED",
-  INIT: "INIT",
-  TRACKLOADED: "TRACKLOADED",
-  DESTROYED: "DESTROYED",
-  CLOSED: "CLOSED",
-  OPENED: "OPENED",
-  MINIMIZED: "MINIMIZED",
-};
-
 export const WINAMP_WINDOW_STATE: Record<WinampWindow, WinampWindow> = {
   EQUALIZER: "EQUALIZER",
   NONE: "NONE",

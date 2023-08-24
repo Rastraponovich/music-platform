@@ -1,6 +1,5 @@
 import { useUnit } from "effector-react";
 
-import { WINAMP_STATE } from "@/features/music/constants";
 import { PlayListWindow } from "@/src/features/winamp/playlist/view";
 
 import { winampStates } from "~/widgets/winamp/model";
@@ -10,6 +9,8 @@ import { MainWindow } from "~/features/winamp/main-window";
 
 import { Hotkeys } from "~/shared/lib/hotkeys";
 import { InitPlayer } from "~/shared/lib/init-player";
+
+import { WINAMP_STATE } from "../constants";
 
 export const Winamp = () => {
   const state = useUnit(winampStates.$winampState);
