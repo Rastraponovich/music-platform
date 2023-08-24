@@ -1,8 +1,8 @@
 import { createEvent, createStore, sample } from "effector";
 import { and, not } from "patronum";
+import { $songs } from "~/entity/songs";
 import { MEDIA_STATUS, WINAMP_STATE } from "~/entity/winamp";
 
-import { $songs } from "@/features/music";
 import type { Track } from "@/features/music/types";
 import type { Nullable } from "@/types";
 import { toggle } from "@/utils/utils";

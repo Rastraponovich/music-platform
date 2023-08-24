@@ -10,17 +10,15 @@ import {
   Song,
   addToFavoriteButtonClicked,
 } from "~/entity/songs";
+import { MEDIA_STATUS } from "~/entity/winamp";
 
 import { TrackTimer } from "@/components/track-timer";
-import { MEDIA_STATUS } from "@/features/media/constants";
 import { convertTimeToString } from "@/utils/utils";
 
-import { winamp, winampControls } from "~/widgets/winamp";
-import { $currentTrackDuration } from "~/widgets/winamp";
+import { $currentTrackDuration, winamp, winampControls } from "~/widgets/winamp";
 
 import { AddToPlaylistButton } from "~/features/add-to-playlist";
-import { Progressbar } from "~/features/winamp/progress-bar";
-import { $currentTime } from "~/features/winamp/progress-bar";
+import { $currentTime, Progressbar } from "~/features/winamp/progress-bar";
 
 import { AnnotationIcon, HeartIcon, TrashIcon } from "@heroicons/react/outline";
 import { HeartIcon as Fav, PauseIcon, PlayIcon } from "@heroicons/react/solid";

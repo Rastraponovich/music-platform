@@ -49,10 +49,3 @@ export const TIME_MODE: Record<TimeMode, TimeMode> = {
   ELAPSED: "ELAPSED",
   REMAINING: "REMAINING",
 };
-
-// TODO: Convert to enum once we are fully Typescript
-export const MEDIA_STATUS: Record<MediaStatus, MediaStatus> = {
-  PLAYING: "PLAYING",
-  STOPPED: "STOPPED",
-  PAUSED: "PAUSED",
-};

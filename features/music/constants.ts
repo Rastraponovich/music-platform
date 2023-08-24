@@ -19,12 +19,6 @@ export const VISUALIZERS: TVISUALIZERS = {
 export const VISUALIZER_ORDER = [VISUALIZERS.BAR, VISUALIZERS.OSCILLOSCOPE, VISUALIZERS.NONE];
 export const BANDS: Band[] = [60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000];
 
-export const MEDIA_STATUS: Record<MediaStatus, MediaStatus> = {
-  PAUSED: "PAUSED",
-  PLAYING: "PLAYING",
-  STOPPED: "STOPPED",
-};
-
 export const WINAMP_PLAYER_STATE: Record<MediaStatus, MediaStatus> = {
   PAUSED: "PAUSED",
   PLAYING: "PLAYING",
