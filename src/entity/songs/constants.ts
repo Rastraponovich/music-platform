@@ -4,7 +4,6 @@ import {
   PresetTypes,
   TPreset,
   TVISUALIZERS,
-  TWinampState,
   UseDraggblePosition,
   WinampWindow,
 } from "./types";

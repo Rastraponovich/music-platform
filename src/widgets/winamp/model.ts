@@ -1,6 +1,12 @@
 import { attach, createEffect, createEvent, createStore, sample, scopeBind } from "effector";
 import { not, reset } from "patronum";
-import { BANDS, MEDIA_STATUS, WINAMP_STATE, WINAMP_WINDOW_STATE } from "~/entity/winamp/constants";
+import {
+  BANDS,
+  BASE_SKIN_COLORS,
+  MEDIA_STATUS,
+  WINAMP_STATE,
+  WINAMP_WINDOW_STATE,
+} from "~/entity/winamp/constants";
 
 // problem
 import {
@@ -16,7 +22,6 @@ import {
   _Bands,
 } from "@/features/music/types";
 import type { Nullable } from "@/types";
-import { BASE_SKIN_COLORS } from "@/types/ui.types";
 import { getMMssFromNumber, getSnapBandValue, toggle } from "@/utils/utils";
 
 import { getClientScope } from "~/shared/hooks/use-scope";

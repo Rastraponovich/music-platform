@@ -1,13 +1,14 @@
-import type { Band, LoadStyle, MediaStatus, MediaTagRequestStatus, TimeMode } from "./types";
+import type { Band, LoadStyle, TimeMode } from "./types";
 
 export const BANDS: Band[] = [60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000];
 
-export const WINDOWS = {
-  MAIN: "main",
-  PLAYLIST: "playlist",
-  EQUALIZER: "equalizer",
-  MILKDROP: "milkdrop",
-};
+// TODO
+// export const WINDOWS = {
+//   MAIN: "main",
+//   PLAYLIST: "playlist",
+//   EQUALIZER: "equalizer",
+//   MILKDROP: "milkdrop",
+// };
 
 export const LOAD_STYLE: Record<LoadStyle, LoadStyle> = {
   BUFFER: "BUFFER",
@@ -16,12 +17,12 @@ export const LOAD_STYLE: Record<LoadStyle, LoadStyle> = {
 };
 
 // TODO: Make this an enum?
-export const MEDIA_TAG_REQUEST_STATUS: Record<MediaTagRequestStatus, MediaTagRequestStatus> = {
-  INITIALIZED: "INITIALIZED",
-  FAILED: "FAILED",
-  COMPLETE: "COMPLETE",
-  NOT_REQUESTED: "NOT_REQUESTED",
-};
+// export const MEDIA_TAG_REQUEST_STATUS: Record<MediaTagRequestStatus, MediaTagRequestStatus> = {
+//   INITIALIZED: "INITIALIZED",
+//   FAILED: "FAILED",
+//   COMPLETE: "COMPLETE",
+//   NOT_REQUESTED: "NOT_REQUESTED",
+// };
 
 export const UTF8_ELLIPSIS = "\u2026";
 export const CHARACTER_WIDTH = 5;
