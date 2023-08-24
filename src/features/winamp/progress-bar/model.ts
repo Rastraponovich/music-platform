@@ -7,8 +7,9 @@ import {
   $currentTrackDuration,
   $currentTrackTime,
   changeCurrentTimeFx,
+  disabledMarqueInfo,
+  enabledMarqueInfo,
   keyChangeCurrentTimeFx,
-  marqueInfo,
   setCurrentTime_,
   setMarqueInfo,
 } from "~/widgets/winamp";
@@ -44,7 +45,7 @@ $currentTrackTime.on($seekingProgress, (_, seekedTime) => seekedTime);
 /* on lifted progress bar */
 sample({
   clock: progressBarLifted,
-  target: marqueInfo.enabledMarqueInfo,
+  target: enabledMarqueInfo,
 });
 
 /* when lifted we must set marque info */
@@ -64,7 +65,7 @@ $allowSeeking.on(progressBarLifted, () => false);
 /* on uplifted progress bar */
 sample({
   clock: progressBarUplifted,
-  target: marqueInfo.disabledMarqueInfo,
+  target: disabledMarqueInfo,
 });
 
 /* on uplifted progress bar */

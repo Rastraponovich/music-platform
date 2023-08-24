@@ -2,17 +2,17 @@ import { createStore, sample } from "effector";
 
 import { Nullable } from "@/types";
 
-import { $currentTrack, marqueInfo } from "~/widgets/winamp";
+import { $currentTrack, $enabledMaruqeInfo, $winampMarqueInfo } from "~/widgets/winamp";
 
 import { $currentPlayedTrackIndex } from "../../../playlist";
 import { MARQUEE_MAX_LENGTH, MINUTE, SEPARATOR, isLong } from "../lib";
 
 export const $enabledMarque = createStore<boolean>(false).on(
-  marqueInfo.$enabledMaruqeInfo,
+  $enabledMaruqeInfo,
   (_, state) => state,
 );
 export const $marqueInfoText = createStore<Nullable<string>>(null).on(
-  marqueInfo.$winampMarqueInfo,
+  $winampMarqueInfo,
   (_, info) => info,
 );
 

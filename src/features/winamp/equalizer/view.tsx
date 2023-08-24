@@ -3,7 +3,13 @@ import { useUnit } from "effector-react";
 import { ChangeEvent, MouseEvent, memo, useCallback, useMemo, useRef, useState } from "react";
 import "react";
 
-import { $activeWindow, $clutterBar, changeWindowState, marqueInfo } from "~/widgets/winamp";
+import {
+  $activeWindow,
+  $clutterBar,
+  changeWindowState,
+  disabledMarqueInfo,
+  enabledMarqueInfo,
+} from "~/widgets/winamp";
 
 import { useDraggable } from "~/shared/hooks/use-draggable";
 import { WinampButton } from "~/shared/ui/winamp/winamp-button";
@@ -77,10 +83,7 @@ interface EQSliderProps {
 const EQSlider = memo(({ name, value, onChange, reset, title }: EQSliderProps) => {
   const [active, setActive] = useState(false);
 
-  const [mouseDown, mouseUp] = useUnit([
-    marqueInfo.enabledMarqueInfo,
-    marqueInfo.disabledMarqueInfo,
-  ]);
+  const [mouseDown, mouseUp] = useUnit([enabledMarqueInfo, disabledMarqueInfo]);
 
   const handleMouseUp = (_: MouseEvent<HTMLInputElement>) => {
     setActive(false);

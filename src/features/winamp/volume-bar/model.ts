@@ -5,10 +5,13 @@ import type { ChangeEvent } from "react";
 // TODO: remove ui from model
 import {
   $activeWindow,
+  $enabledMaruqeInfo,
   $volume,
+  $winampMarqueInfo,
   changeVolumeFx,
+  disabledMarqueInfo,
+  enabledMarqueInfo,
   keyboardChangedVolumeFx,
-  marqueInfo,
 } from "~/widgets/winamp";
 
 import { VOLUME_STEP } from "./constants";
@@ -32,7 +35,7 @@ export const $currentVolumePosition = $currentVolume.map((volume) =>
 );
 
 // runtime //
-marqueInfo.$winampMarqueInfo.on($marqueText, (_, text) => text);
+$winampMarqueInfo.on($marqueText, (_, text) => text);
 
 /**
  * when volume changed
@@ -62,7 +65,7 @@ const debouncedKeyboardVolumeChanged = debounce({
  */
 sample({
   clock: [volumebarLifted, keyboardVolumeChanged],
-  target: marqueInfo.enabledMarqueInfo,
+  target: enabledMarqueInfo,
 });
 
 /**
@@ -71,8 +74,8 @@ sample({
 sample({
   clock: [volumebarLifted, keyboardVolumeChanged],
   source: $marqueText,
-  filter: marqueInfo.$enabledMaruqeInfo,
-  target: marqueInfo.$winampMarqueInfo,
+  filter: $enabledMaruqeInfo,
+  target: $winampMarqueInfo,
 });
 
 /**
@@ -80,5 +83,5 @@ sample({
  */
 sample({
   clock: [volumebarUplifted, debouncedKeyboardVolumeChanged],
-  target: marqueInfo.disabledMarqueInfo,
+  target: disabledMarqueInfo,
 });

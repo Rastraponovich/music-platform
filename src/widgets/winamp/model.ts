@@ -330,9 +330,9 @@ export const toggleShuffle = createEvent();
 
 export const changeClutterBar = createEvent<string>();
 
-const toggleEnabledMarqueInfo = createEvent();
-const enabledMarqueInfo = createEvent();
-const disabledMarqueInfo = createEvent();
+export const toggleEnabledMarqueInfo = createEvent();
+export const enabledMarqueInfo = createEvent();
+export const disabledMarqueInfo = createEvent();
 
 export const setMarqueInfo = createEvent<string | number>();
 
@@ -368,8 +368,8 @@ export const $clutterBar = createStore<Record<string, boolean>>({
   v: false,
 });
 
-const $enabledMaruqeInfo = createStore<boolean>(false);
-const $winampMarqueInfo = createStore<Nullable<string>>("");
+export const $enabledMaruqeInfo = createStore<boolean>(false);
+export const $winampMarqueInfo = createStore<Nullable<string>>("");
 
 export const $loop = createStore<boolean>(false);
 
@@ -855,11 +855,3 @@ reset({
   clock: $currentTrack,
   target: [$timer, $currentTrackTimeRemaining, $currentTrackTime],
 });
-
-export const marqueInfo = {
-  $winampMarqueInfo,
-  $enabledMaruqeInfo,
-  enabledMarqueInfo,
-  disabledMarqueInfo,
-  toggleEnabledMarqueInfo,
-};
