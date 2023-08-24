@@ -1,7 +1,7 @@
 import { useUnit } from "effector-react";
 import { useEffect } from "react";
 
-import { WINAMP_WINDOW_STATE } from "@/features/music/constants";
+import { WINAMP_WINDOW_STATE } from "@/src/entity/winamp";
 
 import { $activeWindow, removeTrackFromPlaylist } from "~/widgets/winamp";
 

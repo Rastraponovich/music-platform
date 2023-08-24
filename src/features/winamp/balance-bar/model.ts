@@ -1,7 +1,7 @@
 import { attach, createEvent, createStore, sample } from "effector";
 import type { ChangeEvent, MouseEvent } from "react";
+import { MediaElement } from "~/entity/songs";
 
-import type { MediaElement } from "@/features/music/types";
 import { getSnapBalanceValue } from "@/utils/utils";
 
 import {

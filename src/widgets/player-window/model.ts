@@ -1,7 +1,5 @@
 import { combine } from "effector";
-
-//TODO
-import { PlayerState, WinampState } from "@/features/music/constants";
+import { PlayerState, WinampState } from "~/entity/songs";
 
 import { $currentPlayedTrackIndex } from "~/features/winamp/playlist";
 

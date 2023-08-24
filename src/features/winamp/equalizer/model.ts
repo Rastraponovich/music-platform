@@ -3,8 +3,7 @@ import { reset } from "patronum";
 import type { ChangeEvent } from "react";
 import { WINAMP_STATE } from "~/entity/winamp";
 
-import { PRESETS, PRESETS_ARRAY } from "@/features/music/constants";
-import type { Band, TPreset } from "@/features/music/types";
+import type { Band } from "@/features/music/types";
 import {
   $winampState,
   changePreampFx,
@@ -18,9 +17,24 @@ import {
 import type { Nullable } from "@/types";
 import { getSnapBandValue, toggle } from "@/utils/utils";
 
+import { PRESETS, PRESETS_ARRAY } from "./constants";
 import { generateEQBandMarqueText, generatePreampMarqueText, setAllBands } from "./utils";
 
 export type ResetStateKey = "max" | "min" | "reset";
+
+export type Preset = {
+  name: PresetNames;
+  value: Record<Band, number>;
+};
+
+export type PresetNames =
+  | "ROCK"
+  | "DEFAULT"
+  | "TECHNO"
+  | "CLASSIC"
+  | "CLUB"
+  | "FULL BASS"
+  | "FULL BASS AND TREBBLE";
 
 //turn off EQ in UI
 export const disableClickedEQ = createEvent();
@@ -30,7 +44,7 @@ export const toggleAutoEQ = createEvent();
 export const resetAllBands = createEvent();
 export const toggleVisibleEQ = createEvent();
 export const toggleMinimizeEQ = createEvent();
-export const selectPreset = createEvent<TPreset>();
+export const selectPreset = createEvent<Preset>();
 export const toggleVisiblePresetWindow = createEvent();
 export const setBand = createEvent<Record<Band, number>>();
 
@@ -58,9 +72,9 @@ export const $visibleEQ = createStore(false);
 
 export const $minimizedEQ = createStore(false);
 export const $visiblePresetWindow = createStore(false);
-export const $presets = createStore<TPreset[]>(PRESETS_ARRAY);
-export const $selectedPreset = createStore<Nullable<TPreset>>(null);
-export const $currentPreset = createStore<TPreset>(PRESETS.DEFAULT);
+export const $presets = createStore<Preset[]>(PRESETS_ARRAY);
+export const $selectedPreset = createStore<Nullable<Preset>>(null);
+export const $currentPreset = createStore<Preset>(PRESETS.DEFAULT);
 export const $bands = createStore<Record<Band, number>>(PRESETS.DEFAULT.value);
 
 $autoEQ.on(toggleAutoEQ, toggle);

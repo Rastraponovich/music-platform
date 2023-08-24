@@ -2,13 +2,12 @@ import clsx from "clsx";
 import { useUnit } from "effector-react/scope";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { VISUALIZERS } from "@/features/music/constants";
-
 import { $baseSkinColors, $mediaElement, $mediaStatus, $shadePlayer } from "~/widgets/winamp";
 
 import { usePaintBar, usePaintBarFrame } from "~/shared/hooks/use-bar-visualizer";
 import { usePaintOscilloscopeFrame } from "~/shared/hooks/use-oscilloscope-visualizer";
 
+import { Visualizers } from "./constants";
 import { $dummyVizData, $visualizerStyle, toggleVisualizerStyle } from "./model";
 
 interface VisualizerProps {
@@ -102,12 +101,12 @@ export const Visualizer = (_: VisualizerProps) => {
         return;
       }
       switch (style) {
-        case VISUALIZERS.OSCILLOSCOPE:
+        case Visualizers.OSCILLOSCOPE:
           canvasCtx.drawImage(bgCanvas, 0, 0);
           paintOscilloscopeFrame(canvasCtx);
           break;
 
-        case VISUALIZERS.BAR:
+        case Visualizers.BAR:
           canvasCtx.drawImage(bgCanvas, 0, 0);
           paintBarFrame(canvasCtx);
           break;

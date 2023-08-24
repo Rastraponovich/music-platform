@@ -10,19 +10,20 @@ import {
 } from "~/entity/winamp/constants";
 
 // problem
-import type {
+import {
   Band,
   MediaElement,
   MediaStatus,
   StereoBalanceNodeType,
-  TPreset,
   TWinampState,
   Track,
   WinampWindow,
   _Bands,
-} from "@/features/music/types";
+} from "@/src/entity/songs/types";
 import type { Nullable } from "@/types";
 import { getMMssFromNumber, getSnapBandValue, toggle } from "@/utils/utils";
+
+import type { Preset } from "~/features/winamp/equalizer";
 
 import { getClientScope } from "~/shared/hooks/use-scope";
 import { StereoBalanceNode } from "~/shared/lib/audio/stereo-balance-node";
@@ -254,7 +255,7 @@ const createWinampFx = createEffect<Track, Nullable<MediaElement>, Error>((track
   BANDS.forEach((band, i) => {
     const filter = _context.createBiquadFilter();
 
-    _bands[band] = filter;
+    _bands[band as Band] = filter;
 
     // The first filter, includes all lower frequencies
     if (i === 0) {
@@ -570,7 +571,7 @@ export const setAllBandsEqFx = attach({
 
 export const loadPresetEQFx = attach({
   source: $mediaElement,
-  async effect(media, { preset }: { preset: TPreset }) {
+  async effect(media, { preset }: { preset: Preset }) {
     Object.entries(preset.value).forEach(([key, value]) => {
       const bandName = Number(key) as keyof _Bands;
       const db = value * 0.24 - 12;

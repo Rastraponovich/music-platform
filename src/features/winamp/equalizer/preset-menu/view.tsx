@@ -2,15 +2,19 @@ import clsx from "clsx";
 import { useList, useUnit } from "effector-react";
 import { MouseEvent, ReactNode, memo, useRef } from "react";
 
-import { TPreset } from "@/features/music/types";
-
-import { $activeWindow } from "~/widgets/winamp/model";
+import { $activeWindow } from "~/widgets/winamp";
 
 import { useDraggable } from "~/shared/hooks/use-draggable";
 
-import { $visiblePresetWindow } from "..";
-import { loadPreset, toggleVisiblePresetWindow } from "..";
-import { $presets, $selectedPreset, selectPreset } from "..";
+import {
+  $presets,
+  $selectedPreset,
+  $visiblePresetWindow,
+  Preset,
+  loadPreset,
+  selectPreset,
+  toggleVisiblePresetWindow,
+} from "../model";
 import { WINDOW_NAME } from "./constants";
 
 export const PresetMenu = () => {
@@ -76,13 +80,13 @@ const ClosePresetMenuButton = () => {
 };
 
 interface PresetProps {
-  preset: TPreset;
+  preset: Preset;
 }
 
 /**
  * @todo semantic refactor
  */
-const Preset = memo<PresetProps>(({ preset }) => {
+const PresetItem = memo<PresetProps>(({ preset }) => {
   const [selected, handleSelectPreset] = useUnit([$selectedPreset, selectPreset]);
 
   return (
@@ -98,7 +102,7 @@ const Preset = memo<PresetProps>(({ preset }) => {
   );
 });
 
-Preset.displayName = "Preset";
+PresetItem.displayName = "Preset";
 
 const PresetsList = () => {
   const selectedPreset = useUnit($selectedPreset);
@@ -107,7 +111,7 @@ const PresetsList = () => {
     <div className="flex flex-col  overflow-y-scroll border-[0.5px] border-[#828790] bg-white p-px">
       {useList($presets, {
         keys: [selectedPreset],
-        fn: (preset) => <Preset preset={preset} />,
+        fn: (preset) => <PresetItem preset={preset} />,
       })}
     </div>
   );
