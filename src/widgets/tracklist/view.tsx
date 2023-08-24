@@ -19,8 +19,9 @@ import {
   $currentTrack,
   $currentTrackDuration,
   $mediaStatus,
+  onPauseClicked,
+  onPlayClicked,
   selectTrackFromList,
-  winampControls,
 } from "~/widgets/winamp";
 
 import { AddToPlaylistButton } from "~/features/add-to-playlist";
@@ -80,8 +81,8 @@ export const TrackListItem = memo<TrackListItemProps>(({ id }) => {
 
   const [handleSelectTrack, handlePlay, handlePause] = useUnit([
     selectTrackFromList,
-    winampControls.play,
-    winampControls.pause,
+    onPlayClicked,
+    onPauseClicked,
   ]);
 
   const play = useCallback(() => {
@@ -270,8 +271,8 @@ export const TrackListItemSmall = memo<TrackListSmallItemProps>(({ track, isCurr
 
   const [handleSelectTrack, handlePlay, handlePause] = useUnit([
     selectTrackFromList,
-    winampControls.play,
-    winampControls.pause,
+    onPlayClicked,
+    onPauseClicked,
   ]);
 
   const duration = useMemo(() => convertTimeToString(track?.metaData?.format.duration), [track]);

@@ -325,8 +325,8 @@ export const onStopButtonClicked = createEvent();
 export const nextTrackClicked = createEvent();
 export const prevTrackClicked = createEvent();
 
-const toggleLoop = createEvent();
-const toggleShuffle = createEvent();
+export const toggleLoop = createEvent();
+export const toggleShuffle = createEvent();
 
 export const changeClutterBar = createEvent<string>();
 
@@ -862,14 +862,4 @@ export const marqueInfo = {
   enabledMarqueInfo,
   disabledMarqueInfo,
   toggleEnabledMarqueInfo,
-};
-
-export const winampControls = {
-  play: onPlayClicked,
-  pause: onPauseClicked,
-  stop: onStopButtonClicked,
-  prevTrack: prevTrackClicked,
-  nextTrack: nextTrackClicked,
-  toggleShuffle,
-  toggleLoop,
 };

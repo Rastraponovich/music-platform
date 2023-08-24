@@ -1,6 +1,17 @@
 import { createEvent, sample } from "effector";
 
-import { $shuffled as $baseShuffled, $loop, $mediaStatus, winampControls } from "~/widgets/winamp";
+import {
+  $shuffled as $baseShuffled,
+  $loop,
+  $mediaStatus,
+  nextTrackClicked,
+  onPauseClicked,
+  onPlayClicked,
+  onStopButtonClicked,
+  prevTrackClicked,
+  toggleLoop,
+  toggleShuffle,
+} from "~/widgets/winamp";
 
 import { $visibleEQ, toggleVisibleEQ } from "../equalizer";
 import { $visiblePlaylist, toggleVisiblePlaylist } from "../playlist";
@@ -38,7 +49,7 @@ sample({
  */
 sample({
   clock: playButtonClicked,
-  target: winampControls.play,
+  target: onPlayClicked,
 });
 
 /**
@@ -46,7 +57,7 @@ sample({
  */
 sample({
   clock: prevTrackButtonClicked,
-  target: winampControls.prevTrack,
+  target: prevTrackClicked,
 });
 
 /**
@@ -54,7 +65,7 @@ sample({
  */
 sample({
   clock: nextTrackButtonClicked,
-  target: winampControls.nextTrack,
+  target: nextTrackClicked,
 });
 
 /**
@@ -62,7 +73,7 @@ sample({
  */
 sample({
   clock: pauseButtonClicked,
-  target: winampControls.pause,
+  target: onPauseClicked,
 });
 
 /**
@@ -70,7 +81,7 @@ sample({
  */
 sample({
   clock: stopButtonClicked,
-  target: winampControls.stop,
+  target: onStopButtonClicked,
 });
 
 /**
@@ -78,7 +89,7 @@ sample({
  */
 sample({
   clock: loopToggled,
-  target: winampControls.toggleLoop,
+  target: toggleLoop,
 });
 
 /**
@@ -86,7 +97,7 @@ sample({
  */
 sample({
   clock: shuffleToggled,
-  target: winampControls.toggleShuffle,
+  target: toggleShuffle,
 });
 
 /**
