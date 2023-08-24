@@ -1,16 +1,14 @@
 import clsx from "clsx";
 import { useUnit } from "effector-react";
+import { MEDIA_STATUS, WINAMP_STATE } from "~/entity/winamp";
 
-import { MEDIA_STATUS } from "@/features/media/constants";
-import { WINAMP_STATE } from "@/features/music/constants";
-import { winamp, winampStates } from "@/src/widgets/winamp/model";
+import { $mediaStatus, $winampState, showWinamp } from "~/widgets/winamp";
 
 import { WinampIcon } from "~/shared/ui/winamp-icon";
 
 export const WinampLayoutButton = () => {
-  const handleShowWinamp = useUnit(winamp.show);
-  const mediaState = useUnit(winamp.$mediaStatus);
-  const playerState = useUnit(winampStates.$winampState);
+  const handleShowWinamp = useUnit(showWinamp);
+  const [mediaState, playerState] = useUnit([$mediaStatus, $winampState]);
 
   const pulse = mediaState === MEDIA_STATUS.PLAYING && playerState === WINAMP_STATE.MINIMIZED;
 

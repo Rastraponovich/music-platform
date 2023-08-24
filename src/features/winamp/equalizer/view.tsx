@@ -3,10 +3,16 @@ import { useUnit } from "effector-react";
 import { ChangeEvent, MouseEvent, memo, useCallback, useMemo, useRef, useState } from "react";
 import "react";
 
-import { useDraggable } from "@/src/shared/hooks/use-draggable";
-import { WinampButton } from "@/src/shared/ui/winamp/winamp-button";
-import { $clutterBar, winampStates } from "@/src/widgets/winamp/model";
-import { marqueInfo } from "@/src/widgets/winamp/model";
+import {
+  $activeWindow,
+  $clutterBar,
+  changeWindowState,
+  disabledMarqueInfo,
+  enabledMarqueInfo,
+} from "~/widgets/winamp";
+
+import { useDraggable } from "~/shared/hooks/use-draggable";
+import { WinampButton } from "~/shared/ui/winamp/winamp-button";
 
 import { GRAPH_HEIGHT, GRAPH_WIDTH, TALL_SPRITE, WIDE_SPRITE, WINDOW_NAME } from "./constants";
 import {
@@ -36,7 +42,7 @@ export const EQWindow = () => {
   const clutter = useUnit($clutterBar);
   const [minimized, visibled] = useUnit([$minimizedEQ, $visibleEQ]);
 
-  const handleActiveWindow = useUnit(winampStates.changeWindowState);
+  const handleActiveWindow = useUnit(changeWindowState);
 
   const handleActiveWindowClicked = () => handleActiveWindow(WINDOW_NAME);
 
@@ -77,10 +83,7 @@ interface EQSliderProps {
 const EQSlider = memo(({ name, value, onChange, reset, title }: EQSliderProps) => {
   const [active, setActive] = useState(false);
 
-  const [mouseDown, mouseUp] = useUnit([
-    marqueInfo.enabledMarqueInfo,
-    marqueInfo.disabledMarqueInfo,
-  ]);
+  const [mouseDown, mouseUp] = useUnit([enabledMarqueInfo, disabledMarqueInfo]);
 
   const handleMouseUp = (_: MouseEvent<HTMLInputElement>) => {
     setActive(false);
@@ -218,8 +221,7 @@ interface EQHeaderProps {
 }
 
 const EQHeader = memo(({ onMouseDown, onMouseMove, onMouseUp, onMouseLeave }: EQHeaderProps) => {
-  const [minimized] = useUnit([$minimizedEQ]);
-  const windowState = useUnit(winampStates.$activeWindow);
+  const [minimized, windowState] = useUnit([$minimizedEQ, $activeWindow]);
 
   const [handleMinimize, handleCloseEQ] = useUnit([toggleMinimizeEQ, toggleVisibleEQ]);
 

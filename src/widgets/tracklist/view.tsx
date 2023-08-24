@@ -3,35 +3,25 @@ import { useList, useStoreMap, useUnit } from "effector-react";
 import Image from "next/image";
 import { memo, useCallback, useMemo, useState } from "react";
 import { Comments } from "~/entity/comments";
-import {
-  $favoritesTracks,
-  $songs,
-  $songsCount,
-  Song,
-  addToFavoriteButtonClicked,
-} from "~/entity/songs";
+import { $favoritesTracks, $songs, Song, addToFavoriteButtonClicked } from "~/entity/songs";
+import { $currentTrack, MEDIA_STATUS } from "~/entity/winamp";
 
-import { TrackTimer } from "@/components/track-timer";
-import { MEDIA_STATUS } from "@/features/media/constants";
 import { convertTimeToString } from "@/utils/utils";
 
-import { winamp, winampControls } from "~/widgets/winamp";
-import { $currentTrackDuration } from "~/widgets/winamp";
+import { $currentTrackDuration, $mediaStatus } from "~/widgets/winamp";
 
 import { AddToPlaylistButton } from "~/features/add-to-playlist";
-import { Progressbar } from "~/features/winamp/progress-bar";
-import { $currentTime } from "~/features/winamp/progress-bar";
+import { $currentTime, Progressbar } from "~/features/winamp/progress-bar";
+
+import { $playedTime, playButtonClicked } from "./model";
 
 import { AnnotationIcon, HeartIcon, TrashIcon } from "@heroicons/react/outline";
 import { HeartIcon as Fav, PauseIcon, PlayIcon } from "@heroicons/react/solid";
 
 export const Tracklist = () => {
-  const tracksCount = useUnit($songsCount);
-
   return (
     <div className="flex flex-col divide-y-2 divide-gray-200">
       {useList($songs, {
-        keys: [tracksCount],
         getKey: (item) => item.id!,
         fn: (song) => <TrackListItem id={song.id} />,
       })}
@@ -43,8 +33,9 @@ interface TrackListItemProps {
   id: Song["id"];
 }
 
+//TODO: refactors
 export const TrackListItem = memo<TrackListItemProps>(({ id }) => {
-  const mediaStatus = useUnit(winamp.$mediaStatus);
+  const mediaStatus = useUnit($mediaStatus);
 
   const { track, duration } = useStoreMap({
     store: $songs,
@@ -67,31 +58,18 @@ export const TrackListItem = memo<TrackListItemProps>(({ id }) => {
   });
 
   const isCurrentPlayedTrack = useStoreMap({
-    store: winamp.$currentTrack,
+    store: $currentTrack,
     keys: [id],
     fn: (currentTrack) => currentTrack?.id === id,
   });
 
   const handleAddToFavButtonClicked = useUnit(addToFavoriteButtonClicked);
 
-  const [handleSelectTrack, handlePlay, handlePause] = useUnit([
-    winamp.selectTrackFromList,
-    winampControls.play,
-    winampControls.pause,
-  ]);
+  const onPlay = useUnit(playButtonClicked);
 
-  const play = useCallback(() => {
-    switch (true) {
-      case !isCurrentPlayedTrack:
-        return handleSelectTrack(track);
-
-      case mediaStatus === "PLAYING":
-        return handlePause();
-
-      default:
-        return handlePlay();
-    }
-  }, [handlePause, handlePlay, handleSelectTrack, isCurrentPlayedTrack, mediaStatus, track]);
+  const handlePlayTrack = useCallback(() => {
+    onPlay(track);
+  }, [onPlay, track]);
 
   const [comments, showComments] = useState(false);
 
@@ -114,7 +92,7 @@ export const TrackListItem = memo<TrackListItemProps>(({ id }) => {
           isCurrentPlayedTrack && "bg-orange-300",
         )}
       >
-        <PlayButton onClick={play} isCurrentTrack={isCurrentPlayedTrack} />
+        <PlayButton onClick={handlePlayTrack} isCurrentTrack={isCurrentPlayedTrack} />
         <div className="col-span-1 flex items-center">
           <Image
             src={`${process.env.NEXT_PUBLIC_BACKEND}/images/${track.cover}`}
@@ -159,7 +137,7 @@ interface PlayButtonProps {
 }
 
 const PlayButton = memo<PlayButtonProps>(({ isCurrentTrack, onClick }) => {
-  const mediaStatus = useUnit(winamp.$mediaStatus);
+  const mediaStatus = useUnit($mediaStatus);
 
   return (
     <button
@@ -253,31 +231,41 @@ export const Actions = memo<ActionsProps>(
 Actions.displayName = "Actions";
 
 interface TrackListSmallItemProps {
-  track: Song;
-  isCurrentTrack: boolean;
+  id: Song["id"];
 }
 
-export const TrackListItemSmall = memo<TrackListSmallItemProps>(({ track, isCurrentTrack }) => {
+export const TrackListItemSmall = memo<TrackListSmallItemProps>(({ id }) => {
+  const { track, duration } = useStoreMap({
+    store: $songs,
+    keys: [id],
+    fn: (songs) => {
+      const track = songs.find((song) => song.id === id);
+      const duration = convertTimeToString(track!.metaData?.format.duration);
+
+      return { track, duration };
+    },
+  }) as {
+    track: Song;
+    duration: string;
+  };
+
+  const isCurrentTrack = useStoreMap({
+    store: $currentTrack,
+    keys: [id],
+    fn: (currentTrack) => currentTrack?.id === id,
+  });
+
   const [currentTrackDuration, currentTrackTime, mediaStatus] = useUnit([
     $currentTrackDuration,
     $currentTime,
-    winamp.$mediaStatus,
+    $mediaStatus,
   ]);
 
-  const [handleSelectTrack, handlePlay, handlePause] = useUnit([
-    winamp.selectTrackFromList,
-    winampControls.play,
-    winampControls.pause,
-  ]);
+  const onPlay = useUnit(playButtonClicked);
 
-  const duration = useMemo(() => convertTimeToString(track?.metaData?.format.duration), [track]);
-
-  const play = useCallback(() => {
-    if (!isCurrentTrack) return handleSelectTrack(track);
-
-    if (mediaStatus === "PLAYING") return handlePause();
-    return handlePlay();
-  }, [handlePause, handlePlay, handleSelectTrack, isCurrentTrack, mediaStatus, track]);
+  const handlePlayTrack = useCallback(() => {
+    onPlay(track);
+  }, [onPlay, track]);
 
   const needToShow = useMemo(() => {
     return isCurrentTrack && mediaStatus !== MEDIA_STATUS.STOPPED;
@@ -300,7 +288,7 @@ export const TrackListItemSmall = memo<TrackListSmallItemProps>(({ track, isCurr
 
       <div className="z-20 grid grid-cols-12 items-center rounded bg-white py-2 px-1 group-hover:bg-gray-200 md:pr-2">
         <button
-          onClick={play}
+          onClick={handlePlayTrack}
           className={clsx(
             "col-span-1 justify-self-start text-gray-500 duration-150 hover:text-gray-900 md:justify-self-center",
             isCurrentTrack &&
@@ -343,3 +331,14 @@ export const TrackListItemSmall = memo<TrackListSmallItemProps>(({ track, isCurr
 });
 
 TrackListItemSmall.displayName = "TrackListItemSmall";
+
+//TODO: refactor
+const TrackTimer = () => {
+  const playedTimeString = useUnit($playedTime);
+
+  return (
+    <span className="after:mx-1 md:after:content-['/']" title={playedTimeString}>
+      {playedTimeString}
+    </span>
+  );
+};

@@ -1,17 +1,18 @@
 import { createEvent, createStore, sample } from "effector";
 import { reset } from "patronum";
 import type { ChangeEvent, MouseEvent } from "react";
+import { $currentTrack } from "~/entity/winamp";
 
-import { $currentTrack } from "@/src/entity/winamp";
 import {
   $currentTrackDuration,
   $currentTrackTime,
   changeCurrentTimeFx,
+  disabledMarqueInfo,
+  enabledMarqueInfo,
   keyChangeCurrentTimeFx,
-  marqueInfo,
   setCurrentTime_,
   setMarqueInfo,
-} from "@/src/widgets/winamp";
+} from "~/widgets/winamp";
 
 import { generateMarqueSeekText } from "./utils";
 
@@ -44,7 +45,7 @@ $currentTrackTime.on($seekingProgress, (_, seekedTime) => seekedTime);
 /* on lifted progress bar */
 sample({
   clock: progressBarLifted,
-  target: marqueInfo.enabledMarqueInfo,
+  target: enabledMarqueInfo,
 });
 
 /* when lifted we must set marque info */
@@ -64,7 +65,7 @@ $allowSeeking.on(progressBarLifted, () => false);
 /* on uplifted progress bar */
 sample({
   clock: progressBarUplifted,
-  target: marqueInfo.disabledMarqueInfo,
+  target: disabledMarqueInfo,
 });
 
 /* on uplifted progress bar */

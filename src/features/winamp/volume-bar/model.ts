@@ -2,13 +2,17 @@ import { createEvent, sample } from "effector";
 import { debounce } from "patronum";
 import type { ChangeEvent } from "react";
 
+// TODO: remove ui from model
 import {
+  $activeWindow,
+  $enabledMaruqeInfo,
   $volume,
+  $winampMarqueInfo,
   changeVolumeFx,
+  disabledMarqueInfo,
+  enabledMarqueInfo,
   keyboardChangedVolumeFx,
-  marqueInfo,
-  winampStates,
-} from "@/src/widgets/winamp";
+} from "~/widgets/winamp";
 
 import { VOLUME_STEP } from "./constants";
 import { generateVolumeMaruqeText } from "./utils";
@@ -22,9 +26,7 @@ export const volumebarUplifted = createEvent();
 
 // stores //
 export const $currentVolume = $volume.map((volume) => volume);
-export const $isActiveWindow = winampStates.$activeWindow.map(
-  (activeWindow) => activeWindow === "PLAYER",
-);
+export const $isActiveWindow = $activeWindow.map((activeWindow) => activeWindow === "PLAYER");
 
 const $marqueText = $currentVolume.map((volume) => generateVolumeMaruqeText(volume));
 
@@ -33,7 +35,7 @@ export const $currentVolumePosition = $currentVolume.map((volume) =>
 );
 
 // runtime //
-marqueInfo.$winampMarqueInfo.on($marqueText, (_, text) => text);
+$winampMarqueInfo.on($marqueText, (_, text) => text);
 
 /**
  * when volume changed
@@ -63,7 +65,7 @@ const debouncedKeyboardVolumeChanged = debounce({
  */
 sample({
   clock: [volumebarLifted, keyboardVolumeChanged],
-  target: marqueInfo.enabledMarqueInfo,
+  target: enabledMarqueInfo,
 });
 
 /**
@@ -72,8 +74,8 @@ sample({
 sample({
   clock: [volumebarLifted, keyboardVolumeChanged],
   source: $marqueText,
-  filter: marqueInfo.$enabledMaruqeInfo,
-  target: marqueInfo.$winampMarqueInfo,
+  filter: $enabledMaruqeInfo,
+  target: $winampMarqueInfo,
 });
 
 /**
@@ -81,5 +83,5 @@ sample({
  */
 sample({
   clock: [volumebarUplifted, debouncedKeyboardVolumeChanged],
-  target: marqueInfo.disabledMarqueInfo,
+  target: disabledMarqueInfo,
 });

@@ -1,15 +1,18 @@
 import clsx from "clsx";
 import { useList, useUnit } from "effector-react";
 import dynamic from "next/dynamic";
-import { useMemo, useRef } from "react";
-import { MouseEventHandler, memo } from "react";
-import { MiniTimer } from "~/entity/winamp";
+import { memo, useMemo, useRef } from "react";
+import type { MouseEventHandler } from "react";
 
 import type { Track } from "@/features/music/types";
 import { convertTimeToString } from "@/utils/utils";
 
-import { $currentTrackDuration, winampStates } from "~/widgets/winamp/model";
-import { winamp } from "~/widgets/winamp/model";
+import {
+  $activeWindow,
+  $currentTrackDuration,
+  $mediaStatus,
+  changeWindowState,
+} from "~/widgets/winamp";
 
 import { MiniActions } from "~/features/winamp/controls-panel";
 import {
@@ -26,6 +29,7 @@ import {
 import { useDraggable } from "~/shared/hooks/use-draggable";
 import { CharacterStrings } from "~/shared/ui/winamp/character-strings";
 
+import { MiniTimer } from "../mini-timer";
 import { WINDOW_NAME } from "./constants";
 
 const OptionMenu = dynamic(() => import("../menu").then(({ OptionMenu }) => OptionMenu), {
@@ -36,7 +40,7 @@ const AddMenu = dynamic(() => import("../menu").then(({ AddMenu }) => AddMenu), 
 export const PlayListWindow = () => {
   const ref = useRef(null);
 
-  const handleActiveWindow = useUnit(winampStates.changeWindowState);
+  const handleActiveWindow = useUnit(changeWindowState);
   const [visible, currentTrackDuration, totalDuration] = useUnit([
     $visiblePlaylist,
     $currentTrackDuration,
@@ -115,7 +119,7 @@ interface PlaylistHeaderProps {
 
 const PlaylistHeader = memo<PlaylistHeaderProps>(
   ({ onMouseDown, onMouseMove, onMouseUp, onMouseLeave }) => {
-    const windowState = useUnit(winampStates.$activeWindow);
+    const windowState = useUnit($activeWindow);
 
     return (
       <div
@@ -152,7 +156,7 @@ const Playlist = () => {
     $playlistLength,
     $currentPlayedTrackIndex,
     $selectedTrackInPlaylist,
-    winamp.$mediaStatus,
+    $mediaStatus,
   ]);
 
   return (

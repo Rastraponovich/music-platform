@@ -12,8 +12,8 @@ export const Button = memo<ButtonProps>(
   ({ children, variant = "default", className, ...props }) => {
     return (
       <button
-        {...props}
         type="button"
+        {...props}
         className={clsx(
           "btn no-animation",
           className,

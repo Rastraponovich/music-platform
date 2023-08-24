@@ -1,14 +1,25 @@
 import clsx from "clsx";
-import { InputHTMLAttributes, forwardRef } from "react";
+import { ChangeEventHandler, InputHTMLAttributes, forwardRef } from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   title?: string;
   dense?: boolean;
   validateError?: string;
+  onChangeValue?: (value: string) => void;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ title, validateError, dense = false, ...props }, ref) => {
+  ({ title, validateError, dense = false, onChange, onChangeValue, ...props }, ref) => {
+    const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+      if (onChangeValue) {
+        onChangeValue(event.target.value);
+      }
+
+      if (onChange) {
+        onChange(event);
+      }
+    };
+
     return (
       <label className="flex flex-col ">
         <span
@@ -23,6 +34,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           {...props}
+          onChange={handleChange}
           className={clsx(
             "mb-1 rounded border border-gray-400  px-2 text-gray-900 placeholder:text-gray-500 placeholder:first-letter:uppercase",
             validateError && "border-red-600 outline-red-600",

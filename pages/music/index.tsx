@@ -5,11 +5,11 @@ import type { GetServerSideProps, NextPage } from "next";
 import { useState } from "react";
 import { $songsCount, songsGet } from "~/entity/songs";
 
-import { MusicFilter } from "@/components/music-filter";
-import { UploadFormModal } from "@/components/upload-form";
+import { MusicFilter } from "@/src/features/music-page/music-filter";
+import { UploadFormModal } from "@/src/features/music-page/upload-form";
 
 import { Tracklist } from "~/widgets/tracklist";
-import { winamp } from "~/widgets/winamp";
+import { playAllTracksFromList, showWinamp } from "~/widgets/winamp";
 
 import { SearchInput } from "~/features/music-page/search-input";
 import { PlaylistFormModal } from "~/features/playlists/create-playlist-form";
@@ -19,11 +19,9 @@ import { WinampIcon } from "~/shared/ui/winamp-icon";
 import { MusicNoteIcon, PlayIcon } from "@heroicons/react/solid";
 
 const MusicPage: NextPage = () => {
-  const hanldePlayAll = useUnit(winamp.playAllTracksFromList);
+  const [handleShowWinamp, hanldePlayAll] = useUnit([showWinamp, playAllTracksFromList]);
 
   const [activePage, setActivePage] = useState<Nullable<number>>(null);
-
-  const handleShowWinamp = useUnit(winamp.show);
 
   const countSongs = useUnit($songsCount);
 

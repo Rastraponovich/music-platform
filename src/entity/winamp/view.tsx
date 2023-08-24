@@ -1,41 +1,31 @@
-import clsx from "clsx";
 import { useUnit } from "effector-react";
-import { memo } from "react";
 
-import { TimeMode } from "@/features/music/types";
-import { CharacterString } from "@/src/shared/ui/winamp/character-strings";
-import { $timeMode, $timer, toggleTimeMode, winamp } from "@/src/widgets/winamp/model";
+import { PlayListWindow } from "@/src/features/winamp/playlist/view";
 
-interface MiniTimerProps {
-  className?: string;
-}
+import { $winampState } from "~/widgets/winamp/model";
 
-export const MiniTimer = memo<MiniTimerProps>(({ className }) => {
-  const playerState = useUnit(winamp.$mediaStatus);
-  const timeMode = useUnit($timeMode);
+import { EQWindow } from "~/features/winamp/equalizer";
+import { MainWindow } from "~/features/winamp/main-window";
 
-  const timer = useUnit($timer);
+import { Hotkeys } from "~/shared/lib/hotkeys";
+import { InitPlayer } from "~/shared/lib/init-player";
 
-  const { firstSecond, lastSecond, firstMinute, lastMinute } = timer;
-  const handleSwitchTimeMode = useUnit(toggleTimeMode);
+import { WINAMP_STATE } from "./constants";
+
+export const Winamp = () => {
+  const state = useUnit($winampState);
 
   return (
-    <div
-      className={clsx(
-        playerState === "PAUSED" && "animate-w-blink",
-        playerState === "STOPPED" && "hidden",
-        "align-text-center flex h-2.5",
-        className,
+    <>
+      {state !== WINAMP_STATE.DESTROYED && (
+        <InitPlayer>
+          <Hotkeys>
+            <MainWindow />
+          </Hotkeys>
+          <EQWindow />
+          <PlayListWindow />
+        </InitPlayer>
       )}
-      onClick={handleSwitchTimeMode}
-    >
-      <CharacterString>{timeMode === TimeMode.REMAINING ? "-" : " "}</CharacterString>
-      <CharacterString className="ml-px h-1.5 w-[5px]">{firstMinute}</CharacterString>
-      <CharacterString className="ml-px h-1.5 w-[5px]">{lastMinute}</CharacterString>
-      <CharacterString className="ml-[3px] h-1.5 w-[5px]">{firstSecond}</CharacterString>
-      <CharacterString className="ml-px h-1.5 w-[5px]">{lastSecond}</CharacterString>
-    </div>
+    </>
   );
-});
-
-MiniTimer.displayName = "MiniTimer";
+};

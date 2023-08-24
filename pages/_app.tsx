@@ -3,12 +3,13 @@ import type { NextPage } from "next";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import "tailwindcss/tailwind.css";
+import { Winamp } from "~/entity/winamp";
 
-import { Winamp } from "@/src/entity/winamp";
-import { Layout } from "@/src/widgets/layout";
 import "@/styles/globals.css";
 
-import { useScope } from "../src/shared/hooks/use-scope";
+import { Layout } from "~/widgets/layout";
+
+import { useScope } from "~/shared/hooks/use-scope";
 
 const App: NextPage<AppProps> = ({ Component, pageProps, router }) => {
   const scope = useScope(pageProps.initialState);

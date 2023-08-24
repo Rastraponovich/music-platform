@@ -1,15 +1,16 @@
-import { MenuIcon } from "@heroicons/react/solid";
 import clsx from "clsx";
 import { useEvent } from "effector-react/scope";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Auth } from "@/components/auth/view";
 import { toggleSidebar } from "@/features/sidebar";
+import { Auth } from "@/src/features/auth/view";
 
 import { Navbar } from "~/widgets/navbar";
 
 import { Button } from "~/shared/ui/button";
+
+import { MenuIcon } from "@heroicons/react/solid";
 
 export const Header = () => {
   const handleToggleSidebar = useEvent(toggleSidebar);

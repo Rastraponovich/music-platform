@@ -1,6 +1,5 @@
 import { createEvent, sample } from "effector";
-
-import type { Song } from "@/src/entity/songs/lib";
+import type { Song } from "~/entity/songs";
 
 import { addTrackToPlaylist } from "../winamp/playlist";
 

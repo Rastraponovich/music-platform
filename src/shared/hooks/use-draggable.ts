@@ -1,19 +1,15 @@
 import { useUnit } from "effector-react";
 import { MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
 
-import { winampStates } from "@/src/widgets/winamp/model";
+import { changeWindowState } from "~/widgets/winamp/model";
 
-import { DEFALUT_WINDOW_STATE } from "@/features/music/constants";
 
-import type {
-  WinampWindow,
-  UseDraggblePosition,
-  UseDraggbleReturnProps,
-} from "@/features/music/types";
+import { DEFALUT_WINDOW_STATE } from "~/entity/songs";
+import type { UseDraggblePosition, UseDraggbleReturnProps, WinampWindow } from "~/entity/songs/types";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const useDraggable = (WINDOW_NAME: WinampWindow, ref: any): UseDraggbleReturnProps => {
-  const handleActiveWindow = useUnit(winampStates.changeWindowState);
+  const handleActiveWindow = useUnit(changeWindowState);
 
   const position = useMemo(() => {
     return <UseDraggblePosition>DEFALUT_WINDOW_STATE[WINDOW_NAME];

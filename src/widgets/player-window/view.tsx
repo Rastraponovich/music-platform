@@ -1,8 +1,8 @@
 import { useUnit } from "effector-react";
+import { $bitrate, $numberOfChannels, $sampleRate } from "~/entity/winamp";
 
-import { $bitrate, $numberOfChannels, $sampleRate } from "@/src/entity/winamp";
-import { KBPS, KHZ, MonoStereo } from "@/src/features/winamp/main-window/media-info/ui/info";
-import { Ticker } from "@/src/features/winamp/main-window/media-info/ui/ticker";
+import { KBPS, KHZ, MonoStereo } from "~/features/winamp/main-window/media-info/ui/info";
+import { Ticker } from "~/features/winamp/main-window/media-info/ui/ticker";
 
 import { $currentTrackId, $isPlayerNotStopped, $showingTicker, $track } from "./model";
 

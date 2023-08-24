@@ -2,18 +2,18 @@ import { createEvent, sample } from "effector";
 
 import {
   $clutterBar,
+  $mediaStatus,
   $timeMode,
   $timer,
   changeClutterBar,
   toggleTimeMode,
-  winamp,
-} from "@/src/widgets/winamp";
+} from "~/widgets/winamp";
 
 export const toggleTimeModeButtonClicked = createEvent();
 
 export const changedClutterBar = createEvent<string>();
 
-export const $playerState = winamp.$mediaStatus.map((status) => status);
+export const $playerState = $mediaStatus.map((status) => status);
 export const $timerValue = $timer.map((timer) => timer);
 export const $currentTimeMode = $timeMode.map((timeMode) => timeMode);
 export const $clutterbar = $clutterBar.map((bar) => bar);

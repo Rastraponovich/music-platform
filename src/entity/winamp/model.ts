@@ -1,6 +1,8 @@
-import { winamp } from "@/src/widgets/winamp";
+import { $currentTrack as $baseCurrentTrack } from "~/widgets/winamp";
 
-export const $currentTrack = winamp.$currentTrack.map((track) => track);
+//<-- problem
+
+export const $currentTrack = $baseCurrentTrack.map((track) => track);
 
 export const $bitrate = $currentTrack.map((track) => track?.metaData.format.bitrate ?? 0);
 export const $sampleRate = $currentTrack.map((track) => track?.metaData.format.sampleRate ?? 0);

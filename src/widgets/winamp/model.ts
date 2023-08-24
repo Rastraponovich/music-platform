@@ -1,22 +1,29 @@
 import { attach, createEffect, createEvent, createStore, sample, scopeBind } from "effector";
 import { not, reset } from "patronum";
-import { BANDS, MEDIA_STATUS, WINAMP_STATE, WINAMP_WINDOW_STATE } from "~/entity/winamp/constants";
+import {
+  BANDS,
+  BASE_SKIN_COLORS,
+  MEDIA_STATUS,
+  TimeMode,
+  WINAMP_STATE,
+  WINAMP_WINDOW_STATE,
+} from "~/entity/winamp/constants";
 
+// problem
 import {
   Band,
   MediaElement,
   MediaStatus,
   StereoBalanceNodeType,
-  TPreset,
   TWinampState,
-  TimeMode,
   Track,
   WinampWindow,
   _Bands,
-} from "@/features/music/types";
+} from "@/src/entity/songs/types";
 import type { Nullable } from "@/types";
-import { baseSkinColors } from "@/types/ui.types";
 import { getMMssFromNumber, getSnapBandValue, toggle } from "@/utils/utils";
+
+import type { Preset } from "~/features/winamp/equalizer";
 
 import { getClientScope } from "~/shared/hooks/use-scope";
 import { StereoBalanceNode } from "~/shared/lib/audio/stereo-balance-node";
@@ -28,8 +35,6 @@ import {
   startPlayingCb,
   stopPlayingCb,
 } from "./utils";
-
-export { $currentTrack };
 
 declare global {
   interface Window {
@@ -250,7 +255,7 @@ const createWinampFx = createEffect<Track, Nullable<MediaElement>, Error>((track
   BANDS.forEach((band, i) => {
     const filter = _context.createBiquadFilter();
 
-    _bands[band] = filter;
+    _bands[band as Band] = filter;
 
     // The first filter, includes all lower frequencies
     if (i === 0) {
@@ -288,21 +293,25 @@ const createWinampFx = createEffect<Track, Nullable<MediaElement>, Error>((track
   };
 });
 
-const initWinamp = createEvent();
-const destroyWinamp = createEvent();
-const closeWinamp = createEvent();
+export const initWinamp = createEvent();
+export const destroyWinamp = createEvent();
+
+export const closeWinamp = createEvent();
 
 //function has load track in Media._audio
-const loadUrl = createEvent<Track>();
+export const loadUrl = createEvent<Track>();
 
-const changeWindowState = createEvent<WinampWindow>();
-const toggleShadePlayer = createEvent();
-const minimizedWinamp = createEvent();
-const showWinamp = createEvent();
+export const changeWindowState = createEvent<WinampWindow>();
+
+export const toggleShadePlayer = createEvent();
+
+export const minimizedWinamp = createEvent();
+
+export const showWinamp = createEvent();
 
 const setMediaStatus = createEvent<MediaStatus>();
 
-const selectTrackFromList = createEvent<Track>();
+export const selectTrackFromList = createEvent<Track>();
 
 export const removeTrackFromPlaylist = createEvent<number>();
 
@@ -315,14 +324,14 @@ export const onStopButtonClicked = createEvent();
 export const nextTrackClicked = createEvent();
 export const prevTrackClicked = createEvent();
 
-const toggleLoop = createEvent();
-const toggleShuffle = createEvent();
+export const toggleLoop = createEvent();
+export const toggleShuffle = createEvent();
 
-const changeClutterBar = createEvent<string>();
+export const changeClutterBar = createEvent<string>();
 
-const toggleEnabledMarqueInfo = createEvent();
-const enabledMarqueInfo = createEvent();
-const disabledMarqueInfo = createEvent();
+export const toggleEnabledMarqueInfo = createEvent();
+export const enabledMarqueInfo = createEvent();
+export const disabledMarqueInfo = createEvent();
 
 export const setMarqueInfo = createEvent<string | number>();
 
@@ -344,12 +353,13 @@ export const setCurrentTime_ = createEvent<number>();
 // end segment //
 
 export const $mediaElement = createStore<Nullable<MediaElement>>(null);
-const $currentTrack = createStore<Nullable<Track>>(null);
+export const $currentTrack = createStore<Nullable<Track>>(null);
 
 const $currentTrackIsEmpty = $currentTrack.map((track) => track === null);
-const $activeWindow = createStore<WinampWindow>(WINAMP_WINDOW_STATE.NONE);
 
-const $clutterBar = createStore<Record<string, boolean>>({
+export const $activeWindow = createStore<WinampWindow>(WINAMP_WINDOW_STATE.NONE);
+
+export const $clutterBar = createStore<Record<string, boolean>>({
   o: false,
   a: false,
   i: false,
@@ -357,10 +367,10 @@ const $clutterBar = createStore<Record<string, boolean>>({
   v: false,
 });
 
-const $enabledMaruqeInfo = createStore<boolean>(false);
-const $winampMarqueInfo = createStore<Nullable<string>>("");
+export const $enabledMaruqeInfo = createStore<boolean>(false);
+export const $winampMarqueInfo = createStore<Nullable<string>>("");
 
-const $loop = createStore<boolean>(false);
+export const $loop = createStore<boolean>(false);
 
 export const $shuffled = createStore<boolean>(false);
 
@@ -368,10 +378,10 @@ export const $winampState = createStore<TWinampState>(WINAMP_STATE.DESTROYED);
 
 export const $mediaStatus = createStore<MediaStatus>(MEDIA_STATUS.STOPPED);
 
-const $visiblePlayer = createStore<boolean>(false);
-const $shadePlayer = createStore<boolean>(false);
+export const $visiblePlayer = createStore<boolean>(false);
+export const $shadePlayer = createStore<boolean>(false);
 
-export const $baseSkinColors = createStore<string[]>(baseSkinColors);
+export const $baseSkinColors = createStore<string[]>(BASE_SKIN_COLORS);
 
 // volume segment //
 export const $volume = createStore<number>(50);
@@ -561,7 +571,7 @@ export const setAllBandsEqFx = attach({
 
 export const loadPresetEQFx = attach({
   source: $mediaElement,
-  async effect(media, { preset }: { preset: TPreset }) {
+  async effect(media, { preset }: { preset: Preset }) {
     Object.entries(preset.value).forEach(([key, value]) => {
       const bandName = Number(key) as keyof _Bands;
       const db = value * 0.24 - 12;
@@ -844,48 +854,3 @@ reset({
   clock: $currentTrack,
   target: [$timer, $currentTrackTimeRemaining, $currentTrackTime],
 });
-
-export const marqueInfo = {
-  $winampMarqueInfo,
-  $enabledMaruqeInfo,
-  enabledMarqueInfo,
-  disabledMarqueInfo,
-  toggleEnabledMarqueInfo,
-};
-
-export const winampControls = {
-  play: onPlayClicked,
-  pause: onPauseClicked,
-  stop: onStopButtonClicked,
-  prevTrack: prevTrackClicked,
-  nextTrack: nextTrackClicked,
-  toggleShuffle,
-  toggleLoop,
-};
-
-export const winamp = {
-  init: initWinamp,
-  destroy: destroyWinamp,
-  close: closeWinamp,
-  show: showWinamp,
-  minimize: minimizedWinamp,
-
-  $mediaStatus,
-  $currentTrack,
-  selectTrackFromList,
-  playAllTracksFromList,
-  toggleShadePlayer,
-  $loop,
-  $shuffle: $shuffled,
-};
-
-export const winampStates = {
-  $winampState,
-
-  $activeWindow,
-  changeWindowState,
-  $visiblePlayer,
-  $shadePlayer,
-};
-
-export { loadUrl, selectTrackFromList, $clutterBar, changeClutterBar };

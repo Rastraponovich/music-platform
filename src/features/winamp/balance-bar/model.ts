@@ -1,9 +1,15 @@
 import { attach, createEvent, createStore, sample } from "effector";
 import type { ChangeEvent, MouseEvent } from "react";
+import { MediaElement } from "~/entity/songs";
 
-import type { MediaElement } from "@/features/music/types";
-import { $mediaElement, marqueInfo } from "@/src/widgets/winamp";
 import { getSnapBalanceValue } from "@/utils/utils";
+
+import {
+  $mediaElement,
+  $winampMarqueInfo,
+  disabledMarqueInfo,
+  enabledMarqueInfo,
+} from "~/widgets/winamp";
 
 import { CURRENT_BALANCE_OFFSET } from "./constants";
 import { getMarqueInfo } from "./utils";
@@ -52,7 +58,7 @@ $currentBalancePosition.on($balance, (_, currentBalance) => {
 /**
  * when balance changed set marque text
  */
-marqueInfo.$winampMarqueInfo.on($balance, (_, balance) => getMarqueInfo(balance));
+$winampMarqueInfo.on($balance, (_, balance) => getMarqueInfo(balance));
 
 /**
  * when balance changed
@@ -67,7 +73,7 @@ sample({
  */
 sample({
   clock: balancebarLifted,
-  target: marqueInfo.enabledMarqueInfo,
+  target: enabledMarqueInfo,
 });
 
 /**
@@ -77,7 +83,7 @@ sample({
   clock: balancebarLifted,
   source: $balance,
   fn: (balance) => getMarqueInfo(balance),
-  target: marqueInfo.$winampMarqueInfo,
+  target: $winampMarqueInfo,
 });
 
 /**
@@ -85,5 +91,5 @@ sample({
  */
 sample({
   clock: balancebarUplifted,
-  target: marqueInfo.disabledMarqueInfo,
+  target: disabledMarqueInfo,
 });

@@ -1,6 +1,17 @@
 import { createEvent, sample } from "effector";
 
-import { winamp, winampControls } from "@/src/widgets/winamp";
+import {
+  $shuffled as $baseShuffled,
+  $loop,
+  $mediaStatus,
+  nextTrackClicked,
+  onPauseClicked,
+  onPlayClicked,
+  onStopButtonClicked,
+  prevTrackClicked,
+  toggleLoop,
+  toggleShuffle,
+} from "~/widgets/winamp";
 
 import { $visibleEQ, toggleVisibleEQ } from "../equalizer";
 import { $visiblePlaylist, toggleVisiblePlaylist } from "../playlist";
@@ -18,11 +29,11 @@ export const prevTrackButtonClicked = createEvent();
 /**
  * @todo Fix names of variables in this function. move reducer
  */
-export const $isPlaying = winamp.$mediaStatus.map((status) => status === "PLAYING");
+export const $isPlaying = $mediaStatus.map((status) => status === "PLAYING");
 
-export const $loopIsOn = winamp.$loop.map((loop) => loop);
+export const $loopIsOn = $loop.map((loop) => loop);
 
-export const $shuffled = winamp.$shuffle.map((shuffled) => shuffled);
+export const $shuffled = $baseShuffled.map((shuffled) => shuffled);
 
 export const $eqVisible = $visibleEQ.map((visible) => visible);
 
@@ -38,7 +49,7 @@ sample({
  */
 sample({
   clock: playButtonClicked,
-  target: winampControls.play,
+  target: onPlayClicked,
 });
 
 /**
@@ -46,7 +57,7 @@ sample({
  */
 sample({
   clock: prevTrackButtonClicked,
-  target: winampControls.prevTrack,
+  target: prevTrackClicked,
 });
 
 /**
@@ -54,7 +65,7 @@ sample({
  */
 sample({
   clock: nextTrackButtonClicked,
-  target: winampControls.nextTrack,
+  target: nextTrackClicked,
 });
 
 /**
@@ -62,7 +73,7 @@ sample({
  */
 sample({
   clock: pauseButtonClicked,
-  target: winampControls.pause,
+  target: onPauseClicked,
 });
 
 /**
@@ -70,7 +81,7 @@ sample({
  */
 sample({
   clock: stopButtonClicked,
-  target: winampControls.stop,
+  target: onStopButtonClicked,
 });
 
 /**
@@ -78,7 +89,7 @@ sample({
  */
 sample({
   clock: loopToggled,
-  target: winampControls.toggleLoop,
+  target: toggleLoop,
 });
 
 /**
@@ -86,7 +97,7 @@ sample({
  */
 sample({
   clock: shuffleToggled,
-  target: winampControls.toggleShuffle,
+  target: toggleShuffle,
 });
 
 /**
