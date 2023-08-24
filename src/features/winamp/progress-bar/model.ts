@@ -1,6 +1,5 @@
 import { createEvent, createStore, sample } from "effector";
 import { reset } from "patronum";
-import type { ChangeEvent, MouseEvent } from "react";
 import { $currentTrack } from "~/entity/winamp";
 
 import {
@@ -21,21 +20,21 @@ import { generateMarqueSeekText } from "./utils";
 export const keyChangeCurrentTime = createEvent<string>();
 
 /* when pressed */
-export const progressBarLifted = createEvent<MouseEvent<HTMLInputElement>>();
+export const progressBarLifted = createEvent();
 
 /* when lifted */
-export const progressBarUplifted = createEvent<MouseEvent<HTMLInputElement>>();
+export const progressBarUplifted = createEvent();
 
 /* seeking track */
-export const sought = createEvent<ChangeEvent<HTMLInputElement>>();
+export const sought = createEvent<string>();
 
 // stores //
 /* allow seeking */
-export const $allowSeeking = createStore<boolean>(true);
+export const $allowSeeking = createStore(true);
 export const $isPressed = createStore(false);
+export const $seekingProgress = createStore(0);
 export const $currentDuration = $currentTrackDuration.map((time) => time);
 export const $currentTime = $currentTrackTime.map((time) => time);
-export const $seekingProgress = createStore<number>(0);
 
 // runtime //
 
@@ -75,7 +74,7 @@ $isPressed.on(progressBarUplifted, () => false);
 $allowSeeking.on(progressBarUplifted, () => true);
 
 /* on seeking */
-$seekingProgress.on(sought, (_, event) => Number(event.target.value));
+$seekingProgress.on(sought, (_, progress) => Number(progress));
 
 /* костыль бородыль, модель слушает изменение из основоного класса */
 sample({

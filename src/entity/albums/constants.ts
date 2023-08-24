@@ -1,4 +1,4 @@
-import type { Album } from "@/types";
+import type { Album } from "./model";
 
 export const ALBUMS: Album[] = [
   { id: 1, title: "Ядрена вошь", content: "новый альбом", backgroundImage: "yadrena-vosh.jpg" },

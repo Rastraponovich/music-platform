@@ -1,8 +1,6 @@
 import { createEvent, sample } from "effector";
 import { debounce } from "patronum";
-import type { ChangeEvent } from "react";
 
-// TODO: remove ui from model
 import {
   $activeWindow,
   $enabledMaruqeInfo,
@@ -18,7 +16,7 @@ import { VOLUME_STEP } from "./constants";
 import { generateVolumeMaruqeText } from "./utils";
 
 // events //
-export const volumeChanged = createEvent<ChangeEvent<HTMLInputElement>>();
+export const volumeChanged = createEvent<string>();
 export const keyboardVolumeChanged = createEvent<KeyboardEvent>();
 
 export const volumebarLifted = createEvent();
@@ -43,7 +41,6 @@ $winampMarqueInfo.on($marqueText, (_, text) => text);
  */
 sample({
   clock: volumeChanged,
-  fn: (event) => event.target.value,
   target: changeVolumeFx,
 });
 

@@ -1,11 +1,11 @@
 import clsx from "clsx";
 import { useUnit } from "effector-react";
 import { MouseEventHandler, memo } from "react";
-import { MiniTimer } from "~/entity/winamp";
 
 import { WinampButton } from "~/shared/ui/winamp/winamp-button";
 
 import { MiniActions } from "../controls-panel";
+import { MiniTimer } from "../mini-timer";
 import {
   $isActiveWindow,
   $shaded,

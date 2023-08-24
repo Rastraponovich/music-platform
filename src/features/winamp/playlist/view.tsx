@@ -3,34 +3,29 @@ import { useList, useUnit } from "effector-react";
 import dynamic from "next/dynamic";
 import { memo, useMemo, useRef } from "react";
 import type { MouseEventHandler } from "react";
+import type { Track } from "~/entity/songs";
 
-import type { Track } from "@/features/music/types";
-import { convertTimeToString } from "@/utils/utils";
+import { convertTimeToStringWithoutZeros } from "@/utils/utils";
 
-import {
-  $activeWindow,
-  $currentTrackDuration,
-  $mediaStatus,
-  changeWindowState,
-} from "~/widgets/winamp";
+import { $activeWindow, $mediaStatus, changeWindowState } from "~/widgets/winamp";
 
 import { MiniActions } from "~/features/winamp/controls-panel";
+
+import { useDraggable } from "~/shared/hooks/use-draggable";
+import { CharacterStrings } from "~/shared/ui/winamp/character-strings";
+
+import { MiniTimer } from "../mini-timer";
+import { DEFAULT_HEIGHT, WINDOW_NAME } from "./constants";
 import {
   $currentPlayedTrackIndex,
-  $durationTracksInPlaylist,
+  $diffTrackLength,
   $playlist,
   $playlistLength,
   $selectedTrackInPlaylist,
   $visiblePlaylist,
   doubleClickedTrackInPlaylist,
   selectTrackInPlaylist,
-} from "~/features/winamp/playlist";
-
-import { useDraggable } from "~/shared/hooks/use-draggable";
-import { CharacterStrings } from "~/shared/ui/winamp/character-strings";
-
-import { MiniTimer } from "../mini-timer";
-import { WINDOW_NAME } from "./constants";
+} from "./model";
 
 const OptionMenu = dynamic(() => import("../menu").then(({ OptionMenu }) => OptionMenu), {
   ssr: false,
@@ -41,18 +36,9 @@ export const PlayListWindow = () => {
   const ref = useRef(null);
 
   const handleActiveWindow = useUnit(changeWindowState);
-  const [visible, currentTrackDuration, totalDuration] = useUnit([
-    $visiblePlaylist,
-    $currentTrackDuration,
-    $durationTracksInPlaylist,
-  ]);
+  const [visible, trackDiffLength] = useUnit([$visiblePlaylist, $diffTrackLength]);
 
   const [onDragStart, onDragging, onDragEnd] = useDraggable(WINDOW_NAME, ref);
-
-  const trackLength = useMemo(
-    () => `${convertTimeToString(currentTrackDuration)}/${convertTimeToString(totalDuration)}`,
-    [currentTrackDuration, totalDuration],
-  );
 
   return (
     <aside
@@ -96,7 +82,7 @@ export const PlayListWindow = () => {
         <div className="playlist-bottom-right draggable absolute right-0  flex h-full  w-[150px] px-0.5 py-1.5 text-[9px]">
           <div className="flex w-24 flex-col ">
             <span className="mb-[2px] flex h-[13.5px] items-center pl-[5px]">
-              <CharacterStrings>{trackLength}</CharacterStrings>
+              <CharacterStrings>{trackDiffLength}</CharacterStrings>
             </span>
             <div className="flex">
               <MiniActions bottom />
@@ -149,8 +135,6 @@ const PlaylistHeader = memo<PlaylistHeaderProps>(
 
 PlaylistHeader.displayName = "PlaylistHeader";
 
-const DEFAULT_HEIGHT = 151;
-
 const Playlist = () => {
   const [playlistLength, currentIndex, selectedTrack, playingState] = useUnit([
     $playlistLength,
@@ -179,6 +163,7 @@ interface PlaylistTrackProps {
   index: number;
 }
 
+// TODO exclude track from props
 const PlaylistTrack = memo<PlaylistTrackProps>(({ track, index }) => {
   const [currentIndex, selectedTrack] = useUnit([
     $currentPlayedTrackIndex,
@@ -190,9 +175,10 @@ const PlaylistTrack = memo<PlaylistTrackProps>(({ track, index }) => {
     doubleClickedTrackInPlaylist,
   ]);
 
-  const firstMinute = useMemo(() => Math.floor(track.metaData.format.duration / 60), [track]);
-  const lastMinute = useMemo(() => Math.floor(track.metaData.format.duration % 60), [track]);
-  const seconds = useMemo(() => Math.floor(track.metaData.format.duration % 60), [track]);
+  const duration = useMemo(
+    () => convertTimeToStringWithoutZeros(track.metaData.format.duration),
+    [track],
+  );
 
   return (
     <div
@@ -207,9 +193,7 @@ const PlaylistTrack = memo<PlaylistTrackProps>(({ track, index }) => {
       <span className="truncate">
         {index + 1}. {track.artist} - {track.name}
       </span>
-      <span>
-        {firstMinute}:{lastMinute < 10 ? `0${lastMinute}` : seconds}
-      </span>
+      <span>{duration}</span>
     </div>
   );
 });

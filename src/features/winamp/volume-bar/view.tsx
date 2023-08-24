@@ -34,7 +34,7 @@ export const VolumeBar = () => {
         step="1"
         title="Volume Bar"
         value={volume}
-        onChange={handleChangeVolume}
+        onChange={(e) => handleChangeVolume(e.target.value)}
         className="slider-thumb  appearance-none"
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}

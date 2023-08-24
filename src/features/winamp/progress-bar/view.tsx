@@ -16,11 +16,7 @@ interface ProgressbarProps {
   id?: string;
 }
 
-/**
- * компонент отвечающий за управление позиции в треке
- * @used Winamp, TrackListItem, TrackListItemSmall
- */
-export const Progressbar = memo(({ className, id }: ProgressbarProps) => {
+export const Progressbar = memo<ProgressbarProps>(({ className, id }) => {
   const [currentDuration, currentTime, isPressed] = useUnit([
     $currentDuration,
     $currentTime,
@@ -40,7 +36,7 @@ export const Progressbar = memo(({ className, id }: ProgressbarProps) => {
       min={0}
       max={currentDuration}
       value={currentTime}
-      onChange={handleSeeking}
+      onChange={(event) => handleSeeking(event.target.value)}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       className={clsx(

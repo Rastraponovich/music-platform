@@ -1,14 +1,14 @@
-import { createEvent, createStore, sample } from "effector";
+import { combine, createEvent, createStore, sample } from "effector";
 import { and, not } from "patronum";
-import { $songs } from "~/entity/songs";
+import { $songs, Track } from "~/entity/songs";
 import { MEDIA_STATUS, WINAMP_STATE } from "~/entity/winamp";
 
-import type { Track } from "@/features/music/types";
 import type { Nullable } from "@/types";
-import { toggle } from "@/utils/utils";
+import { convertTimeToString } from "@/utils/utils";
 
 import {
   $currentTrack,
+  $currentTrackDuration,
   $mediaStatus,
   $shuffled,
   $winampState,
@@ -40,6 +40,13 @@ export const $playlistLength = $playlist.map((tracks) => tracks.length);
 export const $playlistNotEmpty = $playlist.map((tracks) => tracks.length > 0);
 export const $playlistHasOneTrack = $playlist.map((tracks) => tracks.length === 1);
 export const $playListHasMultipleTracks = $playlist.map((tracks) => tracks.length > 1);
+
+export const $diffTrackLength = combine(
+  { current: $currentTrackDuration, total: $durationTracksInPlaylist },
+  ({ current, total }) => {
+    return `${convertTimeToString(current)}/${convertTimeToString(total)}`;
+  },
+);
 
 $playlist.on(addTrackToPlaylist, (tracks, track) => [...tracks, track]);
 
@@ -207,6 +214,6 @@ $mediaStatus.on(doubleClickedTrackInPlaylist, () => MEDIA_STATUS.STOPPED);
 /* inline sample */
 $currentPlayedTrackIndex.on(playAllTracksFromList, () => 0);
 
-$visiblePlaylist.on(toggleVisiblePlaylist, toggle);
+$visiblePlaylist.on(toggleVisiblePlaylist, (visible) => !visible);
 
 $removedTrackIndex.reset([doubleClickedTrackInPlaylist, setCurrentPlayedTrackIndex]);

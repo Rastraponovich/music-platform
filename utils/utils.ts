@@ -114,3 +114,11 @@ export const getMMssFromNumber = (currentTime: number) => {
     lastMinute,
   };
 };
+
+export const convertTimeToStringWithoutZeros = (duration: number): string => {
+  const firstMinute = Math.floor(duration / 60);
+  const lastMinute = Math.floor(duration % 60);
+  const seconds = Math.floor(duration % 60);
+
+  return `${firstMinute}:${lastMinute < 10 ? `0${lastMinute}` : seconds}`;
+};

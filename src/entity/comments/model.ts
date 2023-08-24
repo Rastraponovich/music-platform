@@ -1,6 +1,6 @@
 import { attach, createEffect, createEvent, createStore, sample } from "effector";
 
-import { api } from "@/src/shared/api";
+import { api } from "~/shared/api";
 
 export type TComment = {
   id: number;

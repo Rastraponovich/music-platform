@@ -1,9 +1,11 @@
 import { createEvent, createStore, sample } from "effector";
 import { reset } from "patronum";
-import type { ChangeEvent } from "react";
+import type { Band } from "~/entity/songs";
 import { WINAMP_STATE } from "~/entity/winamp";
 
-import type { Band } from "@/features/music/types";
+import type { Nullable } from "@/types";
+import { getSnapBandValue, toggle } from "@/utils/utils";
+
 import {
   $winampState,
   changePreampFx,
@@ -13,9 +15,7 @@ import {
   setEQbandFx,
   setMarqueInfo,
   toggleEQFx,
-} from "@/src/widgets/winamp";
-import type { Nullable } from "@/types";
-import { getSnapBandValue, toggle } from "@/utils/utils";
+} from "~/widgets/winamp";
 
 import { PRESETS, PRESETS_ARRAY } from "./constants";
 import { generateEQBandMarqueText, generatePreampMarqueText, setAllBands } from "./utils";
@@ -49,10 +49,10 @@ export const toggleVisiblePresetWindow = createEvent();
 export const setBand = createEvent<Record<Band, number>>();
 
 //ui change preamp slider value
-export const changePreampValue = createEvent<ChangeEvent<HTMLInputElement>>();
+export const changePreampValue = createEvent<string>();
 
 //ui change EQ Band
-export const changeEQBand = createEvent<ChangeEvent<HTMLInputElement>>();
+export const changeEQBand = createEvent<{ name: string; value: string }>();
 
 // turn on EQ in UI
 export const enableClickedEQ = createEvent();
@@ -91,7 +91,7 @@ $selectedPreset.on(selectPreset, (_, preset) => preset);
 
 sample({
   clock: changeEQBand,
-  fn: ({ target: { name, value } }) => ({ name, value }),
+  fn: ({ name, value }) => ({ name, value }),
   target: setEQbandFx,
 });
 
@@ -111,7 +111,7 @@ $bands.on(setAllBandsEqFx.doneData, setAllBands);
 
 sample({
   clock: changePreampValue,
-  fn: ({ target }) => ({ value: getSnapBandValue(Number(target.value)) }),
+  fn: (preampValue) => ({ value: getSnapBandValue(Number(preampValue)) }),
   target: changePreampFx,
 });
 
@@ -135,7 +135,7 @@ sample({
 
 sample({
   clock: changePreampValue,
-  fn: (event) => generatePreampMarqueText(event.target.value),
+  fn: (preampValue) => generatePreampMarqueText(preampValue),
   target: setMarqueInfo,
 });
 
@@ -145,7 +145,7 @@ sample({
 
 sample({
   clock: changeEQBand,
-  fn: ({ target }) => generateEQBandMarqueText(target.value, target.name),
+  fn: ({ name, value }) => generateEQBandMarqueText(value, name),
   target: setMarqueInfo,
 });
 

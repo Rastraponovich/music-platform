@@ -1,28 +1,75 @@
-import React, { MouseEvent, memo, useEffect, useMemo, useRef, useState } from "react";
+import clsx from "clsx";
+import { useUnit } from "effector-react";
+import { MouseEvent, memo, useEffect, useMemo, useRef, useState } from "react";
 import type { Track } from "~/entity/songs";
 
+import { Character } from "~/shared/ui/winamp/character-strings";
 import { CharacterStrings } from "~/shared/ui/winamp/character-strings";
 
-import { MARQUEE_MAX_LENGTH, MINUTE, SEPARATOR, isLong } from "../lib";
-import { selectors } from "../model";
+import { MARQUEE_MAX_LENGTH, MINUTE, SEPARATOR } from "./constants";
+import { $enabledMarque, $marqueInfoText } from "./model";
+import { isLong } from "./utils";
+
+interface KBPSProps {
+  bitrate: number;
+}
+
+export const KBPS = memo<KBPSProps>(({ bitrate }) => {
+  return (
+    <div id="kbps" className="text-opacity-0">
+      <Character num={String(bitrate).charAt(0)} />
+      <Character num={String(bitrate).charAt(1)} />
+      <Character num={String(bitrate).charAt(2)} />
+    </div>
+  );
+});
+KBPS.displayName = "KBPS";
+
+interface KHZProps {
+  sampleRate: number;
+}
+
+export const KHZ = memo<KHZProps>(({ sampleRate }) => {
+  return (
+    <div id="khz" className="text-opacity-0">
+      <Character num={String(sampleRate).charAt(0)} />
+      <Character num={String(sampleRate).charAt(1)} />
+    </div>
+  );
+});
+KHZ.displayName = "KHZ";
+
+interface MonoStereoProps {
+  numberOfChannels: number;
+}
+
+export const MonoStereo = memo<MonoStereoProps>(({ numberOfChannels }) => {
+  return (
+    <div className="mono-stereo">
+      <div id="stereo" className={clsx(numberOfChannels === 2 && "selected")}></div>
+      <div id="mono" className={clsx(numberOfChannels !== 2 && "selected")}></div>
+    </div>
+  );
+});
+
+MonoStereo.displayName = "MonoStereo";
 
 interface MediaInfoTrackProps {
   currentTrack: Track;
   currentId: number;
 }
 
-export const Ticker = memo(({ currentTrack, currentId }: MediaInfoTrackProps) => {
+export const Ticker = memo<MediaInfoTrackProps>(({ currentTrack, currentId }) => {
   const timerId = useRef<unknown>(null);
   const ref = useRef<Nullable<HTMLDivElement>>(null);
 
   const [pos, setpos] = useState(0);
   const [diff, setDiff] = useState(0);
 
-  const enabledMarque = selectors.useEnabledMarque();
-  const marqueInfoText = selectors.useMarqueInfoText();
+  const [enabledMarque, marqueInfoText] = useUnit([$enabledMarque, $marqueInfoText]);
 
   const [track, setTrack] = useState(SEPARATOR);
-  const [allowDragging, setAllowDragging] = useState<boolean>(false);
+  const [allowDragging, setAllowDragging] = useState(false);
 
   const min = useMemo(
     () => Math.floor(currentTrack.metaData.format.duration / MINUTE),

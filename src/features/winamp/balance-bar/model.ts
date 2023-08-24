@@ -4,6 +4,7 @@ import { MediaElement } from "~/entity/songs";
 
 import { getSnapBalanceValue } from "@/utils/utils";
 
+//TODO: exclude react from model
 import {
   $mediaElement,
   $winampMarqueInfo,

@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import { useUnit } from "effector-react";
 import { ChangeEvent, MouseEvent, memo, useCallback, useMemo, useRef, useState } from "react";
-import "react";
 
 import {
   $activeWindow,
@@ -85,11 +84,11 @@ const EQSlider = memo(({ name, value, onChange, reset, title }: EQSliderProps) =
 
   const [mouseDown, mouseUp] = useUnit([enabledMarqueInfo, disabledMarqueInfo]);
 
-  const handleMouseUp = (_: MouseEvent<HTMLInputElement>) => {
+  const handleMouseUp = () => {
     setActive(false);
     mouseUp();
   };
-  const handleMouseDown = (_: MouseEvent<HTMLInputElement>) => {
+  const handleMouseDown = () => {
     setActive(true);
     mouseDown();
   };
@@ -139,7 +138,10 @@ const Sliders = () => {
     changeEQBand,
   ]);
 
-  const memoHandleChange = useCallback((e) => handleChange(e), [handleChange]);
+  const memoHandleChange = useCallback(
+    ({ target: { name, value } }) => handleChange({ name, value }),
+    [handleChange],
+  );
 
   const handleSetMaxBandsValuesClicked = () => handleChangeAllBandsValues("max");
   const handleSetMinBandsValuesClicked = () => handleChangeAllBandsValues("min");
@@ -150,7 +152,7 @@ const Sliders = () => {
       <EQSlider
         name="preamp"
         value={preamp}
-        onChange={handleChangePreamp}
+        onChange={(e) => handleChangePreamp(e.target.value)}
         title="Предварительное усилинеие"
       />
       <div className=" flex w-3.5 flex-col justify-between" style={{ margin: "0 12px" }}>

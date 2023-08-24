@@ -1,16 +1,6 @@
 import { attach, createEffect, createEvent, createStore, sample, scopeBind } from "effector";
 import { not, reset } from "patronum";
 import {
-  BANDS,
-  BASE_SKIN_COLORS,
-  MEDIA_STATUS,
-  TimeMode,
-  WINAMP_STATE,
-  WINAMP_WINDOW_STATE,
-} from "~/entity/winamp/constants";
-
-// problem
-import {
   Band,
   MediaElement,
   MediaStatus,
@@ -18,8 +8,18 @@ import {
   TWinampState,
   Track,
   WinampWindow,
+  WinampWindowState,
   _Bands,
-} from "@/src/entity/songs/types";
+} from "~/entity/songs";
+import {
+  BANDS,
+  BASE_SKIN_COLORS,
+  MEDIA_STATUS,
+  TimeMode,
+  WINAMP_STATE,
+} from "~/entity/winamp/constants";
+
+// problem
 import type { Nullable } from "@/types";
 import { getMMssFromNumber, getSnapBandValue, toggle } from "@/utils/utils";
 
@@ -357,7 +357,7 @@ export const $currentTrack = createStore<Nullable<Track>>(null);
 
 const $currentTrackIsEmpty = $currentTrack.map((track) => track === null);
 
-export const $activeWindow = createStore<WinampWindow>(WINAMP_WINDOW_STATE.NONE);
+export const $activeWindow = createStore<WinampWindow>(WinampWindowState.NONE);
 
 export const $clutterBar = createStore<Record<string, boolean>>({
   o: false,

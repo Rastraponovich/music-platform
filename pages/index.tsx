@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import Image from "next/image";
-import { ALBUMSList } from "~/entity/albums";
+import { AlbumsList } from "~/entity/albums";
 
 import { Tarifs } from "@/components/tarifs";
 
@@ -18,7 +18,7 @@ const Home: NextPage = () => {
       </section>
       <section className="flex flex-col bg-white px-5 py-10 sm:px-10 md:px-20">
         <h2 className="mb-4 text-3xl font-bold">Новинки</h2>
-        <ALBUMSList />
+        <AlbumsList />
       </section>
 
       <section className="grid grid-cols-3 items-center bg-blue-600 px-5 text-white sm:grid-cols-2 sm:px-10 md:grid-cols-3 md:px-20">

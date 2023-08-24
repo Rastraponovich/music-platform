@@ -14,7 +14,7 @@ import {
   toggleTimeModeButtonClicked,
 } from "./model";
 
-const Visualizer = dynamic(() => import("../visualizer/view").then((mod) => mod.Visualizer), {
+const Visualizer = dynamic(() => import("../visualizer").then((mod) => mod.Visualizer), {
   ssr: false,
 });
 
@@ -81,6 +81,7 @@ const Digit = memo<DigitProps>(({ id, value, className }) => (
 
 Digit.displayName = "Digit";
 
+//todo refactor
 const ClutterBar = () => {
   const [clutterBar, handleChangedClutterBar] = useUnit([$clutterbar, changedClutterBar]);
 

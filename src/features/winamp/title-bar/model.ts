@@ -8,7 +8,7 @@ import {
   toggleShadePlayer,
 } from "~/widgets/winamp";
 
-import { WindowNames } from "./constants";
+import { WINDOW_NAME } from "./constants";
 
 export const minimizeButtonClicked = createEvent();
 export const shadeButtonClicked = createEvent();
@@ -17,7 +17,7 @@ export const closeButtonClicked = createEvent();
 export const $shaded = $shadePlayer.map((shaded) => shaded);
 
 export const $isActiveWindow = $activeWindow.map(
-  (currentWindowName) => currentWindowName === WindowNames.PLAYER,
+  (currentWindowName) => currentWindowName === WINDOW_NAME,
 );
 
 /**

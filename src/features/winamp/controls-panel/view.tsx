@@ -3,7 +3,7 @@ import { useUnit } from "effector-react";
 import Link from "next/link";
 import { memo } from "react";
 
-import { WinampButton } from "@/src/shared/ui/winamp/winamp-button";
+import { WinampButton } from "~/shared/ui/winamp/winamp-button";
 
 import {
   $eqVisible,

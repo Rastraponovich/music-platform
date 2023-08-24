@@ -1,21 +1,13 @@
-import {
+import type {
+  AudioStates,
   Band,
   MediaStatus,
   PresetTypes,
   TPreset,
-  TVISUALIZERS,
   UseDraggblePosition,
   WinampWindow,
 } from "./types";
 
-export const VISUALIZERS: TVISUALIZERS = {
-  OSCILLOSCOPE: "OSCILLOSCOPE",
-  BAR: "BAR",
-  NONE: "NONE",
-  MILKDROP: "MILKDROP",
-};
-
-export const VISUALIZER_ORDER = [VISUALIZERS.BAR, VISUALIZERS.OSCILLOSCOPE, VISUALIZERS.NONE];
 export const BANDS: Band[] = [60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000];
 
 export const MEDIA_STATUS: Record<MediaStatus, MediaStatus> = {
@@ -31,9 +23,23 @@ export const WINAMP_PLAYER_STATE: Record<MediaStatus, MediaStatus> = {
 };
 
 export enum PlayerState {
+  STOPED = "STOPED",
+  PLAYED = "PLAYED",
   PAUSED = "PAUSED",
-  PLAYING = "PLAYING",
-  STOPPED = "STOPPED",
+  DESTROYED = "DESTROYED",
+}
+
+export enum AudioState {
+  HAVE_NOTHING = "HAVE_NOTHING",
+  HAVE_METADATA = "HAVE_METADATA",
+  HAVE_CURRENT_DATA = "HAVE_CURRENT_DATA",
+  HAVE_FUTURE_DATA = "HAVE_FUTURE_DATA",
+  HAVE_ENOUGH_DATA = "HAVE_ENOUGH_DATA",
+}
+
+export enum TimeMode {
+  ELAPSED = "ELAPSED",
+  REMAINING = "REMAINING",
 }
 
 export enum WinampState {
@@ -46,13 +52,13 @@ export enum WinampState {
   MINIMIZED = "MINIMIZED",
 }
 
-export const WINAMP_WINDOW_STATE: Record<WinampWindow, WinampWindow> = {
-  EQUALIZER: "EQUALIZER",
-  NONE: "NONE",
-  PLAYER: "PLAYER",
-  PLAYLIST: "PLAYLIST",
-  PRESETS: "PRESETS",
-};
+export enum WinampWindowState {
+  EQUALIZER = "EQUALIZER",
+  NONE = "NONE",
+  PLAYER = "PLAYER",
+  PLAYLIST = "PLAYLIST",
+  PRESETS = "PRESETS",
+}
 export const DEFALUT_WINDOW_STATE: Record<WinampWindow, UseDraggblePosition> = {
   PLAYER: {
     clientX: "1rem",
@@ -202,3 +208,11 @@ export enum ChangeAllBandsFromEvent {
   max = 100,
   reset = 50,
 }
+
+export const AUDIO_STATES: AudioStates = {
+  "0": AudioState.HAVE_NOTHING,
+  "1": AudioState.HAVE_METADATA,
+  "2": AudioState.HAVE_CURRENT_DATA,
+  "3": AudioState.HAVE_FUTURE_DATA,
+  "4": AudioState.HAVE_ENOUGH_DATA,
+};

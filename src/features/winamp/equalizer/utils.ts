@@ -1,4 +1,5 @@
-import { Band } from "@/features/music/types";
+import type { Band } from "~/entity/songs";
+
 import { getSnapBandValue } from "@/utils/utils";
 
 import { CHANGE_ALL_BANDS_EVENT, OFFSET, SPRITE_ELEMENT_OFFSET } from "./constants";

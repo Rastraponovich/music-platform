@@ -1,5 +1,5 @@
 import { combine, createEvent, sample } from "effector";
-import { TimeMode, Track } from "~/entity/songs/types";
+import { TimeMode, Track } from "~/entity/songs";
 import { $currentTrack } from "~/entity/winamp";
 
 import {
