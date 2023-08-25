@@ -72,11 +72,11 @@ export const Ticker = memo<MediaInfoTrackProps>(({ currentTrack, currentId }) =>
   const [allowDragging, setAllowDragging] = useState(false);
 
   const min = useMemo(
-    () => Math.floor(currentTrack.metaData.format.duration / MINUTE),
+    () => Math.floor(currentTrack?.metaData.format.duration / MINUTE),
     [currentTrack],
   );
   const sec = useMemo(
-    () => Math.floor(currentTrack.metaData.format.duration % MINUTE),
+    () => Math.floor(currentTrack?.metaData.format.duration % MINUTE),
     [currentTrack],
   );
 
@@ -86,14 +86,14 @@ export const Ticker = memo<MediaInfoTrackProps>(({ currentTrack, currentId }) =>
 
   useEffect(() => {
     const total = `(${min < 10 ? `0${min}` : min}:${sec < 10 ? `0${sec}` : sec})`;
-    const text = `${currentId !== null && currentId + 1}. ${currentTrack.artist} - ${
+    const text = `${currentId !== null && currentId + 1}. ${currentTrack?.artist} - ${
       currentTrack.name
     }   ${total}`;
 
     setTrack(isLong(text) ? `${text}${SEPARATOR}${text}` : text.padEnd(MARQUEE_MAX_LENGTH, " "));
 
     return () => setpos(1);
-  }, [currentId, min, sec, currentTrack.artist, currentTrack.name]);
+  }, [currentId, min, sec, currentTrack?.artist, currentTrack?.name]);
 
   useEffect(() => {
     timerId.current = setInterval(() => {

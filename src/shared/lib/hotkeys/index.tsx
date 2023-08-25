@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import {
   useChangeCurentTime,
   useChangeCurrentVolume,
-} from "@/src/shared/hooks/use-change-current-time";
+} from "~/shared/hooks/use-change-current-time";
 
 interface HotkeysProps {
   children: ReactNode;

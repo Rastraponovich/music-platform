@@ -23,7 +23,7 @@ export const WINAMP_PLAYER_STATE: Record<MediaStatus, MediaStatus> = {
 };
 
 export enum PlayerState {
-  STOPED = "STOPED",
+  STOPPED = "STOPPED",
   PLAYED = "PLAYED",
   PAUSED = "PAUSED",
   DESTROYED = "DESTROYED",

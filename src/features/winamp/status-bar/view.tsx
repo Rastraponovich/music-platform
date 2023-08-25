@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { useUnit } from "effector-react";
 import dynamic from "next/dynamic";
 import { memo } from "react";
-import { TimeMode } from "~/entity/winamp";
+import { $currentTrack, TimeMode } from "~/entity/winamp";
 
 import { PLAYER_STATES } from "./constants";
 import {
@@ -20,6 +20,7 @@ const Visualizer = dynamic(() => import("../visualizer").then((mod) => mod.Visua
 
 export const StatusBar = () => {
   const playerState = useUnit($playerState);
+  const currentTrackExist = useUnit($currentTrack);
 
   return (
     <div className="webamp-status flex h-[42px] w-[93px]">
@@ -34,7 +35,7 @@ export const StatusBar = () => {
       />
       <span id="work-indicator" className=""></span>
       <TimerDisplay />
-      <Visualizer />
+      {currentTrackExist && <Visualizer />}
     </div>
   );
 };
