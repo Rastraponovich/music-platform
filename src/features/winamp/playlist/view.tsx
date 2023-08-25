@@ -5,11 +5,10 @@ import { memo, useMemo, useRef } from "react";
 import type { MouseEventHandler } from "react";
 import type { Track } from "~/entity/songs";
 
+import { MiniActions } from "@/src/widgets/controls-panel";
 import { convertTimeToStringWithoutZeros } from "@/utils/utils";
 
 import { $activeWindow, $mediaStatus, changeWindowState } from "~/widgets/winamp";
-
-import { MiniActions } from "~/features/winamp/controls-panel";
 
 import { useDraggable } from "~/shared/hooks/use-draggable";
 import { CharacterStrings } from "~/shared/ui/winamp/character-strings";

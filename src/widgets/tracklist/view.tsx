@@ -4,11 +4,11 @@ import Image from "next/image";
 import { memo, useCallback, useMemo, useState } from "react";
 import { Comments } from "~/entity/comments";
 import { $favoritesTracks, $songs, Song, addToFavoriteButtonClicked } from "~/entity/songs";
-import { $currentTrack, MEDIA_STATUS } from "~/entity/winamp";
+import { MEDIA_STATUS } from "~/entity/winamp";
 
 import { convertTimeToString } from "@/utils/utils";
 
-import { $currentTrackDuration, $mediaStatus } from "~/widgets/winamp";
+import { $currentTrack, $currentTrackDuration, $mediaStatus } from "~/widgets/winamp";
 
 import { AddToPlaylistButton } from "~/features/add-to-playlist";
 import { $currentTime, Progressbar } from "~/features/winamp/progress-bar";

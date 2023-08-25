@@ -11,13 +11,6 @@ import {
   WinampWindowState,
   _Bands,
 } from "~/entity/songs";
-import {
-  BANDS,
-  BASE_SKIN_COLORS,
-  MEDIA_STATUS,
-  TimeMode,
-  WINAMP_STATE,
-} from "~/entity/winamp/constants";
 
 // problem
 import type { Nullable } from "@/types";
@@ -28,6 +21,7 @@ import type { Preset } from "~/features/winamp/equalizer";
 import { getClientScope } from "~/shared/hooks/use-scope";
 import { StereoBalanceNode } from "~/shared/lib/audio/stereo-balance-node";
 
+import { BANDS, BASE_SKIN_COLORS, MEDIA_STATUS, TimeMode, WINAMP_STATE } from "./constants";
 import {
   pausePlayingCb,
   playNextTrackIsOneInPlayListCb,
@@ -581,6 +575,12 @@ export const loadPresetEQFx = attach({
     return preset.value;
   },
 });
+
+export const $bitrate = $currentTrack.map((track) => track?.metaData.format.bitrate ?? 0);
+export const $sampleRate = $currentTrack.map((track) => track?.metaData.format.sampleRate ?? 0);
+export const $numberOfChannels = $currentTrack.map(
+  (track) => track?.metaData.format.numberOfChannels ?? 0,
+);
 
 // runtime //
 

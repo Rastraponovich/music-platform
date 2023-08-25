@@ -1,5 +1,6 @@
 import { useUnit } from "effector-react";
-import { $bitrate, $numberOfChannels, $sampleRate } from "~/entity/winamp";
+
+import { $bitrate, $numberOfChannels, $sampleRate } from "~/widgets/winamp";
 
 import { KBPS, KHZ, MonoStereo, Ticker } from "~/features/winamp/media-info";
 

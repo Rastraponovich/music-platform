@@ -1,11 +1,10 @@
 import { useUnit } from "effector-react";
 
-import { PlayListWindow } from "@/src/features/winamp/playlist/view";
-
-import { $winampState } from "~/widgets/winamp/model";
+import { $winampState } from "~/widgets/winamp";
 
 import { EQWindow } from "~/features/winamp/equalizer";
 import { MainWindow } from "~/features/winamp/main-window";
+import { PlayListWindow } from "~/features/winamp/playlist";
 
 import { Hotkeys } from "~/shared/lib/hotkeys";
 import { InitPlayer } from "~/shared/lib/init-player";

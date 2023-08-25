@@ -2,12 +2,13 @@ import clsx from "clsx";
 import { useUnit } from "effector-react";
 import { useRef } from "react";
 
+import { ControlsPanel, WindowControls } from "@/src/widgets/controls-panel";
+
 // TODO make a upper layer
 import { MediaInfo } from "~/widgets/player-window";
 import { $clutterBar, $shadePlayer, $visiblePlayer, changeWindowState } from "~/widgets/winamp";
 
 import { BalanceBar } from "~/features/winamp/balance-bar";
-import { ControlsPanel, WindowControls } from "~/features/winamp/controls-panel";
 import { Progressbar } from "~/features/winamp/progress-bar";
 import { StatusBar } from "~/features/winamp/status-bar";
 import { TitleBar } from "~/features/winamp/title-bar";
