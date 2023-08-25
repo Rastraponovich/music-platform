@@ -1,14 +1,13 @@
 import { attach, createEffect, createEvent, createStore, sample, scopeBind } from "effector";
 import { not, reset } from "patronum";
-import {
+import type {
   Band,
   MediaElement,
-  MediaStatus,
   StereoBalanceNodeType,
+  TMediaStatus,
   TWinampState,
   Track,
   WinampWindow,
-  WinampWindowState,
   _Bands,
 } from "~/entity/songs";
 
@@ -21,7 +20,14 @@ import type { Preset } from "~/features/winamp/equalizer";
 import { getClientScope } from "~/shared/hooks/use-scope";
 import { StereoBalanceNode } from "~/shared/lib/audio/stereo-balance-node";
 
-import { BANDS, BASE_SKIN_COLORS, MEDIA_STATUS, TimeMode, WINAMP_STATE } from "./constants";
+import {
+  BANDS,
+  BASE_SKIN_COLORS,
+  MediaStatus,
+  TimeMode,
+  WinampState,
+  WinampWindowState,
+} from "./constants";
 import {
   pausePlayingCb,
   playNextTrackIsOneInPlayListCb,
@@ -90,7 +96,7 @@ const Emitter = {
       scope: getClientScope()!,
     });
 
-    callSetIsPlaying(MEDIA_STATUS.PLAYING);
+    callSetIsPlaying(MediaStatus.PLAYING);
   },
 
   onPlaying: () => {
@@ -98,7 +104,7 @@ const Emitter = {
       scope: getClientScope()!,
     });
 
-    callSetIsPlaying(MEDIA_STATUS.PLAYING);
+    callSetIsPlaying(MediaStatus.PLAYING);
   },
 
   onPause: () => {
@@ -106,7 +112,7 @@ const Emitter = {
       scope: getClientScope()!,
     });
 
-    callSetIsPlaying(MEDIA_STATUS.PAUSED);
+    callSetIsPlaying(MediaStatus.PAUSED);
   },
 
   onTimeUpdate: (event: Event) => {
@@ -303,7 +309,7 @@ export const minimizedWinamp = createEvent();
 
 export const showWinamp = createEvent();
 
-const setMediaStatus = createEvent<MediaStatus>();
+const setMediaStatus = createEvent<TMediaStatus>();
 
 export const selectTrackFromList = createEvent<Track>();
 
@@ -368,9 +374,9 @@ export const $loop = createStore(false);
 
 export const $shuffled = createStore(false);
 
-export const $winampState = createStore<TWinampState>(WINAMP_STATE.DESTROYED);
+export const $winampState = createStore<TWinampState>(WinampState.DESTROYED);
 
-export const $mediaStatus = createStore<MediaStatus>(MEDIA_STATUS.STOPPED);
+export const $mediaStatus = createStore<TMediaStatus>(MediaStatus.STOPPED);
 
 export const $visiblePlayer = createStore(false);
 export const $shadePlayer = createStore(false);
@@ -584,9 +590,9 @@ export const $numberOfChannels = $currentTrack.map(
 
 // runtime //
 
-export const $isPlaying = $mediaStatus.map((status) => status === MEDIA_STATUS.PLAYING);
-export const $isStopped = $mediaStatus.map((status) => status === MEDIA_STATUS.STOPPED);
-export const $isPaused = $mediaStatus.map((status) => status === MEDIA_STATUS.PAUSED);
+export const $isPlaying = $mediaStatus.map((status) => status === MediaStatus.PLAYING);
+export const $isStopped = $mediaStatus.map((status) => status === MediaStatus.STOPPED);
+export const $isPaused = $mediaStatus.map((status) => status === MediaStatus.PAUSED);
 
 // runtime volume segment //
 $volume.on(setVolume, (_, volume) => volume);
@@ -651,7 +657,7 @@ $mediaElement.on(createWinampFx.doneData, (_, media) => media);
 
 $shadePlayer.on(toggleShadePlayer, (shaded) => !shaded);
 
-$winampState.on(initWinamp, () => WINAMP_STATE.INIT);
+$winampState.on(initWinamp, () => WinampState.INIT);
 
 $mediaStatus.on(setMediaStatus, (_, status) => status);
 
@@ -684,13 +690,13 @@ sample({
   target: loadUrl,
 });
 
-$winampState.on(selectTrackFromList, () => WINAMP_STATE.TRACKLOADED);
+$winampState.on(selectTrackFromList, () => WinampState.TRACKLOADED);
 
 sample({
   clock: selectTrackFromList,
   source: $winampState,
-  filter: (state) => state === WINAMP_STATE.INIT,
-  fn: () => WINAMP_STATE.TRACKLOADED,
+  filter: (state) => state === WinampState.INIT,
+  fn: () => WinampState.TRACKLOADED,
   target: $winampState,
 });
 
@@ -732,7 +738,7 @@ sample({
   target: stopPlayingFx,
 });
 
-$mediaStatus.on([stopPlayingFx.done], () => MEDIA_STATUS.STOPPED);
+$mediaStatus.on([stopPlayingFx.done], () => MediaStatus.STOPPED);
 
 // const delayedStopButtonClicked = delay({
 //     source: onStopButtonClicked,
@@ -752,28 +758,28 @@ sample({
   target: onStopButtonClicked,
 });
 
-$winampState.on(closeWinamp, () => WINAMP_STATE.CLOSED);
+$winampState.on(closeWinamp, () => WinampState.CLOSED);
 
 sample({
   clock: $winampState,
   filter: (state) =>
-    state === WINAMP_STATE.CLOSED ||
-    state === WINAMP_STATE.MINIMIZED ||
-    state === WINAMP_STATE.DESTROYED,
+    state === WinampState.CLOSED ||
+    state === WinampState.MINIMIZED ||
+    state === WinampState.DESTROYED,
   fn: () => false,
   target: $visiblePlayer,
 });
 
 sample({
   clock: $winampState,
-  filter: (state) => state === WINAMP_STATE.OPENED || state === WINAMP_STATE.TRACKLOADED,
+  filter: (state) => state === WinampState.OPENED || state === WinampState.TRACKLOADED,
   fn: () => true,
   target: $visiblePlayer,
 });
 
 sample({
   clock: minimizedWinamp,
-  fn: () => WINAMP_STATE.MINIMIZED,
+  fn: () => WinampState.MINIMIZED,
   target: $winampState,
 });
 
@@ -785,14 +791,14 @@ $activeWindow.reset([closeWinamp, selectTrackFromList]);
 sample({
   clock: showWinamp,
   filter: $currentTrackIsEmpty,
-  fn: () => WINAMP_STATE.OPENED,
+  fn: () => WinampState.OPENED,
   target: $winampState,
 });
 
 sample({
   clock: showWinamp,
   filter: not($currentTrackIsEmpty),
-  fn: () => WINAMP_STATE.TRACKLOADED,
+  fn: () => WinampState.TRACKLOADED,
   target: $winampState,
 });
 

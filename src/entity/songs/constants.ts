@@ -1,7 +1,6 @@
 import type {
   AudioStates,
   Band,
-  MediaStatus,
   PresetTypes,
   TPreset,
   UseDraggblePosition,
@@ -9,25 +8,6 @@ import type {
 } from "./types";
 
 export const BANDS: Band[] = [60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000];
-
-export const MEDIA_STATUS: Record<MediaStatus, MediaStatus> = {
-  PAUSED: "PAUSED",
-  PLAYING: "PLAYING",
-  STOPPED: "STOPPED",
-};
-
-export const WINAMP_PLAYER_STATE: Record<MediaStatus, MediaStatus> = {
-  PAUSED: "PAUSED",
-  PLAYING: "PLAYING",
-  STOPPED: "STOPPED",
-};
-
-export enum PlayerState {
-  STOPPED = "STOPPED",
-  PLAYED = "PLAYED",
-  PAUSED = "PAUSED",
-  DESTROYED = "DESTROYED",
-}
 
 export enum AudioState {
   HAVE_NOTHING = "HAVE_NOTHING",
@@ -42,23 +22,6 @@ export enum TimeMode {
   REMAINING = "REMAINING",
 }
 
-export enum WinampState {
-  CREATED = "CREATED",
-  INIT = "INIT",
-  TRACKLOADED = "TRACKLOADED",
-  DESTROYED = "DESTROYED",
-  CLOSED = "CLOSED",
-  OPENED = "OPENED",
-  MINIMIZED = "MINIMIZED",
-}
-
-export enum WinampWindowState {
-  EQUALIZER = "EQUALIZER",
-  NONE = "NONE",
-  PLAYER = "PLAYER",
-  PLAYLIST = "PLAYLIST",
-  PRESETS = "PRESETS",
-}
 export const DEFALUT_WINDOW_STATE: Record<WinampWindow, UseDraggblePosition> = {
   PLAYER: {
     clientX: "1rem",

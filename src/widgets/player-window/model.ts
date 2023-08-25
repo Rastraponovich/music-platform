@@ -1,9 +1,8 @@
 import { combine } from "effector";
-import { PlayerState, WinampState } from "~/entity/songs";
 
 import { $currentPlayedTrackIndex } from "~/features/winamp/playlist";
 
-import { $currentTrack, $mediaStatus, $winampState } from "../winamp";
+import { $currentTrack, $mediaStatus, $winampState, PlayerState, WinampState } from "../winamp";
 
 export const $track = $currentTrack.map((track) => track);
 

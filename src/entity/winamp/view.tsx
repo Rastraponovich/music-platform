@@ -1,6 +1,6 @@
 import { useUnit } from "effector-react";
 
-import { $winampState, WINAMP_STATE } from "~/widgets/winamp";
+import { $winampState, WinampState } from "~/widgets/winamp";
 
 import { EQWindow } from "~/features/winamp/equalizer";
 import { MainWindow } from "~/features/winamp/main-window";
@@ -14,7 +14,7 @@ export const Winamp = () => {
 
   return (
     <>
-      {state !== WINAMP_STATE.DESTROYED && (
+      {state !== WinampState.DESTROYED && (
         <InitPlayer>
           <Hotkeys>
             <MainWindow />
