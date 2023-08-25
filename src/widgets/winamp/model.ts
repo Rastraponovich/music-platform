@@ -1,16 +1,6 @@
 import { attach, createEffect, createEvent, createStore, sample, scopeBind } from "effector";
 import { not, reset } from "patronum";
 import {
-  BANDS,
-  BASE_SKIN_COLORS,
-  MEDIA_STATUS,
-  TimeMode,
-  WINAMP_STATE,
-  WINAMP_WINDOW_STATE,
-} from "~/entity/winamp/constants";
-
-// problem
-import {
   Band,
   MediaElement,
   MediaStatus,
@@ -18,10 +8,20 @@ import {
   TWinampState,
   Track,
   WinampWindow,
+  WinampWindowState,
   _Bands,
-} from "@/src/entity/songs/types";
+} from "~/entity/songs";
+import {
+  BANDS,
+  BASE_SKIN_COLORS,
+  MEDIA_STATUS,
+  TimeMode,
+  WINAMP_STATE,
+} from "~/entity/winamp/constants";
+
+// problem
 import type { Nullable } from "@/types";
-import { getMMssFromNumber, getSnapBandValue, toggle } from "@/utils/utils";
+import { getMMssFromNumber, getSnapBandValue } from "@/utils/utils";
 
 import type { Preset } from "~/features/winamp/equalizer";
 
@@ -357,7 +357,7 @@ export const $currentTrack = createStore<Nullable<Track>>(null);
 
 const $currentTrackIsEmpty = $currentTrack.map((track) => track === null);
 
-export const $activeWindow = createStore<WinampWindow>(WINAMP_WINDOW_STATE.NONE);
+export const $activeWindow = createStore<WinampWindow>(WinampWindowState.NONE);
 
 export const $clutterBar = createStore<Record<string, boolean>>({
   o: false,
@@ -367,31 +367,31 @@ export const $clutterBar = createStore<Record<string, boolean>>({
   v: false,
 });
 
-export const $enabledMaruqeInfo = createStore<boolean>(false);
+export const $enabledMaruqeInfo = createStore(false);
 export const $winampMarqueInfo = createStore<Nullable<string>>("");
 
-export const $loop = createStore<boolean>(false);
+export const $loop = createStore(false);
 
-export const $shuffled = createStore<boolean>(false);
+export const $shuffled = createStore(false);
 
 export const $winampState = createStore<TWinampState>(WINAMP_STATE.DESTROYED);
 
 export const $mediaStatus = createStore<MediaStatus>(MEDIA_STATUS.STOPPED);
 
-export const $visiblePlayer = createStore<boolean>(false);
-export const $shadePlayer = createStore<boolean>(false);
+export const $visiblePlayer = createStore(false);
+export const $shadePlayer = createStore(false);
 
 export const $baseSkinColors = createStore<string[]>(BASE_SKIN_COLORS);
 
 // volume segment //
-export const $volume = createStore<number>(50);
+export const $volume = createStore(50);
 
 // end volume segment //
 
 // progress segment //
 export const $timeMode = createStore<TimeMode>(TimeMode.ELAPSED);
-export const $currentTrackDuration = createStore<number>(0);
-export const $currentTrackTime = createStore<number>(0);
+export const $currentTrackDuration = createStore(0);
+export const $currentTrackTime = createStore(0);
 export const $timer = createStore<TrackTimer>({
   firstSecond: 0,
   lastSecond: 0,
@@ -400,7 +400,7 @@ export const $timer = createStore<TrackTimer>({
 });
 
 /* remaining time in current Track */
-export const $currentTrackTimeRemaining = createStore<number>(0);
+export const $currentTrackTimeRemaining = createStore(0);
 
 // end progress segment //
 
@@ -649,13 +649,13 @@ sample({
 
 $mediaElement.on(createWinampFx.doneData, (_, media) => media);
 
-$shadePlayer.on(toggleShadePlayer, toggle);
+$shadePlayer.on(toggleShadePlayer, (shaded) => !shaded);
 
 $winampState.on(initWinamp, () => WINAMP_STATE.INIT);
 
 $mediaStatus.on(setMediaStatus, (_, status) => status);
 
-$loop.on(toggleLoop, toggle);
+$loop.on(toggleLoop, (loop) => !loop);
 
 sample({
   clock: loadUrl,
@@ -671,7 +671,7 @@ sample({
   target: toggleLoopFx,
 });
 
-$shuffled.on(toggleShuffle, toggle);
+$shuffled.on(toggleShuffle, (shuffled) => !shuffled);
 
 sample({
   clock: $shuffled,
@@ -745,10 +745,6 @@ sample({
   target: playNextTrack,
 });
 
-//balance Control
-
-/** ------------work with window winamp---------- */
-
 //closing Winamp
 
 sample({
@@ -786,9 +782,6 @@ sample({
 $activeWindow.on(changeWindowState, (_, currentWindow) => currentWindow);
 $activeWindow.reset([closeWinamp, selectTrackFromList]);
 
-/**
- * @todo refactor is a dich from here ==>
- */
 sample({
   clock: showWinamp,
   filter: $currentTrackIsEmpty,
@@ -802,8 +795,6 @@ sample({
   fn: () => WINAMP_STATE.TRACKLOADED,
   target: $winampState,
 });
-
-// <== to here
 
 sample({
   clock: playAllTracksFromList,
@@ -820,11 +811,11 @@ $clutterBar.on(changeClutterBar, (keys, key) => {
   return { ...keys, [key]: !keys[key] };
 });
 
-$enabledMaruqeInfo.on(toggleEnabledMarqueInfo, toggle);
+$enabledMaruqeInfo.on(toggleEnabledMarqueInfo, (enabled) => !enabled);
 $enabledMaruqeInfo.on(enabledMarqueInfo, () => true);
 $enabledMaruqeInfo.on(disabledMarqueInfo, () => false);
 
-$winampMarqueInfo.on(setMarqueInfo, (_, payload) => String(payload));
+$winampMarqueInfo.on(setMarqueInfo, (_, marqueText) => String(marqueText));
 $winampMarqueInfo.reset([disabledMarqueInfo, $enabledMaruqeInfo]);
 
 sample({

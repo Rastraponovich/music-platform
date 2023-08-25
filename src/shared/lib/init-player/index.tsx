@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { useInitPlayer } from "@/src/shared/hooks/use-init-player";
+import { useInitPlayer } from "~/shared/hooks/use-init-player";
 
 interface InitPlayerProps {
   children: ReactNode;

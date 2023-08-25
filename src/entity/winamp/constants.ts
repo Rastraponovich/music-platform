@@ -1,4 +1,4 @@
-import type { Band, MediaStatus, TWinampState, WinampWindow } from "@/features/music/types";
+import type { Band, MediaStatus, TWinampState, WinampWindow } from "../songs";
 
 export const BANDS: Band[] = [60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000];
 
@@ -57,3 +57,11 @@ export const BASE_SKIN_COLORS = [
   "rgb(148,156,165)",
   "rgb(150,150,150)",
 ];
+
+export enum WinampWindowState {
+  EQUALIZER = "EQUALIZER",
+  NONE = "NONE",
+  PLAYER = "PLAYER",
+  PLAYLIST = "PLAYLIST",
+  PRESETS = "PRESETS",
+}

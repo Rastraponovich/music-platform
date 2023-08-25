@@ -42,7 +42,7 @@ export const BalanceBar = () => {
       title="Balance"
       value={balance}
       className="slider-thumb  appearance-none"
-      onChange={handleChangeBalance}
+      onChange={(e) => handleChangeBalance(e.target.value)}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
     />

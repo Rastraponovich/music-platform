@@ -7,7 +7,7 @@ export const toggleSidebar = createEvent();
 export const setOpenedSidebar = createEvent<boolean>();
 
 // stores //
-export const $openedSidebar = createStore<boolean>(false);
+export const $openedSidebar = createStore(false);
 
 // runtime //
 $openedSidebar.on(toggleSidebar, toggle);

@@ -13,8 +13,8 @@ import {
   toggleShuffle,
 } from "~/widgets/winamp";
 
-import { $visibleEQ, toggleVisibleEQ } from "../equalizer";
-import { $visiblePlaylist, toggleVisiblePlaylist } from "../playlist";
+import { $visibleEQ, toggleVisibleEQ } from "~/features/winamp/equalizer";
+import { $visiblePlaylist, toggleVisiblePlaylist } from "~/features/winamp/playlist";
 
 export const loopToggled = createEvent();
 export const shuffleToggled = createEvent();

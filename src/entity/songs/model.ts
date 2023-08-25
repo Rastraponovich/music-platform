@@ -3,8 +3,6 @@ import type { Playlist } from "~/entity/playlists";
 
 import { api } from "~/shared/api";
 
-import { saveSongFx, searchTrackFx } from "./api";
-
 export type Song = {
   id?: number;
   name: string;
@@ -71,7 +69,7 @@ export const addToFavoriteButtonClicked = createEvent<Song["id"]>();
 export const $searchTrackNameFiled = createStore("");
 
 export const $songs = createStore<Song[]>([]);
-export const $songsCount = createStore<number>(0);
+export const $songsCount = createStore(0);
 
 const $currentSong = createStore<Song>({ userId: 5 } as Song);
 
@@ -82,13 +80,29 @@ export const $files = createStore<{ music: File; image: File }>({
 
 export const $favoritesTracks = createStore<Song["id"][]>([]);
 
+const songCreateFx = attach({
+  effect: api.songs.songCreateFx,
+  source: { song: $currentSong, files: $files },
+  mapParams(_, { song, files }) {
+    return {
+      song,
+      ...files,
+    };
+  },
+});
+
+const songsSearchFx = attach({
+  effect: api.songs.songsSearchFx,
+  source: { name: $searchTrackNameFiled },
+});
+
 $songs.on(songsGetFx.doneData, (_, [songs]) => songs);
 
-$songs.on(searchTrackFx.doneData, (_, res) => res.data[0]);
+$songs.on(songsSearchFx.doneData, (_, res) => res[0]);
 
 $songsCount.on(songsGetFx.doneData, (_, res) => res[1]);
 
-$currentSong.on(saveSongFx.doneData, (_, res) => res.data);
+$currentSong.on(songCreateFx.doneData, (_, res) => res);
 $currentSong.reset(songsGet);
 
 $searchTrackNameFiled.on(trackSearched, (_, trackName) => trackName);
@@ -120,9 +134,7 @@ sample({
 
 sample({
   clock: formSubmitted,
-  source: { currentSong: $currentSong, files: $files },
-  fn: ({ currentSong, files }) => ({ ...currentSong, ...files }),
-  target: saveSongFx,
+  target: songCreateFx,
 });
 
 sample({

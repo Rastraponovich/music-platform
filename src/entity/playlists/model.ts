@@ -27,7 +27,7 @@ export const formSubmitted = createEvent();
 
 export const $currentPlaylist = createStore<Playlist>({ creatorId: 5 } as Playlist);
 export const $playlists = createStore<Playlist[]>([]);
-export const $playlistsCount = createStore<number>(0);
+export const $playlistsCount = createStore(0);
 
 const playlistSaveFx = attach({
   effect: api.playlists.playlistUpdateFx,

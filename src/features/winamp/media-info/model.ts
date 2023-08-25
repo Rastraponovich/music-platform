@@ -4,33 +4,36 @@ import { Nullable } from "@/types";
 
 import { $currentTrack, $enabledMaruqeInfo, $winampMarqueInfo } from "~/widgets/winamp";
 
-import { $currentPlayedTrackIndex } from "../../../playlist";
-import { MARQUEE_MAX_LENGTH, MINUTE, SEPARATOR, isLong } from "../lib";
+import { $currentPlayedTrackIndex } from "../playlist";
+import { MARQUEE_MAX_LENGTH, MINUTE, SEPARATOR } from "./constants";
+import { isLong } from "./utils";
 
-export const $enabledMarque = createStore<boolean>(false).on(
-  $enabledMaruqeInfo,
-  (_, state) => state,
-);
-export const $marqueInfoText = createStore<Nullable<string>>(null).on(
-  $winampMarqueInfo,
-  (_, info) => info,
-);
+export const $enabledMarque = createStore(false);
+export const $marqueInfoText = createStore<Nullable<string>>(null);
 
-export const $minute = createStore<Nullable<number>>(null).on($currentTrack, (_, currentTrack) => {
+export const $minute = createStore<Nullable<number>>(null);
+export const $second = createStore<Nullable<number>>(null);
+export const $total = createStore("");
+export const $text = createStore("");
+export const $trackName = createStore(SEPARATOR);
+
+$enabledMarque.on($enabledMaruqeInfo, (_, state) => state);
+
+$marqueInfoText.on($winampMarqueInfo, (_, info) => info);
+
+$minute.on($currentTrack, (_, currentTrack) => {
   if (currentTrack !== null) {
     return Math.floor(currentTrack.metaData.format.duration / MINUTE);
   }
   return null;
 });
 
-export const $second = createStore<Nullable<number>>(null).on($currentTrack, (_, currentTrack) => {
+$second.on($currentTrack, (_, currentTrack) => {
   if (currentTrack !== null) {
     return Math.floor(currentTrack.metaData.format.duration % MINUTE);
   }
   return null;
 });
-
-const $total = createStore<string>("");
 
 sample({
   clock: $minute,
@@ -43,8 +46,6 @@ sample({
   },
   target: $total,
 });
-
-const $text = createStore("");
 
 sample({
   clock: $currentTrack,
@@ -59,8 +60,6 @@ sample({
   },
   target: $text,
 });
-
-export const $trackName = createStore(SEPARATOR);
 
 sample({
   clock: $text,

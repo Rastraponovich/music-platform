@@ -36,22 +36,34 @@ export const songGetFx = createEffect<{ id: number }, Song>(async ({ id }) => {
   return await response.json();
 });
 
+export const songsSearchFx = createEffect<{ name: string }, [Song[], number]>(async ({ name }) => {
+  const response = await externalRequest(`/api/songs?name=${name}`, "GET");
+
+  return await response.json();
+});
+
 export const songDeleteFx = createEffect<{ id: number }, unknown>(async ({ id }) => {
   const response = await externalRequest(`/api/songs/${id}`, "DELETE");
 
   return await response.json();
 });
 
-export const songCreateFx = createEffect<{ song: FormData }, Song>(async ({ song }) => {
-  const response = await externalRequest("/api/songs", "POST", song);
+export const songCreateFx = createEffect<{ song: Song; image: File; music: File }, Song>(
+  async ({ song, image, music }) => {
+    const formdata = new FormData();
 
-  return await response.json();
-});
+    Object.entries(song).forEach(([key, value]) => formdata.append(key, value as string));
+    formdata.append("image", image);
+    formdata.append("music", music);
 
-export const songUpdateFx = createEffect<{ song: object; id: number }, Song>(
-  async ({ song, id }) => {
-    const response = await externalRequest(`/api/songs/${id}`, "PUT", song);
+    const response = await externalRequest("/api/songs", "POST", song);
 
     return await response.json();
   },
 );
+
+export const songUpdateFx = createEffect<{ song: Song; id: number }, Song>(async ({ song, id }) => {
+  const response = await externalRequest(`/api/songs/${id}`, "PUT", song);
+
+  return await response.json();
+});

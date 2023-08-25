@@ -2,19 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { ReactNode, memo } from "react";
 
-import type { Album } from "@/types";
-
 import { ALBUMS } from "./constants";
+import type { Album } from "./model";
 
 import { CalendarIcon, ClockIcon, MusicNoteIcon } from "@heroicons/react/outline";
 import { UserIcon } from "@heroicons/react/solid";
 
 interface AlbumInfoItemProps {
-  name: string | ReactNode;
-  value: string | number | boolean | ReactNode;
+  name: ReactNode;
+  value: ReactNode;
 }
 
-export const ALBUMSList = () => {
+export const AlbumsList = () => {
   return (
     <div className="grid items-center gap-4 sm:grid-cols-1 md:grid-cols-2">
       {ALBUMS.map((album) => (
@@ -28,9 +27,7 @@ interface AlbumProps {
   album: Album;
 }
 
-export const AlbumComponent = memo<AlbumProps>((props) => {
-  const { album } = props;
-
+export const AlbumComponent = memo<AlbumProps>(({ album }) => {
   return (
     <article className=" group  flex flex-col space-y-3 rounded shadow-lg hover:shadow-xl">
       <div

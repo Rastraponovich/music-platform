@@ -1,7 +1,7 @@
 import { useUnit } from "effector-react";
 import { MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
 
-import { changeWindowState } from "~/widgets/winamp/model";
+import { changeWindowState } from "~/widgets/winamp";
 
 
 import { DEFALUT_WINDOW_STATE } from "~/entity/songs";
