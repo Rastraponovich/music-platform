@@ -1,3 +1,3 @@
 export * from "./view";
 export * from "./model";
-export * from "./constants";
+export { MediaStatus as MEDIA_STATUS, TimeMode, WinampState as WINAMP_STATE } from "./constants";
