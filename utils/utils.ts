@@ -2,7 +2,7 @@ const BAND_MID_POINT_VALUE = 50;
 const BAND_SNAP_DISTANCE = 5;
 
 const BALANCE_MID_POINT_VALUE = 0;
-const BALANCE_SNAP_DISTANCE = 5;
+const BALANCE_SNAP_DISTANCE = 10;
 
 /**
  * Calculates the snap band value based on the given input value.

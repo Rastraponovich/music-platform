@@ -42,16 +42,14 @@ export const $currentBalancePosition = createStore(0);
 $balance.on(changeBalanceFx.doneData, (_, newBalance) => newBalance);
 
 $currentBalancePosition.on($balance, (_, currentBalance) => {
-  switch (true) {
-    case currentBalance < 0:
-      return Math.ceil(currentBalance / CURRENT_BALANCE_OFFSET) + 1;
-
-    case currentBalance > 0:
-      return Math.ceil((currentBalance / CURRENT_BALANCE_OFFSET) * -1) + 1;
-
-    default:
-      return 0;
+  if (currentBalance < 0) {
+    return Math.ceil(currentBalance / CURRENT_BALANCE_OFFSET) + 1;
   }
+
+  if (currentBalance > 0) {
+    return Math.ceil((currentBalance / CURRENT_BALANCE_OFFSET) * -1) + 1;
+  }
+  return 0;
 });
 
 /**

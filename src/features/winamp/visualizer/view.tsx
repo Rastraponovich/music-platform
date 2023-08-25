@@ -14,6 +14,8 @@ interface VisualizerProps {
   className?: string;
 }
 
+//TODO bug: when winamp opened without track
+
 function preRenderBg(
   width: number,
   height: number,
@@ -57,6 +59,7 @@ export const Visualizer = (_: VisualizerProps) => {
   ]);
 
   const [media, windowShaded] = useUnit([$mediaElement, $shadePlayer])!;
+
   const analyser = media!._analyser;
   const toggleVisualizer = useUnit(toggleVisualizerStyle);
 
