@@ -4,7 +4,7 @@ import { MouseEventHandler, memo } from "react";
 
 import { WinampButton } from "~/shared/ui/winamp/winamp-button";
 
-import { MiniActions } from "../controls-panel";
+import { MiniActions } from "../../../widgets/controls-panel";
 import { MiniTimer } from "../mini-timer";
 import {
   $isActiveWindow,

@@ -16,7 +16,7 @@ export type TWinampState =
   | "OPENED"
   | "MINIMIZED";
 
-export type MediaStatus = "PLAYING" | "STOPPED" | "PAUSED";
+export type TMediaStatus = "PLAYING" | "STOPPED" | "PAUSED";
 
 export type WinampWindow = "PLAYER" | "EQUALIZER" | "PLAYLIST" | "NONE" | "PRESETS";
 
